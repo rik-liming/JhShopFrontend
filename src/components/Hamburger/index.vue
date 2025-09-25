@@ -4,15 +4,31 @@
       src="@/assets/logo.png"
       class="hamburger-logo"
       :class="{ 'is-rotating': isRotating }"
+      :style="{ width: iconSize + 'px', height: iconSize + 'px' }"
     />
   </div>
 </template>
 
 <script setup>
-import { ref } from 'vue'
+import { ref, watch } from 'vue'
+import store from '@/store'
 
 // 动画状态
 const isRotating = ref(false)
+
+// 设置初始图标大小
+let iconSize = ref(40)
+
+// 动态监听 device 的变化
+watch(() => store.app().device, (newDevice) => {
+  if (newDevice === 'mobile') {
+    iconSize.value = 40
+  } else if (newDevice === 'desktop') {
+    iconSize.value = 60
+  } else {
+    iconSize.value = 40 // 默认值
+  }
+}, { immediate: true }) // { immediate: true } 确保页面加载时会立即获取 device 的值
 
 // emit 事件
 const emit = defineEmits(['toggleClick'])
@@ -31,8 +47,6 @@ function handleClick() {
 
 <style scoped>
 .hamburger-logo {
-  width: 60px;
-  height: 60px;
   transition: transform 1s;
 }
 

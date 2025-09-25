@@ -76,10 +76,6 @@
           />
         </el-form-item>
 
-        <!-- <el-form-item prop="qrcode" label="验证码">
-          <el-input v-model="loginForm.qrcode" placeholder="QRCode" clearable />
-        </el-form-item> -->
-
         <!-- 登录按钮 -->
         <el-form-item>
           <el-button
@@ -148,7 +144,7 @@
 </template>
 
 <script lang="ts">
-import { validUsername } from '@/utils/validate';
+import { validEmail } from '@/utils/validate';
 import { defineComponent } from 'vue';
 import type { FormItemRule } from 'element-plus';
 import type { IForm } from '@/types/element-plus';
@@ -167,33 +163,30 @@ export default defineComponent({
     QrcodeVue,
   },
   data() {
-    const validateUsername: FormItemRule['validator'] = (_rule, value, callback) => {
-      if (!validUsername(value)) {
-        callback(new Error('Please enter the correct user name'));
+    const validateEmail: FormItemRule['validator'] = (_rule, value, callback) => {
+      if (!validEmail(value)) {
+        callback(new Error('请输入正确的邮箱'));
       } else {
         callback();
       }
     };
     const validatePassword: FormItemRule['validator'] = (_rule, value, callback) => {
       if (value.length < 6) {
-        callback(new Error('The password can not be less than 6 digits'));
+        callback(new Error('密码不能少于6位'));
       } else {
         callback();
       }
     };
     return {
       loginForm: {
-        username: 'admin',
-        password: '111111',
         email: '',
-        qrcode: '',
+        password: '',
       },
       loginRules: {
-        username: [{ required: true, trigger: 'blur', validator: validateUsername }],
+        email: [{ required: true, trigger: 'blur', validator: validateEmail }],
         password: [{ required: true, trigger: 'blur', validator: validatePassword }]
       },
       passwordType: 'password',
-      capsTooltip: false,
       loading: false,
       showDialog: false,
       redirect: undefined,
@@ -217,20 +210,15 @@ export default defineComponent({
     }
   },
   created() {
-    // window.addEventListener('storage', this.afterQRScan)
   },
   mounted() {
-    if (this.loginForm.username === '') {
-      (this.$refs.username as HTMLElement).focus();
+    if (this.loginForm.email === '') {
+      (this.$refs.email as HTMLElement).focus();
     } else if (this.loginForm.password === '') {
       (this.$refs.password as HTMLElement).focus();
     }
   },
   methods: {
-    checkCapslock(e) {
-      const { key } = e;
-      this.capsTooltip = key && key.length === 1 && (key >= 'A' && key <= 'Z');
-    },
     showPwd() {
       if (this.passwordType === 'password') {
         this.passwordType = '';
@@ -310,7 +298,13 @@ export default defineComponent({
   display: flex;
   justify-content: center;
   align-items: center;
-  background: linear-gradient(#f9e49f, #e2c08c, #b6a694, #9eb1a3);
+  background-image: url('@/assets/login_background.jpg');
+  background-size: cover; /* 图片铺满 */
+  background-position: center; /* 居中 */
+
+  /* 自适应 iPhone 风格圆角 */
+  border-radius: min(11vw, 11vh); /* 取宽和高中较小的比例 */;
+  overflow: hidden;
 
   .login-box {
     width: 360px;

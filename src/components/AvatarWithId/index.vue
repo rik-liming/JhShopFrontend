@@ -1,10 +1,11 @@
 <template>
-  <div style="padding: 6px 0px;" @click="handleClick">
+  <div style="display: flex; align-items: center;" @click="handleClick">
     <img
-      src="@/assets/notification_bell.png"
-      class="notification-bell"
+      src="@/assets/profile_icon.png"
+      class="profile-icon"
       :style="{ width: iconSize + 'px', height: iconSize + 'px' }"
     />
+    <span class="id-text">ID: {{ user?.value?.id }}</span>
   </div>
 </template>
 
@@ -29,6 +30,8 @@ watch(() => store.app().device, (newDevice) => {
   }
 }, { immediate: true }) // { immediate: true } 确保页面加载时会立即获取 device 的值
 
+const user = store.user().user
+
 // emit 事件
 const emit = defineEmits(['toggleClick'])
 
@@ -45,7 +48,15 @@ function handleClick() {
 </script>
 
 <style scoped>
-.notification-bell {
-  cursor: pointer;
+.profile-icon {
+    cursor: pointer;
+}
+
+.id-text {
+    margin-left: 10px; 
+    text-decoration: underline rgb(215, 215, 215);
+    text-decoration-thickness: 3px; /* 增加下划线的粗细 */
+    text-underline-offset: 5px; /* 增加下划线与文字的距离 */
+    font-size: 20px;
 }
 </style>

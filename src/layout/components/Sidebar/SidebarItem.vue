@@ -152,4 +152,60 @@ export default defineComponent({
   fill: currentColor;
   overflow: hidden;
 }
+
+.left-menu-item {
+  // background: #1e3a8a; /* 初始背景色为深蓝色 */
+  border: 2px solid transparent; /* 透明边框 */
+  color: #fff;
+  padding-left: 4px !important;
+  cursor: pointer;
+  position: relative;
+  overflow: hidden;
+  border-radius: 5px;
+  transition: background-color 0.4s ease, color 0.4s ease, border-color 0.6s ease;
+  text-align: center;
+}
+
+/* 鼠标悬停时的效果 */
+.left-menu-item:hover {
+  background: linear-gradient(to right, 
+    rgba(0, 0, 0, 0.1) 10%,   /* 黑色，透明度为0.8 */
+    rgb(45, 97, 241) 80%, /* 深蓝色，完全不透明 */
+    rgba(0, 0, 0, 0.8) 100%    /* 黑色，透明度为0.8 */
+  );
+
+  color: #fff; /* 鼠标悬停时文字颜色 */
+  border-color: skyblue; /* 鼠标悬停时边框颜色变化 */
+  // font-size: 18px;
+  // font-weight: bold;
+}
+
+.left-menu-item.is-active {
+  background: linear-gradient(to right, 
+    rgba(0, 0, 0, 0.1) 10%,   /* 黑色，透明度为0.8 */
+    rgb(45, 97, 241) 80%, /* 深蓝色，完全不透明 */
+    rgba(0, 0, 0, 0.8) 100%    /* 黑色，透明度为0.8 */
+  );
+  color: #fff; /* 鼠标悬停时文字颜色 */
+  border-color: skyblue; /* 鼠标悬停时边框颜色变化 */
+  font-size: 16px;
+  font-weight: bold;
+}
+
+.left-menu-item:before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: -100%;
+  right: -100%;
+  bottom: 0;
+  background: #1e3a8a; /* 初始背景色 */
+  transition: all 0.4s ease; /* 加速过渡 */
+  z-index: -1; /* 确保渐变层在按钮内容的下层 */
+}
+
+.left-menu-item:hover:before {
+  left: 0;
+  right: 0;
+}
 </style>

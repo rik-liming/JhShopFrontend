@@ -3,10 +3,6 @@
     <div v-if="device === 'mobile' && sidebar.opened" class="drawer-bg" @click="handleClickOutside" />
     <sidebar class="sidebar-container" />
     <div :class="{ hasTagsView: needTagsView }" class="main-container" :style="bgStyle">
-      <div :class="{ 'fixed-header': fixedHeader }">
-        <navbar />
-        <!-- <tags-view v-if="needTagsView" /> -->
-      </div>
       <app-main />
       <!-- <right-panel v-if="showSettings">
         <settings />
@@ -17,7 +13,7 @@
 
 <script>
 import RightPanel from '@/components/RightPanel';
-import { AppMain, Navbar, Settings, Sidebar, TagsView } from './components';
+import { AppMain, Settings, Sidebar, TagsView } from './components';
 import ResizeMixin from './mixin/ResizeHandler';
 import { mapState } from 'pinia';
 import store from '@/store';
@@ -28,7 +24,6 @@ export default defineComponent({
   name: 'LayoutIndex',
   components: {
     AppMain,
-    Navbar,
     RightPanel,
     Settings,
     Sidebar,
@@ -58,11 +53,16 @@ export default defineComponent({
     },
     // 内联样式对象：确保 background-image 是合法 url(...)
     bgStyle() {
+      const minRadius = Math.min(window.innerWidth * 0.11, window.innerHeight * 0.11); // 计算 11vw 和 11vh 的最小值
       return {
         backgroundImage: `url(${this.mainBackground})`,
         backgroundSize: 'cover',
         backgroundPosition: 'center',
-        backgroundRepeat: 'no-repeat'
+        backgroundRepeat: 'no-repeat',
+
+        /* 自适应 iPhone 风格圆角 */
+        borderRadius: `${minRadius}px`, // 通过计算得到的最小值
+        overflow: 'hidden',
       };
     },
   },
@@ -102,20 +102,4 @@ export default defineComponent({
   z-index: 999;
 }
 
-.fixed-header {
-  position: fixed;
-  top: 0;
-  right: 0;
-  z-index: 9;
-  width: calc(100% - var(--side-bar-width));
-  transition: width 0.28s;
-}
-
-.hideSidebar .fixed-header {
-  width: calc(100% - 54px)
-}
-
-.mobile .fixed-header {
-  width: 100%;
-}
 </style>

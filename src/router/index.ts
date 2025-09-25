@@ -7,7 +7,10 @@ import {
   Sell as IconWithdraw,
   SoldOut as IconDeposit,
   DArrowRight as IconTransfer,
+  Plus as IconTrade,
+  Money as IconFinance,
 } from '@element-plus/icons-vue';
+import store from '@/store';
 
 /* Layout */
 const Layout = ():RouteComponent => import('@/layout/index.vue');
@@ -132,37 +135,49 @@ export const constantRoutes:RouteRecordRaw[] = [
       }
     ]
   },
-  // {
-  //   path: '/dashboard',
-  //   component: Layout,
-  //   redirect: '/dashboard/index',
-  //   children: [
-  //     {
-  //       path: 'dashboard',
-  //       component: () => import('@/views/dashboard/index.vue'),
-  //       name: 'Dashboard',
-  //       meta: { title: '仪表板', icon: 'dashboard', affix: true }
-  //     }
-  //   ]
-  // },
-  // {
-  //   path: '/profile',
-  //   component: Layout,
-  //   redirect: '/profile/index',
-  //   meta: { hidden: true },
-  //   children: [
-  //     {
-  //       path: 'index',
-  //       component: () => import('@/views/profile/index.vue'),
-  //       name: 'Profile',
-  //       meta: { title: '个人中心', icon: 'user', noCache: true }
-  //     }
-  //   ]
-  // }
+  {
+    path: '/trade',
+    component: Layout,
+    redirect: '/trade/index',
+    children: [
+      {
+        path: 'trade',
+        component: () => import('@/views/trade/index.vue'),
+        name: 'Trade',
+        meta: { title: '发布交易', icon: markRaw(IconTrade), affix: true }
+      }
+    ]
+  },
+  {
+    path: '/finance',
+    component: Layout,
+    redirect: '/finance/index',
+    children: [
+      {
+        path: 'finance',
+        component: () => import('@/views/finance/index.vue'),
+        name: 'Finance',
+        meta: { title: '财务变动', icon: markRaw(IconFinance), affix: true }
+      }
+    ]
+  },
+  {
+    path: '/profile',
+    component: Layout,
+    redirect: '/profile/index',
+    children: [
+      {
+        path: 'profile',
+        component: () => import('@/views/profile/index.vue'),
+        name: 'Profile',
+        meta: { title: '会员信息', icon: 'user', affix: true }
+      }
+    ]
+  },
 ];
 
 /**
- * asyncRoutes
+ * .
  * the routes that need to be dynamically loaded based on user roles
  *
  * 注意：hidden、alwaysShow 属性配置移动到了meta中！！！
@@ -380,7 +395,7 @@ export const asyncRoutes:RouteRecordRaw[] = [
   // {
   //   path: '/pdf/download',
   //   component: () => import('@/views/pdf/download.vue'),
-  //   meta: { hidden: true }
+  //   meta: { hidden: true }login_background
   // },
 
   // {
@@ -408,28 +423,46 @@ export const asyncRoutes:RouteRecordRaw[] = [
   //     }
   //   ]
   // },
+  // {
+  //   path: '/my-demo',
+  //   component: Layout,
+  //   name: 'MyDemo',
+  //   meta: {
+  //     title: '我的示例',
+  //     icon: 'component'
+  //   },
+  //   children: [
+  //     {
+  //       path: 'element-demo',
+  //       component: () => import('@/views/mydemo/ElementDemo.vue'),
+  //       name: 'ElementDemo',
+  //       meta: { title: 'Element 示例', icon: 'skill' }
+  //     },
+  //     {
+  //       path: 'store-demo',
+  //       component: () => import('@/views/mydemo/StoreDemo.vue'),
+  //       name: 'StoreDemo',
+  //       meta: { title: 'Store 示例', icon: 'lock' }
+  //     }
+  //   ]
+  // },
+
+  // logout
   {
-    path: '/my-demo',
+    path: '/logout',
     component: Layout,
-    name: 'MyDemo',
-    meta: {
-      title: '我的示例',
-      icon: 'component'
-    },
     children: [
       {
-        path: 'element-demo',
-        component: () => import('@/views/mydemo/ElementDemo.vue'),
-        name: 'ElementDemo',
-        meta: { title: 'Element 示例', icon: 'skill' }
-      },
-      {
-        path: 'store-demo',
-        component: () => import('@/views/mydemo/StoreDemo.vue'),
-        name: 'StoreDemo',
-        meta: { title: 'Store 示例', icon: 'lock' }
+        path: 'index',
+        component: () => import('@/views/login/index.vue'),
+        name: 'Logout',
+        meta: { title: '登出', icon: 'logout', affix: false }
       }
-    ]
+    ],
+    beforeEnter: async(to, from, next) => {
+      await store.user().logout();
+      next('/login')
+    } 
   },
 
   // 404 page must be placed at the end !!!

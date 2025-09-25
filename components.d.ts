@@ -8,6 +8,7 @@ export {}
 /* prettier-ignore */
 declare module 'vue' {
   export interface GlobalComponents {
+    AvatarWithId: typeof import('./src/components/AvatarWithId/index.vue')['default']
     BackToTop: typeof import('./src/components/BackToTop/index.vue')['default']
     Breadcrumb: typeof import('./src/components/Breadcrumb/index.vue')['default']
     DragSelect: typeof import('./src/components/DragSelect/index.vue')['default']
@@ -70,6 +71,7 @@ declare module 'vue' {
     Mallki: typeof import('./src/components/TextHoverEffect/Mallki.vue')['default']
     MDinput: typeof import('./src/components/MDinput/index.vue')['default']
     MixChart: typeof import('./src/components/Charts/MixChart.vue')['default']
+    Navbar: typeof import('./src/components/Navbar/index.vue')['default']
     NotificationBell: typeof import('./src/components/NotificationBell/index.vue')['default']
     Pagination: typeof import('./src/components/Pagination/index.vue')['default']
     PanThumb: typeof import('./src/components/PanThumb/index.vue')['default']
