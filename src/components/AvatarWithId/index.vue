@@ -3,6 +3,7 @@
     <img
       src="@/assets/profile_icon.png"
       class="profile-icon"
+      :class="{ 'is-rotating': isRotating }"
       :style="{ width: iconSize + 'px', height: iconSize + 'px' }"
     />
     <span class="id-text">ID: {{ user?.value?.id }}</span>
@@ -49,7 +50,12 @@ function handleClick() {
 
 <style scoped>
 .profile-icon {
-    cursor: pointer;
+  cursor: pointer;
+  transition: transform 1s;
+}
+
+.profile-icon.is-rotating {
+  transform: scale(1.5);  /* 放大 1.2 倍 */
 }
 
 .id-text {

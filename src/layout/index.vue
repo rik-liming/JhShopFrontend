@@ -53,7 +53,7 @@ export default defineComponent({
     },
     // 内联样式对象：确保 background-image 是合法 url(...)
     bgStyle() {
-      const minRadius = Math.min(window.innerWidth * 0.11, window.innerHeight * 0.11); // 计算 11vw 和 11vh 的最小值
+      const minRadius = Math.min(window.innerWidth * 0.1, window.innerHeight * 0.1); // 计算 11vw 和 11vh 的最小值
       return {
         backgroundImage: `url(${this.mainBackground})`,
         backgroundSize: 'cover',

@@ -9,6 +9,7 @@ export {}
 declare module 'vue' {
   export interface GlobalComponents {
     AvatarWithId: typeof import('./src/components/AvatarWithId/index.vue')['default']
+    AvatarWithID: typeof import('./src/components/AvatarWithID/index.vue')['default']
     BackToTop: typeof import('./src/components/BackToTop/index.vue')['default']
     Breadcrumb: typeof import('./src/components/Breadcrumb/index.vue')['default']
     DragSelect: typeof import('./src/components/DragSelect/index.vue')['default']

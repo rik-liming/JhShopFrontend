@@ -5,11 +5,11 @@
 
     <div class="right-menu">
         <div class="right-menu-item">
-          <notification-bell />
+          <notification-bell @toggleClick="showMessageBox" />
         </div>
 
         <div class="right-menu-item">
-          <avatar-with-id />
+          <avatar-with-id @toggleClick="openProfile" />
         </div>
     </div>
   </div>
@@ -43,6 +43,12 @@ export default defineComponent({
     async logout() {
       await store.user().logout();
       this.$router.push(`/login?redirect=${this.$route.fullPath}`);
+    },
+    showMessageBox() {
+      alert("show message");
+    },
+    openProfile() {
+      this.$router.push(`/profile`);
     }
   }
 });

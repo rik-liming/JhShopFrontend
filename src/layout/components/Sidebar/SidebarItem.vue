@@ -157,13 +157,13 @@ export default defineComponent({
   // background: #1e3a8a; /* 初始背景色为深蓝色 */
   border: 2px solid transparent; /* 透明边框 */
   color: #fff;
-  padding-left: 4px !important;
+  padding-left: 20px !important;
   cursor: pointer;
   position: relative;
   overflow: hidden;
   border-radius: 5px;
   transition: background-color 0.4s ease, color 0.4s ease, border-color 0.6s ease;
-  text-align: center;
+  text-align: left;
 }
 
 /* 鼠标悬停时的效果 */

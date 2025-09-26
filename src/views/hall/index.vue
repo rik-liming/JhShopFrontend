@@ -2,7 +2,6 @@
   <div>
     <div class="navbar-container">
       <navbar />
-      <!-- <tags-view v-if="needTagsView" /> -->
     </div>
     <div class="promotion-container">
       <div class="carousel-wrapper" v-if="store.app().device !== 'mobile'">
@@ -30,8 +29,8 @@
         </div>
 
         <div class="right-menu">
-          <div class="avatar-container right-menu-item hover-effect" @click="onTradePublish">
-            <div class="avatar-wrapper">
+          <div class="publish-container right-menu-item hover-effect" @click="onTradePublish">
+            <div class="publish-wrapper">
               <img src="@/assets/sale_icon.png" class="sale-icon">
               <span>发布交易</span>
             </div>
@@ -40,169 +39,72 @@
       </div>
     </div>
 
-    <div class="app-container">
+    <div class="app-container" @scroll="onScroll">
       <div class="filter-container">
-        <el-input v-model="listQuery.title" placeholder="Title" style="width: 200px;" class="filter-item" @keyup.enter="handleFilter" />
-        <el-select v-model="listQuery.importance" placeholder="Imp" clearable style="width: 90px" class="filter-item">
-          <el-option v-for="item in importanceOptions" :key="item" :label="item" :value="item" />
+        <el-select v-model="listQuery.channel" clearable style="width: 90px" class="filter-item" @change="handleFilter">
+          <el-option v-for="item in channelOptions" :key="item.value" :label="item.label" :value="item.value" />
         </el-select>
-        <el-select v-model="listQuery.type" placeholder="Type" clearable class="filter-item" style="width: 130px">
-          <el-option v-for="item in calendarTypeOptions" :key="item.key" :label="item.display_name+'('+item.key+')'" :value="item.key" />
+        <el-select v-model="listQuery.tableType" clearable class="filter-item" style="width: 130px" @change="handleFilter">
+          <el-option v-for="item in tableTypeOptions" :key="item.value" :label="item.label" :value="item.value" />
         </el-select>
         <el-select v-model="listQuery.sort" style="width: 140px" class="filter-item" @change="handleFilter">
           <el-option v-for="item in sortOptions" :key="item.key" :label="item.label" :value="item.key" />
         </el-select>
-        <el-button class="filter-item" type="primary" :icon="iconSearch" @click="handleFilter">
-          <span v-waves>Search</span>
-        </el-button>
-        <el-button class="filter-item" style="margin-left: 10px;" type="primary" :icon="iconEdit" @click="handleCreate">
-          Add
-        </el-button>
-        <el-button :loading="downloadLoading" class="filter-item" type="primary" :icon="iconDownload" @click="handleDownload">
-          <span v-waves>Export</span>
-        </el-button>
-        <el-checkbox v-model="showReviewer" class="filter-item" style="margin-left:15px;" @change="tableKey=tableKey+1">
-          reviewer
-        </el-checkbox>
       </div>
 
-      <el-table
-        :key="tableKey"
-        v-loading="listLoading"
-        :data="list"
-        border
-        fit
-        highlight-current-row
-        style="width: 100%;"
-        @sort-change="sortChange"
-      >
-        <el-table-column label="ID" prop="id" sortable="custom" align="center" width="80" :class-name="getSortClass('id')">
-          <template v-slot="{row}">
-            <span>{{ row.id }}</span>
-          </template>
-        </el-table-column>
-        <el-table-column label="Date" width="150px" align="center">
-          <template v-slot="{row}">
-            <span>{{ parseTime(row.timestamp, '{y}-{m}-{d} {h}:{i}') }}</span>
-          </template>
-        </el-table-column>
-        <el-table-column label="Title" min-width="150px">
-          <template v-slot="{row}">
-            <span class="link-type" @click="handleUpdate(row)">{{ row.title }}</span>
-            <el-tag>{{ typeFilter(row.type) }}</el-tag>
-          </template>
-        </el-table-column>
-        <el-table-column label="Author" width="110px" align="center">
-          <template v-slot="{row}">
-            <span>{{ row.author }}</span>
-          </template>
-        </el-table-column>
-        <el-table-column v-if="showReviewer" label="Reviewer" width="110px" align="center">
-          <template v-slot="{row}">
-            <span style="color:red;">{{ row.reviewer }}</span>
-          </template>
-        </el-table-column>
-        <el-table-column label="Imp" width="80px">
-          <template v-slot="{row}">
-            <svg-icon v-for="n in row.importance" :key="n" icon-class="star" class="meta-item__icon" />
-          </template>
-        </el-table-column>
-        <el-table-column label="Readings" align="center" width="95">
-          <template v-slot="{row}">
-            <span v-if="row.pageviews" class="link-type" @click="handleFetchPv(row.pageviews)">{{ row.pageviews }}</span>
-            <span v-else>0</span>
-          </template>
-        </el-table-column>
-        <el-table-column label="Status" class-name="status-col" width="100">
-          <template v-slot="{row}">
-            <el-tag :type="statusFilter(row.status)">
-              {{ row.status }}
-            </el-tag>
-          </template>
-        </el-table-column>
-        <el-table-column label="Actions" align="center" width="230" class-name="small-padding fixed-width">
-          <template v-slot="{row,$index}">
-            <el-button type="primary" size="small" @click="handleUpdate(row)">
-              Edit
-            </el-button>
-            <el-button v-if="row.status!='published'" size="small" type="success" @click="handleModifyStatus(row,'published')">
-              Publish
-            </el-button>
-            <el-button v-if="row.status!='draft'" size="small" @click="handleModifyStatus(row,'draft')">
-              Draft
-            </el-button>
-            <el-button v-if="row.status!='deleted'" size="small" type="danger" @click="handleDelete(row,$index)">
-              Delete
-            </el-button>
-          </template>
-        </el-table-column>
-      </el-table>
+      <!-- 包裹表格的容器 -->
+      <div class="table-wrapper" :class="{ 'animate': animate }">
+          <el-table
+            :data="list"
+            border
+            fit
+            highlight-current-row
+            class="main-table"
+            @sort-change="sortChange"
+            :key="tableKey"
+          >
+            <el-table-column label="Date" width="'30%'" align="center">
+              <template v-slot="{row}">
+                <span>{{ parseTime(row.timestamp, '{y}-{m}-{d} {h}:{i}') }}</span>
+              </template>
+            </el-table-column>
+            <el-table-column label="Author" width="'20%'" align="center">
+              <template v-slot="{row}">
+                <span>{{ row.author }}</span>
+              </template>
+            </el-table-column>
+            <el-table-column label="Imp" width="'20%'" align="center">
+              <template v-slot="{row}">
+                <svg-icon v-for="n in row.importance" :key="n" icon-class="star" class="meta-item__icon" />
+              </template>
+            </el-table-column>
+            <el-table-column label="Status" class-name="status-col" width="'30%'" align="center">
+              <template v-slot="{row}">
+                <el-tag :type="statusFilter(row.status)">
+                  {{ row.status }}
+                </el-tag>
+              </template>
+            </el-table-column>
+          </el-table>
+      </div>
 
-      <pagination v-show="total>0" :total="total" v-model:page="listQuery.page" v-model:limit="listQuery.limit" @pagination="getList" />
-
-      <el-dialog :title="textMap[dialogStatus]" v-model="dialogFormVisible">
-        <el-form ref="dataForm" :rules="rules" :model="temp" label-position="left" label-width="70px" style="width: 400px; margin-left:50px;">
-          <el-form-item label="Type" prop="type">
-            <el-select v-model="temp.type" class="filter-item" placeholder="Please select">
-              <el-option v-for="item in calendarTypeOptions" :key="item.key" :label="item.display_name" :value="item.key" />
-            </el-select>
-          </el-form-item>
-          <el-form-item label="Date" prop="timestamp">
-            <el-date-picker v-model="temp.timestamp" type="datetime" placeholder="Please pick a date" />
-          </el-form-item>
-          <el-form-item label="Title" prop="title">
-            <el-input v-model="temp.title" />
-          </el-form-item>
-          <el-form-item label="Status">
-            <el-select v-model="temp.status" class="filter-item" placeholder="Please select">
-              <el-option v-for="item in statusOptions" :key="item" :label="item" :value="item" />
-            </el-select>
-          </el-form-item>
-          <el-form-item label="Imp">
-            <el-rate v-model="temp.importance" :colors="['#99A9BF', '#F7BA2A', '#FF9900']" :max="3" style="margin-top:8px;" />
-          </el-form-item>
-          <el-form-item label="Remark">
-            <el-input v-model="temp.remark" :autosize="{ minRows: 2, maxRows: 4}" type="textarea" placeholder="Please input" />
-          </el-form-item>
-        </el-form>
-        <template #footer>
-          <div class="dialog-footer">
-            <el-button @click="dialogFormVisible = false">
-              Cancel
-            </el-button>
-            <el-button type="primary" @click="dialogStatus==='create'?createData():updateData()">
-              Confirm
-            </el-button>
-          </div>
-        </template>
-      </el-dialog>
-
-      <el-dialog v-model="dialogPvVisible" title="Reading statistics">
-        <el-table :data="pvData" border fit highlight-current-row style="width: 100%">
-          <el-table-column prop="key" label="Channel" />
-          <el-table-column prop="pv" label="Pv" />
-        </el-table>
-        <template #footer>
-          <span class="dialog-footer">
-            <el-button type="primary" @click="dialogPvVisible = false">Confirm</el-button>
-          </span>
-        </template>
-      </el-dialog>
+      <!-- 分页功能修改 -->
+      <pagination v-show="total > 0" :total="total" v-model:page="listQuery.page" v-model:limit="listQuery.limit" @pagination="getList" />
     </div>
   </div>
 </template>
 
 <script setup>
-import { ref, reactive, onMounted, markRaw } from 'vue'
+import { ref, reactive, onMounted, markRaw, watch } from 'vue'
 import { Vue3Marquee } from 'vue3-marquee'
 import { toast } from 'vue3-toastify'
 import Pagination from '@/components/Pagination'
 import waves from '@/directive/waves'
-import { Search, Edit, Download } from '@element-plus/icons-vue'
-import { fetchList, fetchPv, createArticle, updateArticle } from '@/api/article'
+import { fetchList } from '@/api/article'
 import { parseTime } from '@/utils'
 import Navbar from './navbar.vue';
 import store from '@/store';
+import { useRouter } from 'vue-router';
 
 // --- 广告轮播图片 ---
 const ad_imgs = [
@@ -211,21 +113,37 @@ const ad_imgs = [
   new URL('@/assets/scroll_ad_3.png', import.meta.url).href
 ]
 
-// --- 图标 ---
-const iconSearch = markRaw(Search)
-const iconEdit = markRaw(Edit)
-const iconDownload = markRaw(Download)
-
 // --- 表格数据 ---
 
-const showReviewer = ref(false)
 const tableKey = ref(0)
-const textMap = ref({
-  update: 'Edit',
-  create: 'Create'
-})
-const dialogPvVisible = ref(false)
-const importanceOptions = ref([1, 2, 3])
+const channelOptions = ref(
+  [
+    {
+      'label': '支付宝',
+      'value': 'alipay'
+    },
+    {
+      'label': '银行卡',
+      'value': 'bank'
+    },
+    {
+      'label': '微信',
+      'value': 'wechat'
+    },
+  ]
+)
+const tableTypeOptions = ref(
+  [
+    {
+      'label': '订单',
+      'value': 'order'
+    },
+    {
+      'label': '财务变动',
+      'value': 'finance'
+    },
+  ]
+)
 const sortOptions = ref(
   [{ label: 'ID Ascending', key: '+id' }, { label: 'ID Descending', key: '-id' }]
 )
@@ -235,67 +153,42 @@ const listLoading = ref(true)
 const listQuery = reactive({
   page: 1,
   limit: 20,
-  importance: undefined,
+  channel: 'alipay',
   title: undefined,
-  type: undefined,
+  tableType: 'order',
   sort: '+id'
 })
 
-// --- 弹窗状态 ---
-const dialogFormVisible = ref(false)
-const dialogStatus = ref('')
-const temp = reactive({
-  id: undefined,
-  importance: 1,
-  remark: '',
-  timestamp: new Date(),
-  title: '',
-  type: '',
-  status: 'published'
-})
-const pvData = ref([])
-const downloadLoading = ref(false)
-
-// --- Calendar 类型 ---
-const calendarTypeOptions = [
-  { key: 'CN', display_name: 'China' },
-  { key: 'US', display_name: 'USA' },
-  { key: 'JP', display_name: 'Japan' },
-  { key: 'EU', display_name: 'Eurozone' }
-]
-const calendarTypeKeyValue = calendarTypeOptions.reduce((acc, cur) => {
-  acc[cur.key] = cur.display_name
-  return acc
-}, {})
+const router = useRouter();
 
 // --- 生命周期 ---
 onMounted(() => {
   getList()
 })
 
+watch(() => listQuery.page, () => {
+  getList()
+})
+
+const animate = ref(false);
 // --- 方法 ---
 function getList() {
   listLoading.value = true
+  animate.value = false;
   fetchList(listQuery).then(response => {
     list.value = response.data.items
     total.value = response.data.total
     setTimeout(() => {
       listLoading.value = false
-    }, 1500)
+      animate.value = true;
+
+    }, 300)
   })
 }
 
 function handleFilter() {
   listQuery.page = 1
   getList()
-}
-
-function handleModifyStatus(row, status) {
-  ElMessage({
-    message: '操作Success',
-    type: 'success'
-  })
-  row.status = status
 }
 
 function sortChange({ prop, order }) {
@@ -309,114 +202,9 @@ function sortByID(order) {
   handleFilter()
 }
 
-function resetTemp() {
-  Object.assign(temp, {
-    id: undefined,
-    importance: 1,
-    remark: '',
-    timestamp: new Date(),
-    title: '',
-    status: 'published',
-    type: ''
-  })
-}
-
-function handleCreate() {
-  resetTemp()
-  dialogStatus.value = 'create'
-  dialogFormVisible.value = true
-  nextTick(() => {
-    if ($refs.dataForm) $refs.dataForm.clearValidate()
-  })
-}
-
-function createData() {
-  if ($refs.dataForm) {
-    $refs.dataForm.validate((valid) => {
-      if (valid) {
-        temp.id = parseInt(Math.random() * 100) + 1024
-        temp.author = 'vue-element-admin'
-        createArticle(temp).then(() => {
-          list.value.unshift({ ...temp })
-          dialogFormVisible.value = false
-          ElNotification({
-            title: 'Success',
-            message: 'Created Successfully',
-            type: 'success',
-            duration: 2000
-          })
-        })
-      }
-    })
-  }
-}
-
-function handleUpdate(row) {
-  Object.assign(temp, row)
-  temp.timestamp = new Date(temp.timestamp)
-  dialogStatus.value = 'update'
-  dialogFormVisible.value = true
-  nextTick(() => {
-    if ($refs.dataForm) $refs.dataForm.clearValidate()
-  })
-}
-
-function updateData() {
-  if ($refs.dataForm) {
-    $refs.dataForm.validate((valid) => {
-      if (valid) {
-        const tempData = { ...temp, timestamp: +new Date(temp.timestamp) }
-        updateArticle(tempData).then(() => {
-          const index = list.value.findIndex(v => v.id === temp.id)
-          list.value.splice(index, 1, { ...temp })
-          dialogFormVisible.value = false
-          ElNotification({
-            title: 'Success',
-            message: 'Update Successfully',
-            type: 'success',
-            duration: 2000
-          })
-        })
-      }
-    })
-  }
-}
-
-function handleDelete(row, index) {
-  ElNotification({
-    title: 'Success',
-    message: 'Delete Successfully',
-    type: 'success',
-    duration: 2000
-  })
-  list.value.splice(index, 1)
-}
-
-function handleFetchPv(pv) {
-  fetchPv(pv).then(response => {
-    pvData.value = response.data.pvData
-    dialogPvVisible.value = true
-  })
-}
-
-function handleDownload() {
-  downloadLoading.value = true
-  import('@/vendor/Export2Excel').then(excel => {
-    const tHeader = ['timestamp', 'title', 'type', 'importance', 'status']
-    const filterVal = ['timestamp', 'title', 'type', 'importance', 'status']
-    const data = list.value.map(v => filterVal.map(j => j === 'timestamp' ? parseTime(v[j]) : v[j]))
-    excel.export_json_to_excel({ header: tHeader, data, filename: 'table-list' })
-    downloadLoading.value = false
-  })
-}
-
 function statusFilter(status) {
   const statusMap = { published: 'success', draft: 'info', deleted: 'danger' }
   return statusMap[status]
-}
-
-function typeFilter(type) {
-  return calendarTypeKeyValue[type]
 }
 
 function getSortClass(key) {
@@ -424,12 +212,20 @@ function getSortClass(key) {
   return sort === `+${key}` ? 'ascending' : 'descending';
 }
 
+function onScroll(event) {
+  const bottom = event.target.scrollHeight === event.target.scrollTop + event.target.clientHeight
+  if (bottom && list.length < total.value) {
+    listQuery.page += 1
+    getList()
+  }
+}
+
 function onTradePublish() {
-  alert("publish")
+  router.push('/trade')
 };
 
 function onDeposit() {
-  alert("deposit")
+  router.push('/deposit')
 };
 
 </script>
@@ -453,6 +249,23 @@ function onDeposit() {
   font-size: 18px;
 }
 
+.table-wrapper {
+  position: relative;
+  left: -100%; /* 初始位置在屏幕外 */
+  transform: translateY(-50%); /* 垂直居中 */
+  color: white;
+  transition: left 1s ease-out;
+  // transition: left 1s cubic-bezier(0.1, 0, 0.5, 1); /* 自定义贝塞尔曲线 */
+  visibility: hidden;
+}
+
+.table-wrapper.animate {
+  left: 50%; /* 结束时 div 移动到屏幕中央 */
+  // transform: translateX(-50%) translateY(-50%); /* 确保居中 */
+  transform: translateX(-50%); /* 确保居中 */
+  visibility: visible;
+}
+
 .transaction-container {
   display: flex;
   justify-content: center;
@@ -463,7 +276,7 @@ function onDeposit() {
     height: 70px;
     overflow: hidden;
     position: relative;
-    box-shadow: 0 1px 4px rgba(0, 21, 41, .08);
+    // box-shadow: 0 1px 4px rgba(0, 21, 41, .08);
 
     .left-menu {
       line-height: 50px;
@@ -473,12 +286,12 @@ function onDeposit() {
       cursor: pointer;
       transition: background .3s;
       -webkit-tap-highlight-color: transparent;
-      font-size: 22px;
-      color: red;
+      font-size: 18px;
+      color: #d9001b;
       font-weight: bold;
       display: flex;
       align-items: center;
-      gap: 10px;
+      gap: 8px;
 
       &:hover {
         background: rgba(0, 0, 0, .025)
@@ -486,8 +299,8 @@ function onDeposit() {
 
       .buy-icon {
         cursor: pointer;
-        width: 48px;
-        height: 48px;
+        width: 23px;
+        height: 32px;
         // border-radius: 10px;
       }
     }
@@ -505,8 +318,8 @@ function onDeposit() {
         display: inline-block;
         height: 100%;
         line-height: 50px;
-        font-size: 22px;
-        color: red;
+        font-size: 18px;
+        color: #d9001b;
         font-weight: bold;
         vertical-align: text-bottom;
 
@@ -520,30 +333,22 @@ function onDeposit() {
         }
       }
 
-      .avatar-container {
+      .publish-container {
         margin-right: 10px;
 
-        .avatar-wrapper {
+        .publish-wrapper {
           margin-top: 5px;
           position: relative;
           height: 60px;
           display: flex;
           align-items: center;
-          gap: 10px;
+          gap: 8px;
 
           .sale-icon {
             cursor: pointer;
-            width: 56px;
-            height: 52px;
+            width: 31px;
+            height: 28px;
             // border-radius: 10px;
-          }
-
-          .el-icon-caret-bottom {
-            cursor: pointer;
-            position: absolute;
-            right: -20px;
-            top: 25px;
-            font-size: 12px;
           }
         }
       }
@@ -577,13 +382,42 @@ function onDeposit() {
   cursor: pointer;
 }
 
-// .publish-btn:hover {
-//   color: #409EFF; /* Element Plus 默认主题蓝色 */
-// }
-
 .sale-icon {
   width: 40px;
   height: 40px;
+}
+
+:deep(.main-table) {
+  width: 100%; 
+  background-color: transparent !important;
+  border: 1px solid black !important;
+}
+
+/* 设置表头单元格的边框 */
+:deep(.main-table .el-table__header th) {
+  border: 1px solid #7f7f7f !important;
+  font-size: 16px;
+  font-weight: bold;
+  color: black;
+}
+
+/* 设置每个表格单元格的边框 */
+:deep(.main-table .el-table__body td) {
+  border: 1px solid #7f7f7f !important;
+}
+
+/* 设置每一行的背景颜色为透明 */
+:deep(.main-table .el-table__body tr) {
+  background-color: transparent !important; /* 设置透明背景 */
+  border: 1px solid #7f7f7f !important;
+}
+
+:deep(.el-table tr) {
+  background-color: transparent !important; /* 设置透明背景 */
+}
+
+:deep(.el-table th.el-table__cell) {
+  background-color: transparent !important; /* 设置透明背景 */
 }
 
 </style>

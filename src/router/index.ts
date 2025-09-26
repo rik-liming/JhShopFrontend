@@ -9,6 +9,7 @@ import {
   DArrowRight as IconTransfer,
   Plus as IconTrade,
   Money as IconFinance,
+  SwitchButton as IconLogout,
 } from '@element-plus/icons-vue';
 import store from '@/store';
 
@@ -89,7 +90,7 @@ export const constantRoutes:RouteRecordRaw[] = [
     redirect: '/deposit/index',
     children: [
       {
-        path: 'deposit',
+        path: '',
         component: () => import('@/views/deposit/index.vue'),
         name: 'Deposit',
         meta: { title: '充值', icon: markRaw(IconDeposit), affix: true }
@@ -141,7 +142,7 @@ export const constantRoutes:RouteRecordRaw[] = [
     redirect: '/trade/index',
     children: [
       {
-        path: 'trade',
+        path: '',
         component: () => import('@/views/trade/index.vue'),
         name: 'Trade',
         meta: { title: '发布交易', icon: markRaw(IconTrade), affix: true }
@@ -167,7 +168,7 @@ export const constantRoutes:RouteRecordRaw[] = [
     redirect: '/profile/index',
     children: [
       {
-        path: 'profile',
+        path: '',
         component: () => import('@/views/profile/index.vue'),
         name: 'Profile',
         meta: { title: '会员信息', icon: 'user', affix: true }
@@ -456,7 +457,7 @@ export const asyncRoutes:RouteRecordRaw[] = [
         path: 'index',
         component: () => import('@/views/login/index.vue'),
         name: 'Logout',
-        meta: { title: '登出', icon: 'logout', affix: false }
+        meta: { title: '登出', icon: markRaw(IconLogout), affix: false }
       }
     ],
     beforeEnter: async(to, from, next) => {

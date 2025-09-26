@@ -3,6 +3,7 @@
     <img
       src="@/assets/notification_bell.png"
       class="notification-bell"
+      :class="{ 'is-rotating': isRotating }"
       :style="{ width: iconSize + 'px', height: iconSize + 'px' }"
     />
   </div>
@@ -47,5 +48,11 @@ function handleClick() {
 <style scoped>
 .notification-bell {
   cursor: pointer;
+  transition: transform 1s;
 }
+
+.notification-bell.is-rotating {
+  transform: scale(1.5);  /* 放大 1.5 倍 */
+}
+
 </style>

@@ -1,19 +1,40 @@
 <template>
-  <div class="tw-p-8">
-    <h1 class="tw-text-4xl tw-font-bold tw-text-blue-600">Tailwind 生效测试</h1>
-
-    <el-button type="danger" class="mt-4">Element Plus 按钮</el-button>
-
-    <div class="tw-mt-6 p-4 bg-red-300 rounded-3xl">
-      <p class="tw-text-red-500 tw-font-bold">Tailwind 类可以加前缀验证</p>
-      <p class="tw-text-green-500 font-semibold">Tailwind 类直接使用也可以</p>
-    </div>
+  <div>
+    <button @click="startAnimation">点击触发动画</button>
+    <div class="moving-div" :class="{ 'animate': animate }">这是一个从左边滑入的div</div>
   </div>
 </template>
 
 <script setup>
+import { ref } from 'vue';
+
+const animate = ref(false);
+
+const startAnimation = () => {
+  animate.value = false; // 先停止动画
+  // 使用 setTimeout 来稍微延迟一下，让动画可以重新触发
+  setTimeout(() => {
+    animate.value = true; // 重新触发动画
+  }, 500); // 短暂的延迟，确保动画能够重新启动
+};
 </script>
 
-<style>
-/* 组件内普通样式也可以 */
+<style scoped>
+.moving-div {
+  position: absolute;
+  top: 50%; /* 垂直居中 */
+  left: -100%; /* 初始位置在屏幕外 */
+  transform: translateY(-50%); /* 垂直居中 */
+  background-color: lightcoral;
+  padding: 10px;
+  color: white;
+  transition: left 2s ease-out;
+  visibility: hidden;
+}
+
+.moving-div.animate {
+  left: 50%; /* 结束时 div 移动到屏幕中央 */
+  transform: translateX(-50%) translateY(-50%); /* 确保居中 */
+  visibility: visible;
+}
 </style>
