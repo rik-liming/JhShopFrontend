@@ -55,14 +55,32 @@
       <!-- 包裹表格的容器 -->
       <div class="table-wrapper" :class="{ 'animate': animate }">
           <!-- 根据 tableType 动态渲染表格 -->
-          <keep-alive>
-            <component 
+          <!-- <keep-alive> -->
+            <!-- <component 
               :is="currentTable" 
               :channel="listQuery.channel" 
               @table-update-start="handleTableUpdateStart"
               @table-update-end="handleTableUpdateEnd"
-            />
-          </keep-alive>
+            /> -->
+          <!-- </keep-alive> -->
+          <market-table
+            :channel="listQuery.channel" 
+            @table-update-start="handleTableUpdateStart"
+            @table-update-end="handleTableUpdateEnd"
+            v-show="listQuery.tableType == 'market'"
+          ></market-table>
+          <order-table
+            :channel="listQuery.channel" 
+            @table-update-start="handleTableUpdateStart"
+            @table-update-end="handleTableUpdateEnd"
+            v-show="listQuery.tableType == 'order'"
+          ></order-table>
+          <finance-table
+            :channel="listQuery.channel" 
+            @table-update-start="handleTableUpdateStart"
+            @table-update-end="handleTableUpdateEnd"
+            v-show="listQuery.tableType == 'finance'"
+          ></finance-table>
       </div>
 
       <!-- 分页功能修改 -->
@@ -180,6 +198,14 @@ async function handleTableUpdateEnd() {
   animate.value = true;
 }
 
+watch(() => listQuery.tableType, async () => {
+  animate.value = false
+  await nextTick()
+  setTimeout(() => {
+    animate.value = true
+  }, 300)
+})
+
 </script>
 
 <style scoped lang="scss">
@@ -204,6 +230,7 @@ async function handleTableUpdateEnd() {
 .table-wrapper {
   position: relative;
   left: -100%; /* 初始位置在屏幕外 */
+  transform: translateY(-50%); /* 垂直居中 */
   color: white;
   transition: left 1s ease-out;
   // transition: left 1s cubic-bezier(0.1, 0, 0.5, 1); /* 自定义贝塞尔曲线 */
@@ -212,6 +239,7 @@ async function handleTableUpdateEnd() {
 
 .table-wrapper.animate {
   left: 50%; /* 结束时 div 移动到屏幕中央 */
+  // transform: translateX(-50%) translateY(-50%); /* 确保居中 */
   transform: translateX(-50%); /* 确保居中 */
   visibility: visible;
 }

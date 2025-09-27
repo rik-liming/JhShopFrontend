@@ -59,6 +59,13 @@ const getList = async () => {
   try {
     emit('table-update-start');
     // 模拟 3 秒延迟
+    if (listQuery.channel == 'ali_pay') {
+        listQuery.page = 1
+    } else if (listQuery.channel == 'bank_pay') {
+        listQuery.page = 2
+    } else if (listQuery.channel == 'wechat_pay') {
+        listQuery.page = 3
+    }
     const response = await fetchList(listQuery);
     emit('table-update-end');
     list.value = response.data.items;
