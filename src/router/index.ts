@@ -85,6 +85,19 @@ export const constantRoutes:RouteRecordRaw[] = [
     ]
   },
   {
+    path: '/buy',
+    component: Layout,
+    redirect: '/buy/index',
+    children: [
+      {
+        path: '',
+        component: () => import('@/views/buy/index.vue'),
+        name: 'Buy',
+        meta: { title: '购买', icon: markRaw(IconDeposit), affix: true }
+      }
+    ]
+  },
+  {
     path: '/deposit',
     component: Layout,
     redirect: '/deposit/index',

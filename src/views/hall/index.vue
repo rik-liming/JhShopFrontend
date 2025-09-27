@@ -41,51 +41,28 @@
 
     <div class="app-container" @scroll="onScroll">
       <div class="filter-container">
-        <el-select v-model="listQuery.channel" clearable style="width: 90px" class="filter-item" @change="handleFilter">
+        <el-select v-model="listQuery.channel" clearable style="width: 90px" class="filter-item">
           <el-option v-for="item in channelOptions" :key="item.value" :label="item.label" :value="item.value" />
         </el-select>
-        <el-select v-model="listQuery.tableType" clearable class="filter-item" style="width: 130px" @change="handleFilter">
+        <el-select v-model="listQuery.tableType" clearable class="filter-item" style="width: 130px">
           <el-option v-for="item in tableTypeOptions" :key="item.value" :label="item.label" :value="item.value" />
         </el-select>
-        <el-select v-model="listQuery.sort" style="width: 140px" class="filter-item" @change="handleFilter">
+        <!-- <el-select v-model="listQuery.sort" style="width: 140px" class="filter-item">
           <el-option v-for="item in sortOptions" :key="item.key" :label="item.label" :value="item.key" />
-        </el-select>
+        </el-select> -->
       </div>
 
       <!-- 包裹表格的容器 -->
       <div class="table-wrapper" :class="{ 'animate': animate }">
-          <el-table
-            :data="list"
-            border
-            fit
-            highlight-current-row
-            class="main-table"
-            @sort-change="sortChange"
-            :key="tableKey"
-          >
-            <el-table-column label="Date" width="'30%'" align="center">
-              <template v-slot="{row}">
-                <span>{{ parseTime(row.timestamp, '{y}-{m}-{d} {h}:{i}') }}</span>
-              </template>
-            </el-table-column>
-            <el-table-column label="Author" width="'20%'" align="center">
-              <template v-slot="{row}">
-                <span>{{ row.author }}</span>
-              </template>
-            </el-table-column>
-            <el-table-column label="Imp" width="'20%'" align="center">
-              <template v-slot="{row}">
-                <svg-icon v-for="n in row.importance" :key="n" icon-class="star" class="meta-item__icon" />
-              </template>
-            </el-table-column>
-            <el-table-column label="Status" class-name="status-col" width="'30%'" align="center">
-              <template v-slot="{row}">
-                <el-tag :type="statusFilter(row.status)">
-                  {{ row.status }}
-                </el-tag>
-              </template>
-            </el-table-column>
-          </el-table>
+          <!-- 根据 tableType 动态渲染表格 -->
+          <keep-alive>
+            <component 
+              :is="currentTable" 
+              :channel="listQuery.channel" 
+              @table-update-start="handleTableUpdateStart"
+              @table-update-end="handleTableUpdateEnd"
+            />
+          </keep-alive>
       </div>
 
       <!-- 分页功能修改 -->
@@ -95,7 +72,7 @@
 </template>
 
 <script setup>
-import { ref, reactive, onMounted, markRaw, watch } from 'vue'
+import { ref, reactive, onMounted, markRaw, watch, computed, nextTick } from 'vue'
 import { Vue3Marquee } from 'vue3-marquee'
 import { toast } from 'vue3-toastify'
 import Pagination from '@/components/Pagination'
@@ -105,6 +82,9 @@ import { parseTime } from '@/utils'
 import Navbar from './navbar.vue';
 import store from '@/store';
 import { useRouter } from 'vue-router';
+import MarketTable from './components/MarketTable.vue'
+import OrderTable from './components/OrderTable.vue'
+import FinanceTable from './components/FinanceTable.vue'
 
 // --- 广告轮播图片 ---
 const ad_imgs = [
@@ -114,26 +94,32 @@ const ad_imgs = [
 ]
 
 // --- 表格数据 ---
+const tableWrapper = ref(null)
+let scrollTopCache = 0
 
 const tableKey = ref(0)
 const channelOptions = ref(
   [
     {
       'label': '支付宝',
-      'value': 'alipay'
+      'value': 'ali_pay'
     },
     {
       'label': '银行卡',
-      'value': 'bank'
+      'value': 'bank_pay'
     },
     {
       'label': '微信',
-      'value': 'wechat'
+      'value': 'wechat_pay'
     },
   ]
 )
 const tableTypeOptions = ref(
   [
+    {
+      'label': '市场',
+      'value': 'market'
+    },
     {
       'label': '订单',
       'value': 'order'
@@ -144,81 +130,28 @@ const tableTypeOptions = ref(
     },
   ]
 )
-const sortOptions = ref(
-  [{ label: 'ID Ascending', key: '+id' }, { label: 'ID Descending', key: '-id' }]
-)
-const list = ref([])
-const total = ref(0)
-const listLoading = ref(true)
+
 const listQuery = reactive({
-  page: 1,
-  limit: 20,
-  channel: 'alipay',
-  title: undefined,
-  tableType: 'order',
-  sort: '+id'
+  channel: 'ali_pay',
+  tableType: 'market',
 })
 
 const router = useRouter();
 
-// --- 生命周期 ---
-onMounted(() => {
-  getList()
-})
+const animate = ref(false)
 
-watch(() => listQuery.page, () => {
-  getList()
-})
-
-const animate = ref(false);
-// --- 方法 ---
-function getList() {
-  listLoading.value = true
-  animate.value = false;
-  fetchList(listQuery).then(response => {
-    list.value = response.data.items
-    total.value = response.data.total
-    setTimeout(() => {
-      listLoading.value = false
-      animate.value = true;
-
-    }, 300)
-  })
-}
-
-function handleFilter() {
-  listQuery.page = 1
-  getList()
-}
-
-function sortChange({ prop, order }) {
-  if (prop === 'id') {
-    sortByID(order)
+const currentTable = computed(() => {
+  switch(listQuery.tableType) {
+    case 'market':
+      return MarketTable;
+    case 'order':
+      return OrderTable;
+    case 'finance':
+      return FinanceTable;
+    default:
+      return MarketTable;
   }
-}
-
-function sortByID(order) {
-  listQuery.sort = order === 'ascending' ? '+id' : '-id'
-  handleFilter()
-}
-
-function statusFilter(status) {
-  const statusMap = { published: 'success', draft: 'info', deleted: 'danger' }
-  return statusMap[status]
-}
-
-function getSortClass(key) {
-  const sort = this.listQuery.sort;
-  return sort === `+${key}` ? 'ascending' : 'descending';
-}
-
-function onScroll(event) {
-  const bottom = event.target.scrollHeight === event.target.scrollTop + event.target.clientHeight
-  if (bottom && list.length < total.value) {
-    listQuery.page += 1
-    getList()
-  }
-}
+});
 
 function onTradePublish() {
   router.push('/trade')
@@ -227,6 +160,25 @@ function onTradePublish() {
 function onDeposit() {
   router.push('/deposit')
 };
+
+function handleTableUpdateStart() {
+  if (tableWrapper.value) {
+    scrollTopCache = tableWrapper.value.scrollTop
+  }
+  animate.value = false;
+}
+
+async function handleTableUpdateEnd() {
+  nextTick(() => {
+    if (tableWrapper.value) {
+      tableWrapper.value.scrollTop = scrollTopCache
+    }
+  })
+
+  // 增加一定延时，以便播放动画效果
+  await new Promise(resolve => setTimeout(resolve, 300));
+  animate.value = true;
+}
 
 </script>
 
@@ -252,7 +204,6 @@ function onDeposit() {
 .table-wrapper {
   position: relative;
   left: -100%; /* 初始位置在屏幕外 */
-  transform: translateY(-50%); /* 垂直居中 */
   color: white;
   transition: left 1s ease-out;
   // transition: left 1s cubic-bezier(0.1, 0, 0.5, 1); /* 自定义贝塞尔曲线 */
@@ -261,7 +212,6 @@ function onDeposit() {
 
 .table-wrapper.animate {
   left: 50%; /* 结束时 div 移动到屏幕中央 */
-  // transform: translateX(-50%) translateY(-50%); /* 确保居中 */
   transform: translateX(-50%); /* 确保居中 */
   visibility: visible;
 }
@@ -385,39 +335,6 @@ function onDeposit() {
 .sale-icon {
   width: 40px;
   height: 40px;
-}
-
-:deep(.main-table) {
-  width: 100%; 
-  background-color: transparent !important;
-  border: 1px solid black !important;
-}
-
-/* 设置表头单元格的边框 */
-:deep(.main-table .el-table__header th) {
-  border: 1px solid #7f7f7f !important;
-  font-size: 16px;
-  font-weight: bold;
-  color: black;
-}
-
-/* 设置每个表格单元格的边框 */
-:deep(.main-table .el-table__body td) {
-  border: 1px solid #7f7f7f !important;
-}
-
-/* 设置每一行的背景颜色为透明 */
-:deep(.main-table .el-table__body tr) {
-  background-color: transparent !important; /* 设置透明背景 */
-  border: 1px solid #7f7f7f !important;
-}
-
-:deep(.el-table tr) {
-  background-color: transparent !important; /* 设置透明背景 */
-}
-
-:deep(.el-table th.el-table__cell) {
-  background-color: transparent !important; /* 设置透明背景 */
 }
 
 </style>
