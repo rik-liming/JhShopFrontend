@@ -6,6 +6,7 @@
     highlight-current-row
     class="main-table"
     key="marketTable"
+    style="height: 600px; overflow: auto;"
   >
     <el-table-column label="商户" width="'30%'" align="center">
       <template v-slot="{ row }">
@@ -33,17 +34,16 @@ const emit = defineEmits();
 
 const props = defineProps({
   channel: String,
+  tableType: String,
 });
 
 // 定义数据
 const list = ref([]);
 const listQuery = reactive({
   page: 1,
-  limit: 20,
+  limit: 100,
   channel: props.channel,
-  title: undefined,
-  tableType: 'market',
-  sort: '+id'
+  tableType: props.tableType,
 });
 
 // 用于防止重复调用的标志位
@@ -53,7 +53,13 @@ let isFirstCall = true;
 const getList = async () => {
   try {
     emit('table-update-start');
-    // 模拟 3 秒延迟
+    if (listQuery.channel == 'ali_pay') {
+        listQuery.page = 1
+    } else if (listQuery.channel == 'bank_pay') {
+        listQuery.page = 2
+    } else if (listQuery.channel == 'wechat_pay') {
+        listQuery.page = 3
+    }
     const response = await fetchList(listQuery);
     emit('table-update-end');
     list.value = response.data.items;
@@ -70,7 +76,23 @@ watch(
     listQuery.channel = newChannel;
     
     // 确保只有在 channel 改变时才调用 getList
-    if (!isFirstCall) {
+    if (!isFirstCall && props.tableType === 'market') {
+      getList();
+    } else {
+      isFirstCall = false; // 第一次加载后设置为 false
+    }
+  },
+  { immediate: true } // immediate 保证在首次渲染时监听
+);
+
+watch(
+  () => props.tableType,
+  (newTableType) => {
+    // 只有在 channel 变化时，才更新数据
+    listQuery.tableType = newTableType;
+    
+    // 确保只有在 channel 改变时才调用 getList
+    if (!isFirstCall && props.tableType === 'market') {
       getList();
     } else {
       isFirstCall = false; // 第一次加载后设置为 false

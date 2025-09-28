@@ -54,29 +54,23 @@
 
       <!-- 包裹表格的容器 -->
       <div class="table-wrapper" :class="{ 'animate': animate }">
-          <!-- 根据 tableType 动态渲染表格 -->
-          <!-- <keep-alive> -->
-            <!-- <component 
-              :is="currentTable" 
-              :channel="listQuery.channel" 
-              @table-update-start="handleTableUpdateStart"
-              @table-update-end="handleTableUpdateEnd"
-            /> -->
-          <!-- </keep-alive> -->
           <market-table
-            :channel="listQuery.channel" 
+            :channel="listQuery.channel"
+            :tableType="listQuery.tableType"
             @table-update-start="handleTableUpdateStart"
             @table-update-end="handleTableUpdateEnd"
             v-show="listQuery.tableType == 'market'"
           ></market-table>
           <order-table
-            :channel="listQuery.channel" 
+            :channel="listQuery.channel"
+            :tableType="listQuery.tableType"
             @table-update-start="handleTableUpdateStart"
             @table-update-end="handleTableUpdateEnd"
             v-show="listQuery.tableType == 'order'"
           ></order-table>
           <finance-table
-            :channel="listQuery.channel" 
+            :channel="listQuery.channel"
+            :tableType="listQuery.tableType"
             @table-update-start="handleTableUpdateStart"
             @table-update-end="handleTableUpdateEnd"
             v-show="listQuery.tableType == 'finance'"
@@ -84,7 +78,7 @@
       </div>
 
       <!-- 分页功能修改 -->
-      <pagination v-show="total > 0" :total="total" v-model:page="listQuery.page" v-model:limit="listQuery.limit" @pagination="getList" />
+      <!-- <pagination v-show="total > 0" :total="total" v-model:page="listQuery.page" v-model:limit="listQuery.limit" @pagination="getList" /> -->
     </div>
   </div>
 </template>
