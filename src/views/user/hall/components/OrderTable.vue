@@ -5,10 +5,11 @@
         fit
         highlight-current-row
         class="main-table"
-        key="financeTable"
+        key="orderTable"
         style="height: 600px; overflow: auto;"
+        @row-click="handleRowClick"
     >
-        <el-table-column label="财务变动" width="'40%'" align="center">
+        <el-table-column label="订单编号" width="'40%'" align="center">
             <template v-slot="{row}">
             <span>{{ row.author }}</span>
             </template>
@@ -18,12 +19,12 @@
             <span>{{ row.author }}</span>
             </template>
         </el-table-column>
-        <el-table-column label="类型" width="'20%'" align="center">
+        <el-table-column label="市场" width="'20%'" align="center">
             <template v-slot="{row}">
             <span>{{ row.author }}</span>
             </template>
         </el-table-column>
-        <el-table-column label="余额" width="'20%'" align="center">
+        <el-table-column label="状态" width="'20%'" align="center">
             <template v-slot="{row}">
             <span>{{ row.author }}</span>
             </template>
@@ -34,6 +35,7 @@
 <script setup>
 import { ref, onMounted, reactive, watch, defineEmits, nextTick } from 'vue';
 import { fetchList } from '@/api/article';
+import { useRouter } from 'vue-router';
 
 const emit = defineEmits();
 
@@ -49,7 +51,7 @@ const listQuery = reactive({
   limit: 20,
   channel: props.channel,
   title: undefined,
-  tableType: 'finance',
+  tableType: 'order',
   sort: '+id'
 });
 
@@ -83,7 +85,7 @@ watch(
     listQuery.channel = newChannel;
     
     // 确保只有在 channel 改变时才调用 getList
-    if (!isFirstCall && props.tableType === 'finance') {
+    if (!isFirstCall && props.tableType === 'order') {
       getList();
     } else {
       isFirstCall = false; // 第一次加载后设置为 false
@@ -99,7 +101,7 @@ watch(
     listQuery.tableType = newTableType;
     
     // 确保只有在 channel 改变时才调用 getList
-    if (!isFirstCall && props.tableType === 'finance') {
+    if (!isFirstCall && props.tableType === 'order') {
       getList();
     } else {
       isFirstCall = false; // 第一次加载后设置为 false
@@ -115,6 +117,15 @@ onMounted(() => {
     getList();
   });
 });
+
+// 跳转到指定页面
+const router = useRouter();
+
+const handleRowClick = (row) => {
+  // 根据点击的行的数据，构造目标路由地址
+  const targetPage = `/pay?tradeId=${row.id}`; // 假设根据 row.id 构造跳转路径
+  router.push(targetPage); // 跳转到 /buy 页面，带上 tradeId 参数
+};
 </script>
 
 <style scoped lang="scss">

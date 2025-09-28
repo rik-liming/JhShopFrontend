@@ -1,39 +1,36 @@
 <template>
-    <el-table
-        :data="list"
-        border
-        fit
-        highlight-current-row
-        class="main-table"
-        key="orderTable"
-        style="height: 600px; overflow: auto;"
-    >
-        <el-table-column label="订单编号" width="'40%'" align="center">
-            <template v-slot="{row}">
-            <span>{{ row.author }}</span>
-            </template>
-        </el-table-column>
-        <el-table-column label="金额" width="'20%'" align="center">
-            <template v-slot="{row}">
-            <span>{{ row.author }}</span>
-            </template>
-        </el-table-column>
-        <el-table-column label="市场" width="'20%'" align="center">
-            <template v-slot="{row}">
-            <span>{{ row.author }}</span>
-            </template>
-        </el-table-column>
-        <el-table-column label="状态" width="'20%'" align="center">
-            <template v-slot="{row}">
-            <span>{{ row.author }}</span>
-            </template>
-        </el-table-column>
-    </el-table>
+  <el-table
+    :data="list"
+    border
+    fit
+    highlight-current-row
+    class="main-table"
+    key="marketTable"
+    style="height: 600px; overflow: auto;"
+    @row-click="handleRowClick"
+  >
+    <el-table-column label="商户" width="'30%'" align="center">
+      <template v-slot="{ row }">
+        <span>{{ row.author }}</span>
+      </template>
+    </el-table-column>
+    <el-table-column label="售卖数量" width="'40%'" align="center">
+      <template v-slot="{ row }">
+        <span>{{ row.author }}</span>
+      </template>
+    </el-table-column>
+    <el-table-column label="等值人民币" width="'30%'" align="center">
+      <template v-slot="{ row }">
+        <span>{{ row.author }}</span>
+      </template>
+    </el-table-column>
+  </el-table>
 </template>
 
 <script setup>
 import { ref, onMounted, reactive, watch, defineEmits, nextTick } from 'vue';
 import { fetchList } from '@/api/article';
+import { useRouter } from 'vue-router';
 
 const emit = defineEmits();
 
@@ -46,11 +43,9 @@ const props = defineProps({
 const list = ref([]);
 const listQuery = reactive({
   page: 1,
-  limit: 20,
+  limit: 100,
   channel: props.channel,
-  title: undefined,
-  tableType: 'order',
-  sort: '+id'
+  tableType: props.tableType,
 });
 
 // 用于防止重复调用的标志位
@@ -83,7 +78,7 @@ watch(
     listQuery.channel = newChannel;
     
     // 确保只有在 channel 改变时才调用 getList
-    if (!isFirstCall && props.tableType === 'order') {
+    if (!isFirstCall && props.tableType === 'market') {
       getList();
     } else {
       isFirstCall = false; // 第一次加载后设置为 false
@@ -99,7 +94,7 @@ watch(
     listQuery.tableType = newTableType;
     
     // 确保只有在 channel 改变时才调用 getList
-    if (!isFirstCall && props.tableType === 'order') {
+    if (!isFirstCall && props.tableType === 'market') {
       getList();
     } else {
       isFirstCall = false; // 第一次加载后设置为 false
@@ -115,6 +110,15 @@ onMounted(() => {
     getList();
   });
 });
+
+// 跳转到指定页面
+const router = useRouter();
+
+const handleRowClick = (row) => {
+  // 根据点击的行的数据，构造目标路由地址
+  const targetPage = `/buy?tradeId=${row.id}`; // 假设根据 row.id 构造跳转路径
+  router.push(targetPage); // 跳转到 /buy 页面，带上 tradeId 参数
+};
 </script>
 
 <style scoped lang="scss">

@@ -1,34 +1,41 @@
 <template>
-  <el-table
-    :data="list"
-    border
-    fit
-    highlight-current-row
-    class="main-table"
-    key="marketTable"
-    style="height: 600px; overflow: auto;"
-  >
-    <el-table-column label="商户" width="'30%'" align="center">
-      <template v-slot="{ row }">
-        <span>{{ row.author }}</span>
-      </template>
-    </el-table-column>
-    <el-table-column label="售卖数量" width="'40%'" align="center">
-      <template v-slot="{ row }">
-        <span>{{ row.author }}</span>
-      </template>
-    </el-table-column>
-    <el-table-column label="等值人民币" width="'30%'" align="center">
-      <template v-slot="{ row }">
-        <span>{{ row.author }}</span>
-      </template>
-    </el-table-column>
-  </el-table>
+    <el-table
+        :data="list"
+        border
+        fit
+        highlight-current-row
+        class="main-table"
+        key="financeTable"
+        style="height: 600px; overflow: auto;"
+        @row-click="handleRowClick"
+    >
+        <el-table-column label="财务变动" width="'40%'" align="center">
+            <template v-slot="{row}">
+            <span>{{ row.author }}</span>
+            </template>
+        </el-table-column>
+        <el-table-column label="金额" width="'20%'" align="center">
+            <template v-slot="{row}">
+            <span>{{ row.author }}</span>
+            </template>
+        </el-table-column>
+        <el-table-column label="类型" width="'20%'" align="center">
+            <template v-slot="{row}">
+            <span>{{ row.author }}</span>
+            </template>
+        </el-table-column>
+        <el-table-column label="余额" width="'20%'" align="center">
+            <template v-slot="{row}">
+            <span>{{ row.author }}</span>
+            </template>
+        </el-table-column>
+    </el-table>
 </template>
 
 <script setup>
 import { ref, onMounted, reactive, watch, defineEmits, nextTick } from 'vue';
 import { fetchList } from '@/api/article';
+import { useRouter } from 'vue-router';
 
 const emit = defineEmits();
 
@@ -41,9 +48,11 @@ const props = defineProps({
 const list = ref([]);
 const listQuery = reactive({
   page: 1,
-  limit: 100,
+  limit: 20,
   channel: props.channel,
-  tableType: props.tableType,
+  title: undefined,
+  tableType: 'finance',
+  sort: '+id'
 });
 
 // 用于防止重复调用的标志位
@@ -76,7 +85,7 @@ watch(
     listQuery.channel = newChannel;
     
     // 确保只有在 channel 改变时才调用 getList
-    if (!isFirstCall && props.tableType === 'market') {
+    if (!isFirstCall && props.tableType === 'finance') {
       getList();
     } else {
       isFirstCall = false; // 第一次加载后设置为 false
@@ -92,7 +101,7 @@ watch(
     listQuery.tableType = newTableType;
     
     // 确保只有在 channel 改变时才调用 getList
-    if (!isFirstCall && props.tableType === 'market') {
+    if (!isFirstCall && props.tableType === 'finance') {
       getList();
     } else {
       isFirstCall = false; // 第一次加载后设置为 false
@@ -108,6 +117,13 @@ onMounted(() => {
     getList();
   });
 });
+
+const router = useRouter();
+const handleRowClick = (row) => {
+  // 根据点击的行的数据，构造目标路由地址
+  const targetPage = `/deposit/detail?transactionId=${row.id}`;
+  router.push(targetPage);
+};
 </script>
 
 <style scoped lang="scss">

@@ -192,6 +192,12 @@
       transition: none;
     }
   }
+
+  .noSidebar {
+    .main-container {
+      margin-left: 0px;
+    }
+  }
 }
 
 // when menu collapsed

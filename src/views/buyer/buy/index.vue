@@ -67,4 +67,8 @@
 
 <script setup>
 // 可以在这里写表单提交逻辑
+import { useRoute } from 'vue-router';
+
+const route = useRoute();
+const tradeId = route.query.tradeId; // 获取 URL 参数 tradeId
 </script>

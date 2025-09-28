@@ -1,7 +1,7 @@
 <template>
   <div :class="classObj" class="app-wrapper">
     <div v-if="device === 'mobile' && sidebar.opened" class="drawer-bg" @click="handleClickOutside" />
-    <sidebar class="sidebar-container" />
+    <sidebar v-if="isSidebarVisible" class="sidebar-container" />
     <div :class="{ hasTagsView: needTagsView }" class="main-container" :style="bgStyle">
       <app-main />
       <!-- <right-panel v-if="showSettings">
@@ -19,6 +19,7 @@ import { mapState } from 'pinia';
 import store from '@/store';
 import { defineComponent } from 'vue';
 import mainBackground from '@/assets/main_background.jpg';
+import { useRoute } from 'vue-router';
 
 export default defineComponent({
   name: 'LayoutIndex',
@@ -47,6 +48,7 @@ export default defineComponent({
       return {
         hideSidebar: !this.sidebar.opened,
         openSidebar: this.sidebar.opened,
+        noSidebar: !this.isSidebarVisible,
         withoutAnimation: this.sidebar.withoutAnimation,
         mobile: this.device === 'mobile'
       };
@@ -64,6 +66,12 @@ export default defineComponent({
         borderRadius: `${minRadius}px`, // 通过计算得到的最小值
         overflow: 'hidden',
       };
+    },
+    // 使用当前路由判断是否需要显示 sidebar
+    isSidebarVisible() {
+      const route = useRoute();
+      const hiddenSidebarPages = ['/buy', '/pay']; // 设置在这些路由下不显示 sidebar
+      return !hiddenSidebarPages.includes(route.path);
     },
   },
   methods: {

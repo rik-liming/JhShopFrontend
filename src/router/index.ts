@@ -30,6 +30,7 @@ import tableRouter from './modules/table';
  * 注意：hidden、alwaysShow 属性配置移动到了meta中！！！
  */
 export const constantRoutes:RouteRecordRaw[] = [
+  // 不需要展示在侧边栏的
   {
     path: '/redirect',
     component: Layout,
@@ -43,22 +44,22 @@ export const constantRoutes:RouteRecordRaw[] = [
   },
   {
     path: '/login',
-    component: () => import('@/views/login/index.vue'),
+    component: () => import('@/views/user/login/index.vue'),
     meta: { hidden: true }
   },
   {
     path: '/register',
-    component: () => import('@/views/register/index.vue'),
+    component: () => import('@/views/user/register/index.vue'),
     meta: { hidden: true }
   },
   {
     path: '/register/success',
-    component: () => import('@/views/register/success.vue'),
+    component: () => import('@/views/user/register/success.vue'),
     meta: { hidden: true }
   },
   {
     path: '/auth-redirect',
-    component: () => import('@/views/login/auth-redirect.vue'),
+    component: () => import('@/views/user/login/auth-redirect.vue'),
     meta: { hidden: true }
   },
   {
@@ -72,28 +73,98 @@ export const constantRoutes:RouteRecordRaw[] = [
     meta: { hidden: true }
   },
   {
+    path: '/order/buyer/buy',
+    component: Layout,
+    meta: { hidden: true },
+    redirect: '/order/buyer/buy',
+    children: [
+      {
+        path: '',
+        component: () => import('@/views/buyer/order/buy.vue')
+      },
+    ]
+  },
+  {
+    path: '/order/buyer/detail',
+    component: Layout,
+    meta: { hidden: true },
+    redirect: '/order/buyer/detail',
+    children: [
+      {
+        path: '',
+        component: () => import('@/views/buyer/order/detail.vue')
+      }
+    ]
+  },
+  {
+    path: '/order/seller/detail',
+    component: Layout,
+    meta: { hidden: true },
+    redirect: '/order/selller/detail',
+    children: [
+      {
+        path: '',
+        component: () => import('@/views/seller/order/detail.vue')
+      }
+    ]
+  },
+  {
+    path: '/deposit/detail',
+    component: Layout,
+    meta: { hidden: true },
+    children: [
+      {
+        path: '',
+        component: () => import('@/views/seller/deposit/detail.vue')
+      }
+    ]
+  },
+  {
+    path: '/transfer/detail',
+    component: Layout,
+    meta: { hidden: true },
+    children: [
+      {
+        path: '',
+        component: () => import('@/views/seller/transfer/detail.vue')
+      }
+    ]
+  },
+  {
+    path: '/withdraw/detail',
+    component: Layout,
+    meta: { hidden: true },
+    children: [
+      {
+        path: '',
+        component: () => import('@/views/seller/withdraw/detail.vue')
+      }
+    ]
+  },
+  {
+    path: '/report',
+    component: Layout,
+    meta: { hidden: true },
+    redirect: '/report/index',
+    children: [
+      {
+        path: '',
+        component: () => import('@/views/seller/report/index.vue')
+      }
+    ]
+  },
+
+  // 需要展示在侧边栏的
+  {
     path: '/',
     component: Layout,
     redirect: '/hall',
     children: [
       {
         path: 'hall',
-        component: () => import('@/views/hall/index.vue'),
+        component: () => import('@/views/user/hall/index.vue'),
         name: 'Hall',
         meta: { title: '主页', icon: markRaw(IconHome), affix: true }
-      }
-    ]
-  },
-  {
-    path: '/buy',
-    component: Layout,
-    redirect: '/buy/index',
-    children: [
-      {
-        path: '',
-        component: () => import('@/views/buy/index.vue'),
-        name: 'Buy',
-        meta: { title: '购买', icon: markRaw(IconDeposit), affix: true }
       }
     ]
   },
@@ -104,7 +175,7 @@ export const constantRoutes:RouteRecordRaw[] = [
     children: [
       {
         path: '',
-        component: () => import('@/views/deposit/index.vue'),
+        component: () => import('@/views/seller/deposit/index.vue'),
         name: 'Deposit',
         meta: { title: '充值', icon: markRaw(IconDeposit), affix: true }
       }
@@ -117,7 +188,7 @@ export const constantRoutes:RouteRecordRaw[] = [
     children: [
       {
         path: 'transfer',
-        component: () => import('@/views/transfer/index.vue'),
+        component: () => import('@/views/seller/transfer/index.vue'),
         name: 'Transfer',
         meta: { title: '转账', icon: markRaw(IconTransfer), affix: true }
       }
@@ -130,7 +201,7 @@ export const constantRoutes:RouteRecordRaw[] = [
     children: [
       {
         path: 'withdraw',
-        component: () => import('@/views/withdraw/index.vue'),
+        component: () => import('@/views/seller/withdraw/index.vue'),
         name: 'Withdraw',
         meta: { title: '提现', icon: markRaw(IconWithdraw), affix: true }
       }
@@ -143,7 +214,7 @@ export const constantRoutes:RouteRecordRaw[] = [
     children: [
       {
         path: 'order',
-        component: () => import('@/views/order/index.vue'),
+        component: () => import('@/views/seller/order/index.vue'),
         name: 'Order',
         meta: { title: '订单', icon: 'shopping', affix: true }
       }
@@ -156,7 +227,7 @@ export const constantRoutes:RouteRecordRaw[] = [
     children: [
       {
         path: '',
-        component: () => import('@/views/trade/index.vue'),
+        component: () => import('@/views/seller/trade/index.vue'),
         name: 'Trade',
         meta: { title: '发布交易', icon: markRaw(IconTrade), affix: true }
       }
@@ -169,7 +240,7 @@ export const constantRoutes:RouteRecordRaw[] = [
     children: [
       {
         path: 'finance',
-        component: () => import('@/views/finance/index.vue'),
+        component: () => import('@/views/seller/finance/index.vue'),
         name: 'Finance',
         meta: { title: '财务变动', icon: markRaw(IconFinance), affix: true }
       }
@@ -182,7 +253,7 @@ export const constantRoutes:RouteRecordRaw[] = [
     children: [
       {
         path: '',
-        component: () => import('@/views/profile/index.vue'),
+        component: () => import('@/views/user/profile/index.vue'),
         name: 'Profile',
         meta: { title: '会员信息', icon: 'user', affix: true }
       }
@@ -468,7 +539,7 @@ export const asyncRoutes:RouteRecordRaw[] = [
     children: [
       {
         path: 'index',
-        component: () => import('@/views/login/index.vue'),
+        component: () => import('@/views/user/login/index.vue'),
         name: 'Logout',
         meta: { title: '登出', icon: markRaw(IconLogout), affix: false }
       }
