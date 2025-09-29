@@ -7,7 +7,7 @@ import { setupStore } from './store';
 import '@/styles/tailwind.css';
 import '@/styles/index.scss';
 import SvgIcon from './icons'; // icon
-import './permission'; // permission control
+import * as permission from './permission'; // permission control
 import vPermission from './directive/permission/index'; // permission control
 import { checkEnableLogs } from './utils/error-log'; // error log
 
@@ -37,7 +37,6 @@ import waves from '@/directive/waves'
 
 const app = createApp(App);
 setupStore(app);
-app.use(router);
 app.component('svg-icon', SvgIcon);
 app.directive('permission', vPermission);
 checkEnableLogs(app);
@@ -46,4 +45,6 @@ checkEnableLogs(app);
 app.use(vuetify)
 app.directive('waves', waves)
 
+await permission.initDynamicRoutes()
+app.use(router);
 app.mount('#app');

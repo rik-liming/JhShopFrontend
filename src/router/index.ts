@@ -34,228 +34,64 @@ export const constantRoutes:RouteRecordRaw[] = [
   {
     path: '/redirect',
     component: Layout,
+    name: 'Redirect',
     meta: { hidden: true },
     children: [
       {
         path: '/redirect/:path(.*)',
+        name: 'RedirectIndex',
         component: () => import('@/views/redirect/index.vue')
       }
     ]
   },
   {
     path: '/login',
+    name: 'Login',
     component: () => import('@/views/user/login/index.vue'),
     meta: { hidden: true }
   },
   {
     path: '/register',
+    name: 'Register',
     component: () => import('@/views/user/register/index.vue'),
     meta: { hidden: true }
   },
   {
     path: '/register/success',
+    name: 'RegisterSuccess',
     component: () => import('@/views/user/register/success.vue'),
     meta: { hidden: true }
   },
   {
     path: '/auth-redirect',
+    name: 'AuthRedirect',
     component: () => import('@/views/user/login/auth-redirect.vue'),
     meta: { hidden: true }
   },
   {
     path: '/404',
+    name: '404',
     component: () => import('@/views/error-page/404.vue'),
     meta: { hidden: true }
   },
   {
     path: '/401',
+    name: '401',
     component: () => import('@/views/error-page/401.vue'),
     meta: { hidden: true }
   },
-  {
-    path: '/order/buyer/buy',
-    component: Layout,
-    meta: { hidden: true },
-    redirect: '/order/buyer/buy',
-    children: [
-      {
-        path: '',
-        component: () => import('@/views/buyer/order/buy.vue')
-      },
-    ]
-  },
-  {
-    path: '/order/buyer/detail',
-    component: Layout,
-    meta: { hidden: true },
-    redirect: '/order/buyer/detail',
-    children: [
-      {
-        path: '',
-        component: () => import('@/views/buyer/order/detail.vue')
-      }
-    ]
-  },
-  {
-    path: '/order/seller/detail',
-    component: Layout,
-    meta: { hidden: true },
-    redirect: '/order/selller/detail',
-    children: [
-      {
-        path: '',
-        component: () => import('@/views/seller/order/detail.vue')
-      }
-    ]
-  },
-  {
-    path: '/deposit/detail',
-    component: Layout,
-    meta: { hidden: true },
-    children: [
-      {
-        path: '',
-        component: () => import('@/views/seller/deposit/detail.vue')
-      }
-    ]
-  },
-  {
-    path: '/transfer/detail',
-    component: Layout,
-    meta: { hidden: true },
-    children: [
-      {
-        path: '',
-        component: () => import('@/views/seller/transfer/detail.vue')
-      }
-    ]
-  },
-  {
-    path: '/withdraw/detail',
-    component: Layout,
-    meta: { hidden: true },
-    children: [
-      {
-        path: '',
-        component: () => import('@/views/seller/withdraw/detail.vue')
-      }
-    ]
-  },
-  {
-    path: '/report',
-    component: Layout,
-    meta: { hidden: true },
-    redirect: '/report/index',
-    children: [
-      {
-        path: '',
-        component: () => import('@/views/seller/report/index.vue')
-      }
-    ]
-  },
-
   // 需要展示在侧边栏的
   {
     path: '/',
     component: Layout,
     redirect: '/hall',
+    name: 'Hall',
     children: [
       {
         path: 'hall',
         component: () => import('@/views/user/hall/index.vue'),
-        name: 'Hall',
+        name: 'HallIndex',
         meta: { title: '主页', icon: markRaw(IconHome), affix: true }
-      }
-    ]
-  },
-  {
-    path: '/deposit',
-    component: Layout,
-    redirect: '/deposit/index',
-    children: [
-      {
-        path: '',
-        component: () => import('@/views/seller/deposit/index.vue'),
-        name: 'Deposit',
-        meta: { title: '充值', icon: markRaw(IconDeposit), affix: true }
-      }
-    ]
-  },
-  {
-    path: '/transfer',
-    component: Layout,
-    redirect: '/transfer/index',
-    children: [
-      {
-        path: 'transfer',
-        component: () => import('@/views/seller/transfer/index.vue'),
-        name: 'Transfer',
-        meta: { title: '转账', icon: markRaw(IconTransfer), affix: true }
-      }
-    ]
-  },
-  {
-    path: '/withdraw',
-    component: Layout,
-    redirect: '/withdraw/index',
-    children: [
-      {
-        path: 'withdraw',
-        component: () => import('@/views/seller/withdraw/index.vue'),
-        name: 'Withdraw',
-        meta: { title: '提现', icon: markRaw(IconWithdraw), affix: true }
-      }
-    ]
-  },
-  {
-    path: '/order',
-    component: Layout,
-    redirect: '/order/index',
-    children: [
-      {
-        path: 'order',
-        component: () => import('@/views/seller/order/index.vue'),
-        name: 'Order',
-        meta: { title: '订单', icon: 'shopping', affix: true }
-      }
-    ]
-  },
-  {
-    path: '/trade',
-    component: Layout,
-    redirect: '/trade/index',
-    children: [
-      {
-        path: '',
-        component: () => import('@/views/seller/trade/index.vue'),
-        name: 'Trade',
-        meta: { title: '发布交易', icon: markRaw(IconTrade), affix: true }
-      }
-    ]
-  },
-  {
-    path: '/finance',
-    component: Layout,
-    redirect: '/finance/index',
-    children: [
-      {
-        path: 'finance',
-        component: () => import('@/views/seller/finance/index.vue'),
-        name: 'Finance',
-        meta: { title: '财务变动', icon: markRaw(IconFinance), affix: true }
-      }
-    ]
-  },
-  {
-    path: '/profile',
-    component: Layout,
-    redirect: '/profile/index',
-    children: [
-      {
-        path: '',
-        component: () => import('@/views/user/profile/index.vue'),
-        name: 'Profile',
-        meta: { title: '会员信息', icon: 'user', affix: true }
       }
     ]
   },
@@ -268,279 +104,251 @@ export const constantRoutes:RouteRecordRaw[] = [
  * 注意：hidden、alwaysShow 属性配置移动到了meta中！！！
  */
 export const asyncRoutes:RouteRecordRaw[] = [
-  // {
-  //   path: '/permission',
-  //   component: Layout,
-  //   redirect: '/permission/page',
-  //   name: 'Permission',
-  //   meta: {
-  //     alwaysShow: true, // will always show the root menu
-  //     title: '权限测试页',
-  //     icon: 'lock',
-  //     roles: ['admin', 'editor'] // you can set roles in root nav
-  //   },
-  //   children: [
-  //     {
-  //       path: 'page',
-  //       component: () => import('@/views/permission/page.vue'),
-  //       name: 'PagePermission',
-  //       meta: {
-  //         title: '页面权限',
-  //         roles: ['admin'] // or you can only set roles in sub nav
-  //       }
-  //     },
-  //     {
-  //       path: 'directive',
-  //       component: () => import('@/views/permission/directive.vue'),
-  //       name: 'DirectivePermission',
-  //       meta: {
-  //         title: '指令权限'
-  //         // if do not set roles, means: this page does not require permission
-  //       }
-  //     },
-  //     {
-  //       path: 'role',
-  //       component: () => import('@/views/permission/role.vue'),
-  //       name: 'RolePermission',
-  //       meta: {
-  //         title: '角色权限',
-  //         roles: ['admin']
-  //       }
-  //     }
-  //   ]
-  // },
-
   {
-    path: '/icon',
+    path: '/order/buyer/buy',
     component: Layout,
+    name: 'OrderBuyerBuy',
+    meta: { 
+      hidden: true,
+      roles: ['buyer']
+    },
+    redirect: '/order/buyer/buy',
     children: [
       {
-        path: 'index',
-        component: () => import('@/views/icons/index.vue'),
-        name: 'Icons',
-        meta: { title: '图标', icon: 'icon', noCache: true }
+        path: '',
+        name: 'OrderBuyerBuyIndex',
+        component: () => import('@/views/buyer/order/buy.vue')
+      },
+    ]
+  },
+  {
+    path: '/order/buyer/detail',
+    component: Layout,
+    name: 'OrderBuyerDetail',
+    meta: { 
+      hidden: true,
+      roles: ['buyer']
+    },
+    redirect: '/order/buyer/detail',
+    children: [
+      {
+        path: '',
+        name: 'OrderBuyerDetailIndex',
+        component: () => import('@/views/buyer/order/detail.vue')
+      }
+    ]
+  },
+  {
+    path: '/order/seller/detail',
+    name: 'OrderSellerDetail',
+    component: Layout,
+    meta: { 
+      hidden: true,
+      roles: ['seller', 'agent']
+    },
+    redirect: '/order/selller/detail',
+    children: [
+      {
+        path: '',
+        name: 'OrderSellerDetailIndex',
+        component: () => import('@/views/seller/order/detail.vue')
+      }
+    ]
+  },
+  {
+    path: '/deposit/detail',
+    name: 'DepositDetail',
+    component: Layout,
+    meta: { 
+      hidden: true,
+      roles: ['seller', 'agent']
+    },
+    children: [
+      {
+        path: '',
+        name: 'DepositDetailIndex',
+        component: () => import('@/views/seller/deposit/detail.vue')
+      }
+    ]
+  },
+  {
+    path: '/transfer/detail',
+    name: 'TransferDetail',
+    component: Layout,
+    meta: { 
+      hidden: true,
+      roles: ['seller', 'agent']
+    },
+    children: [
+      {
+        path: '',
+        name: 'TransferDetailIndex',
+        component: () => import('@/views/seller/transfer/detail.vue')
+      }
+    ]
+  },
+  {
+    path: '/withdraw/detail',
+    name: 'WithdrawDetail',
+    component: Layout,
+    meta: { 
+      hidden: true,
+      roles: ['seller', 'agent']
+    },
+    children: [
+      {
+        path: '',
+        name: 'WithdrawDetailIndex',
+        component: () => import('@/views/seller/withdraw/detail.vue')
+      }
+    ]
+  },
+  {
+    path: '/report',
+    name: 'Report',
+    component: Layout,
+    meta: { 
+      hidden: true,
+      roles: ['seller', 'agent']
+    },
+    redirect: '/report/index',
+    children: [
+      {
+        path: '',
+        name: 'ReportIndex',
+        component: () => import('@/views/seller/report/index.vue')
       }
     ]
   },
 
-  // // /** when your routing map is too long, you can split it into small modules **/
-  // componentsRouter,
-  // chartsRouter,
-  // nestedRouter,
-  // tableRouter,
-
-  // {
-  //   path: '/example',
-  //   component: Layout,
-  //   redirect: '/example/list',
-  //   name: 'Example',
-  //   meta: {
-  //     title: '综合示例',
-  //     icon: markRaw(IconHelp)
-  //   },
-  //   children: [
-  //     {
-  //       path: 'create',
-  //       component: () => import('@/views/example/create.vue'),
-  //       name: 'CreateArticle',
-  //       meta: { title: '创建文章', icon: 'edit' }
-  //     },
-  //     {
-  //       path: 'edit/:id(\\d+)',
-  //       component: () => import('@/views/example/edit.vue'),
-  //       name: 'EditArticle',
-  //       meta: { hidden: true, title: '编辑文章', noCache: true, activeMenu: '/example/list' }
-  //     },
-  //     {
-  //       path: 'list',
-  //       component: () => import('@/views/example/list.vue'),
-  //       name: 'ArticleList',
-  //       meta: { title: '文章列表', icon: 'list' }
-  //     }
-  //   ]
-  // },
-
-  // {
-  //   path: '/tab',
-  //   component: Layout,
-  //   children: [
-  //     {
-  //       path: 'index',
-  //       component: () => import('@/views/tab/index.vue'),
-  //       name: 'Tab',
-  //       meta: { title: 'Tabs标签页', icon: 'tab' }
-  //     }
-  //   ]
-  // },
-
-  // {
-  //   path: '/error',
-  //   component: Layout,
-  //   redirect: 'noRedirect',
-  //   name: 'ErrorPages',
-  //   meta: {
-  //     title: '错误页面',
-  //     icon: '404'
-  //   },
-  //   children: [
-  //     {
-  //       path: '401',
-  //       component: () => import('@/views/error-page/401.vue'),
-  //       name: 'Page401',
-  //       meta: { title: '401', noCache: true }
-  //     },
-  //     {
-  //       path: '404',
-  //       component: () => import('@/views/error-page/404.vue'),
-  //       name: 'Page404',
-  //       meta: { title: '404', noCache: true }
-  //     }
-  //   ]
-  // },
-
-  // {
-  //   path: '/error-log',
-  //   component: Layout,
-  //   children: [
-  //     {
-  //       path: 'log',
-  //       component: () => import('@/views/error-log/index.vue'),
-  //       name: 'ErrorLog',
-  //       meta: { title: '错误日志', icon: 'bug' }
-  //     }
-  //   ]
-  // },
-
-  // {
-  //   path: '/excel',
-  //   component: Layout,
-  //   redirect: '/excel/export-excel',
-  //   name: 'Excel',
-  //   meta: {
-  //     title: 'Excel',
-  //     icon: 'excel'
-  //   },
-  //   children: [
-  //     {
-  //       path: 'export-excel',
-  //       component: () => import('@/views/excel/export-excel.vue'),
-  //       name: 'ExportExcel',
-  //       meta: { title: '导出 Excel' }
-  //     },
-  //     {
-  //       path: 'export-selected-excel',
-  //       component: () => import('@/views/excel/select-excel.vue'),
-  //       name: 'SelectExcel',
-  //       meta: { title: '导出 已选择项' }
-  //     },
-  //     {
-  //       path: 'export-merge-header',
-  //       component: () => import('@/views/excel/merge-header.vue'),
-  //       name: 'MergeHeader',
-  //       meta: { title: '导出 多级表头' }
-  //     },
-  //     {
-  //       path: 'upload-excel',
-  //       component: () => import('@/views/excel/upload-excel.vue'),
-  //       name: 'UploadExcel',
-  //       meta: { title: '上传 Excel' }
-  //     }
-  //   ]
-  // },
-
-  // {
-  //   path: '/zip',
-  //   component: Layout,
-  //   redirect: '/zip/download',
-  //   name: 'Zip',
-  //   meta: { alwaysShow: true, title: 'Zip', icon: 'zip' },
-  //   children: [
-  //     {
-  //       path: 'download',
-  //       component: () => import('@/views/zip/index.vue'),
-  //       name: 'ExportZip',
-  //       meta: { title: '导出 Zip' }
-  //     }
-  //   ]
-  // },
-
-  // {
-  //   path: '/pdf',
-  //   component: Layout,
-  //   redirect: '/pdf/index',
-  //   children: [
-  //     {
-  //       path: 'index',
-  //       component: () => import('@/views/pdf/index.vue'),
-  //       name: 'PDF',
-  //       meta: { title: 'PDF', icon: 'pdf' }
-  //     }
-  //   ]
-  // },
-  // {
-  //   path: '/pdf/download',
-  //   component: () => import('@/views/pdf/download.vue'),
-  //   meta: { hidden: true }login_background
-  // },
-
-  // {
-  //   path: '/theme',
-  //   component: Layout,
-  //   children: [
-  //     {
-  //       path: 'index',
-  //       component: () => import('@/views/theme/index.vue'),
-  //       name: 'Theme',
-  //       meta: { title: '主题', icon: 'theme' }
-  //     }
-  //   ]
-  // },
-
-  // {
-  //   path: '/clipboard',
-  //   component: Layout,
-  //   children: [
-  //     {
-  //       path: 'index',
-  //       component: () => import('@/views/clipboard/index.vue'),
-  //       name: 'ClipboardDemo',
-  //       meta: { title: '剪贴板', icon: 'clipboard' }
-  //     }
-  //   ]
-  // },
-  // {
-  //   path: '/my-demo',
-  //   component: Layout,
-  //   name: 'MyDemo',
-  //   meta: {
-  //     title: '我的示例',
-  //     icon: 'component'
-  //   },
-  //   children: [
-  //     {
-  //       path: 'element-demo',
-  //       component: () => import('@/views/mydemo/ElementDemo.vue'),
-  //       name: 'ElementDemo',
-  //       meta: { title: 'Element 示例', icon: 'skill' }
-  //     },
-  //     {
-  //       path: 'store-demo',
-  //       component: () => import('@/views/mydemo/StoreDemo.vue'),
-  //       name: 'StoreDemo',
-  //       meta: { title: 'Store 示例', icon: 'lock' }
-  //     }
-  //   ]
-  // },
+  // 需要展示在侧边栏的
+  {
+    path: '/deposit',
+    name: 'Deposit',
+    component: Layout,
+    redirect: '/deposit/index',
+    meta: { 
+      roles: ['seller', 'agent']
+    },
+    children: [
+      {
+        path: '',
+        component: () => import('@/views/seller/deposit/index.vue'),
+        name: 'DepositIndex',
+        meta: { title: '充值', icon: markRaw(IconDeposit), affix: true }
+      }
+    ]
+  },
+  {
+    path: '/transfer',
+    name: 'Transfer',
+    component: Layout,
+    redirect: '/transfer/index',
+    meta: { 
+      roles: ['seller', 'agent']
+    },
+    children: [
+      {
+        path: 'transfer',
+        component: () => import('@/views/seller/transfer/index.vue'),
+        name: 'TransferIndex',
+        meta: { title: '转账', icon: markRaw(IconTransfer), affix: true }
+      }
+    ]
+  },
+  {
+    path: '/withdraw',
+    name: 'Withdraw',
+    component: Layout,
+    redirect: '/withdraw/index',
+    meta: { 
+      roles: ['seller', 'agent']
+    },
+    children: [
+      {
+        path: 'withdraw',
+        component: () => import('@/views/seller/withdraw/index.vue'),
+        name: 'WithdrawIndex',
+        meta: { title: '提现', icon: markRaw(IconWithdraw), affix: true }
+      }
+    ]
+  },
+  {
+    path: '/order',
+    name: 'Order',
+    component: Layout,
+    redirect: '/order/index',
+    meta: { 
+      roles: ['buyer', 'seller', 'agent']
+    },
+    children: [
+      {
+        path: 'order',
+        component: () => import('@/views/user/order/index.vue'),
+        name: 'OrderIndex',
+        meta: { title: '订单', icon: 'shopping', affix: true }
+      }
+    ]
+  },
+  {
+    path: '/trade',
+    name: 'Trade',
+    component: Layout,
+    redirect: '/trade/index',
+    meta: { 
+      roles: ['seller', 'agent']
+    },
+    children: [
+      {
+        path: '',
+        component: () => import('@/views/seller/trade/index.vue'),
+        name: 'TradeIndex',
+        meta: { title: '发布交易', icon: markRaw(IconTrade), affix: true }
+      }
+    ]
+  },
+  {
+    path: '/finance',
+    name: 'Finance',
+    component: Layout,
+    redirect: '/finance/index',
+    meta: { 
+      roles: ['buyer', 'seller', 'agent']
+    },
+    children: [
+      {
+        path: 'finance',
+        component: () => import('@/views/user/finance/index.vue'),
+        name: 'FinanceIndex',
+        meta: { title: '财务变动', icon: markRaw(IconFinance), affix: true }
+      }
+    ]
+  },
+  {
+    path: '/profile',
+    name: 'Profile',
+    component: Layout,
+    redirect: '/profile/index',
+    children: [
+      {
+        path: '',
+        component: () => import('@/views/user/profile/index.vue'),
+        name: 'ProfileIndex',
+        meta: { title: '会员信息', icon: 'user', affix: true }
+      }
+    ]
+  },
 
   // logout
   {
     path: '/logout',
+    name: 'Logout',
     component: Layout,
     children: [
       {
         path: 'index',
         component: () => import('@/views/user/login/index.vue'),
-        name: 'Logout',
+        name: 'LogoutIndex',
         meta: { title: '登出', icon: markRaw(IconLogout), affix: false }
       }
     ],
@@ -551,7 +359,7 @@ export const asyncRoutes:RouteRecordRaw[] = [
   },
 
   // 404 page must be placed at the end !!!
-  { path: '/:pathMatch(.*)*', redirect: '/404', meta: { hidden: true }}
+  { path: '/:pathMatch(.*)*', name: 'NoMatch', redirect: '/404', meta: { hidden: true }}
 ];
 
 console.log('BASE_URL=', import.meta.env);
