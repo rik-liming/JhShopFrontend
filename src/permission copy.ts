@@ -9,27 +9,6 @@ NProgress.configure({ showSpinner: false }); // NProgress Configuration
 
 const whiteList = ['/login', '/register', '/register/success', '/auth-redirect']; // no redirect whitelist
 
-// 在应用初始化时就进行动态路由的处理
-export async function initDynamicRoutes() {
-  const userStore = store.user();
-  const hasToken = !!userStore.loginToken;
-
-  if (hasToken) {
-    const hasRoles = !!userStore.user?.value?.role;
-
-    if (hasRoles) {
-      let roles = [userStore.user?.value?.role];
-      // 动态生成路由
-      const accessRoutes = await permissionStore().generateRoutes(roles);
-      
-      // Dynamically add routes
-      accessRoutes.forEach(route => {
-        router.addRoute(route);  // Add the new route
-      });
-    }
-  }
-}
-
 router.beforeEach(async (to, from, next) => {
   // console.log('router.beforeEach', to.path, from.path);
   // start progress bar
@@ -56,14 +35,11 @@ router.beforeEach(async (to, from, next) => {
       // console.log('hasRoles=', hasRoles);
       if (hasRoles) {
         let roles = [userStore.user?.value?.role]
-        
-        // Check if we already generated routes, if not, generate them dynamically
-        // 动态生成路由
         const accessRoutes = await permissionStore().generateRoutes(roles);
-        
-        // Dynamically add routes
+
+        // 重新添加新的路由
         accessRoutes.forEach(route => {
-          router.addRoute(route);  // Add the new route
+          router.addRoute(route);  // 添加新的路由
         });
 
         next();

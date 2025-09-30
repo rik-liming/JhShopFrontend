@@ -40,27 +40,13 @@
     </div>
 
     <div class="app-container" @scroll="onScroll">
-      <div class="filter-container tw-flex tw-flex-items-center tw-border tw-border-solid tw-border-black tw-border-opacity-30 tw-pt-6 tw-px-4 tw-mb-4">
-        <div class="tw-w-1/3">
-          <el-select v-model="listQuery.channel" clearable class="filter-item">
-            <el-option v-for="item in channelOptions" :key="item.value" :label="item.label" :value="item.value" />
-          </el-select>
-        </div>
-        <div class="tw-w-1/3">
-          <el-select v-model="listQuery.tableType" clearable class="filter-item">
-            <el-option v-for="item in tableTypeOptions" :key="item.value" :label="item.label" :value="item.value" />
-          </el-select>
-        </div>
-        <div class="tw-flex tw-flex-col tw-w-1/3">
-          <div class="tw-flex tw-justify-between ">
-            <p class="tw-text-left tw-font-bold">市场汇率：</p>
-            <p class="tw-text-lg tw-text-right">7.23</p>
-          </div>
-          <div class="tw-flex tw-justify-between ">
-            <p class="tw-text-left tw-font-bold">刷新：</p>
-            <p class="tw-text-lg tw-text-right tw-text-red-400">3s</p>
-          </div>
-        </div>
+      <div class="filter-container">
+        <el-select v-model="listQuery.channel" clearable style="width: 90px" class="filter-item">
+          <el-option v-for="item in channelOptions" :key="item.value" :label="item.label" :value="item.value" />
+        </el-select>
+        <el-select v-model="listQuery.tableType" clearable class="filter-item" style="width: 130px">
+          <el-option v-for="item in tableTypeOptions" :key="item.value" :label="item.label" :value="item.value" />
+        </el-select>
         <!-- <el-select v-model="listQuery.sort" style="width: 140px" class="filter-item">
           <el-option v-for="item in sortOptions" :key="item.key" :label="item.label" :value="item.key" />
         </el-select> -->
@@ -94,6 +80,10 @@
       <!-- 分页功能修改 -->
       <!-- <pagination v-show="total > 0" :total="total" v-model:page="listQuery.page" v-model:limit="listQuery.limit" @pagination="getList" /> -->
     </div>
+
+    <el-dialog v-model:visible="isNotificationDialogVisible" title="Notification">
+      <div>sdfsf</div>
+    </el-dialog>
   </div>
 </template>
 
@@ -162,6 +152,8 @@ const listQuery = reactive({
   tableType: 'market',
 })
 
+const isNotificationDialogVisible = ref(true)
+
 const router = useRouter();
 
 const animate = ref(false)
@@ -200,6 +192,12 @@ watch(() => listQuery.tableType, async () => {
     animate.value = true
   }, 300)
 })
+
+onMounted(() => {
+  globalThis.addEventListener('show-notification-dialog', () => {
+    isNotificationDialogVisible.value = true
+  });
+});
 
 </script>
 
@@ -358,13 +356,6 @@ watch(() => listQuery.tableType, async () => {
 .sale-icon {
   width: 40px;
   height: 40px;
-}
-
-:deep(.el-select__wrapper) {
-  background-color: transparent !important;
-  box-shadow: none !important;
-  font-size: 18px !important;
-  font-weight: bold !important;
 }
 
 </style>

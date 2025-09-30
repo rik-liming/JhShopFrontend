@@ -1,155 +1,111 @@
 <template>
-  <div class="tw-bg-gradient-to-b tw-from-blue-100 tw-to-blue-300 tw-p-6 tw-rounded-lg tw-w-96">
-    <div class="tw-flex tw-justify-between tw-items-center">
-      <h2 class="tw-text-2xl tw-font-semibold tw-text-blue-800">转账</h2>
-      <button @click="close" class="tw-text-white tw-bg-red-500 tw-px-4 tw-py-2 tw-rounded-lg">
-        关闭
-      </button>
-    </div>
-
-    <div class="tw-mt-4">
-      <div class="tw-flex tw-justify-between tw-items-center">
-        <div class="tw-text-blue-800 tw-font-semibold">商户号：JH001</div>
+  <div class="tw-w-full tw-min-h-screen tw-flex tw-items-center tw-justify-center">
+    <div class="tw-w-[360px] tw-p-2 tw-text-center">
+      <!-- 顶部图标 -->
+      <div class="tw-flex tw-items-center tw-justify-between tw-mb-2 tw-relative">
+        <div class="tw-flex tw-items-center tw-w-full">
+          <img src="@/assets/logo.png" alt="logo" class="tw-w-32 tw-h-32 tw-mx-auto" />
+        </div>
+        <div class="tw-absolute tw-right-0 tw-flex tw-flex-col tw-items-end">
+          <button class="tw-text-red-500 tw-text-sm tw-border tw-border-solid tw-border-black tw-rounded tw-px-4 tw-py-2 tw-mb-4" @click="handleClose">关闭</button>
+        </div>
       </div>
-      <div class="tw-mt-2 tw-text-gray-600">总资产：1650 USDT</div>
-      <div class="tw-mt-2 tw-text-gray-600">可用资产：1250 USDT</div>
+      
 
-      <div class="tw-mt-4">
-        <div class="tw-text-red-500 tw-font-semibold">平台转账</div>
-        <div class="tw-text-sm tw-text-red-500 tw-mt-2">
+      <!-- 标题 & 汇率 -->
+      <h2 class="tw-text-lg tw-font-semibold">提现</h2>
+      <hr class="tw-my-3 tw-border-gray-300" />
+
+      <!-- 用户信息 -->
+      <div class="tw-mt-8 tw-mb-8">
+        <div class="tw-flex tw-justify-between tw-space-x-4">
+          <p class="tw-text-left">商户号：</p>
+          <p class="tw-font-semibold tw-text-right">JH001</p>
+        </div>
+        <div class="tw-flex tw-justify-between tw-space-x-4">
+          <p class="tw-text-left">总资产：</p>
+          <p class="tw-font-semibold tw-text-right">1650 USDT</p>
+        </div>
+        <div class="tw-flex tw-justify-between tw-space-x-4">
+          <p class="tw-text-left">可用资产：</p>
+          <p class="tw-font-semibold tw-text-right">1250 USDT</p>
+        </div>
+      </div>
+
+
+      <div class="tw-mt-4 tw-text-left">
+        <div class="tw-text-lg tw-font-bold">提现</div>
+        <div class="tw-text-lg tw-text-red-500 tw-mt-2 tw-mb-10 transfer-text">
           每笔转账收取手续费 2 USDT
         </div>
       </div>
 
-      <div class="tw-mt-6">
-        <label for="recipient" class="tw-block tw-text-gray-700 tw-font-medium">对方商户号</label>
-        <input id="recipient" v-model="recipient" type="text" class="tw-w-full tw-p-2 tw-border tw-border-gray-300 tw-rounded-md" placeholder="此处文字透明度35%" />
+      <!-- 输入金额 -->
+      <div class="tw-flex tw-flex-col tw-gap-4 tw-text-left">
+        <div>
+          <label class="tw-font-normal tw-text-lg tw-mb-12">提现地址: USDT-TRC20</label>
+          <input
+            type="text"
+            placeholder="请输入充值金额（此处字体透明度35%）"
+            class="tw-w-full tw-border tw-border-solid tw-border-gray tw-rounded-md tw-px-3 tw-py-2 tw-text-sm tw-placeholder-gray-400 tw-mb-4"
+          />
+        </div>
+
+        <input
+          type="text"
+          placeholder="请输入充值金额（此处字体透明度35%）"
+          class="tw-w-full tw-border tw-border-solid tw-border-gray tw-rounded-md tw-px-3 tw-py-2 tw-text-sm tw-placeholder-gray-400 tw-mb-4"
+        />
+
+        <input
+          type="text"
+          placeholder="请输入充值金额（此处字体透明度35%）"
+          class="tw-w-full tw-border tw-border-solid tw-border-gray tw-rounded-md tw-px-3 tw-py-2 tw-text-sm tw-placeholder-gray-400 tw-mb-4"
+        />
       </div>
 
-      <div class="tw-mt-4">
-        <label for="amount" class="tw-block tw-text-gray-700 tw-font-medium">转账金额</label>
-        <input id="amount" v-model="amount" type="number" class="tw-w-full tw-p-2 tw-border tw-border-gray-300 tw-rounded-md" placeholder="此处文字透明度35%" />
-      </div>
+      <!-- 按钮 -->
+      <button
+        class="tw-w-full tw-bg-rose-500 tw-text-white tw-font-semibold tw-rounded-full tw-py-2 tw-mt-4 hover:tw-bg-rose-600"
+        @click="handleWithdraw"
+      >
+        立即提现
+      </button>
+      <button 
+        class="tw-w-full tw-text-red-500 tw-font-medium tw-py-2 tw-mt-2"
+        @click="handleClose"
+      >
+        取消
+      </button>
 
-      <div class="tw-mt-4">
-        <label for="paymentCode" class="tw-block tw-text-gray-700 tw-font-medium">支付密码</label>
-        <input id="paymentCode" v-model="paymentCode" type="password" class="tw-w-full tw-p-2 tw-border tw-border-gray-300 tw-rounded-md" placeholder="此处文字透明度35%" />
-      </div>
-
-      <div class="tw-mt-6 tw-flex tw-justify-between">
-        <span class="tw-text-gray-600">总资产：1650 USDT</span>
-        <span class="tw-text-gray-600">可用资产：1250 USDT</span>
-      </div>
-
-      <div class="tw-mt-8 tw-flex tw-justify-between">
-        <button @click="cancel" class="tw-bg-gray-300 tw-text-gray-800 tw-px-4 tw-py-2 tw-rounded-lg">
-          取消
-        </button>
-        <button @click="transfer" class="tw-bg-blue-500 tw-text-white tw-px-4 tw-py-2 tw-rounded-lg">
-          即时转账
-        </button>
-      </div>
+      <!-- 底部版权 -->
+      <p class="tw-text-xs tw-text-gray-400 tw-mt-4">Copy@ JH嘉禾商城</p>
     </div>
   </div>
 </template>
 
 <script setup>
-import { ref } from 'vue';
 
-// 表单数据
-const recipient = ref('');
-const amount = ref('');
-const paymentCode = ref('');
+import { useRouter } from 'vue-router';
+import { ref } from 'vue'
 
-// 关闭弹窗
-const close = () => {
-  // 这里可以关闭当前页面或者弹窗
-};
+const imageFile = ref(null)
 
-// 取消转账
-const cancel = () => {
-  // 取消逻辑，例如重置表单
-  recipient.value = '';
-  amount.value = '';
-  paymentCode.value = '';
-};
+const router = useRouter()
 
-// 执行转账
-const transfer = () => {
-  // 转账逻辑，这里可以进行数据验证和提交
-  console.log('转账成功', { recipient: recipient.value, amount: amount.value, paymentCode: paymentCode.value });
-};
+const handleClose = () => {
+  router.push('/')
+}
+
+const handleWithdraw = () => {
+  router.push('/withdraw/detail')
+}
 </script>
 
-<style lang="scss" scoped>
-.app-wrapper {
-  background: #e6f1f7;
-  border-radius: 10px;
-  padding: 20px;
-}
-
-.tw-text-red {
-  color: #e74c3c;
-}
-
-.tw-bg-gradient-to-b {
-  background: linear-gradient(to bottom, #e6f1f7, #7fb3d5);
-}
-
-.tw-text-blue-800 {
-  color: #1d4b73;
-}
-
-.tw-px-4,
-.tw-py-2 {
-  padding: 0.5rem 1rem;
-}
-
-.tw-text-lg {
-  font-size: 1.125rem;
-}
-
-.tw-w-full {
-  width: 100%;
-}
-
-.tw-border-collapse {
-  border-collapse: collapse;
-}
-
-.tw-border {
-  border: 1px solid #ddd;
-}
-
-.tw-text-left {
-  text-align: left;
-}
-
-.tw-text-center {
-  text-align: center;
-}
-
-.tw-mt-4 {
-  margin-top: 1rem;
-}
-
-.tw-flex {
-  display: flex;
-}
-
-.tw-justify-between {
-  justify-content: space-between;
-}
-
-.tw-bg-red-500 {
-  background-color: #e74c3c;
-}
-
-.tw-bg-blue-500 {
-  background-color: #3498db;
-}
-
-.tw-rounded-lg {
-  border-radius: 0.5rem;
+<style scoped lang="scss">
+.transfer-text {
+    text-decoration: underline rgb(215, 215, 215);
+    text-decoration-thickness: 3px; /* 增加下划线的粗细 */
+    text-underline-offset: 5px; /* 增加下划线与文字的距离 */
 }
 </style>

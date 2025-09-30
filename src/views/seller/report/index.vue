@@ -1,161 +1,188 @@
 <template>
-  <div class="tw-bg-gradient-to-b tw-from-blue-100 tw-to-blue-300 tw-p-6 tw-rounded-lg tw-w-96">
-    <div class="tw-flex tw-justify-between tw-items-center">
-      <h2 class="tw-text-2xl tw-font-semibold tw-text-blue-800">团队报表</h2>
-      <button @click="close" class="tw-text-white tw-bg-red-500 tw-px-4 tw-py-2 tw-rounded-lg">
-        关闭
-      </button>
-    </div>
-
-    <div class="tw-mt-4">
-      <div class="tw-flex tw-justify-between tw-items-center">
-        <input type="text" v-model="dateRange" class="tw-p-2 tw-border tw-rounded-md" placeholder="2025-08-05 ~ 2025-08-22" />
-        <div>
-          <button @click="toggleView" class="tw-text-lg tw-px-4 tw-py-2 tw-bg-blue-500 tw-text-white tw-rounded-full">
-            <span v-if="isIndividual">个人报表</span>
-            <span v-else>团队报表</span>
-          </button>
+  <div class="tw-w-full tw-min-h-screen tw-flex tw-items-center tw-justify-center">
+    <div class="tw-w-[360px] tw-p-2 tw-text-center">
+      <!-- 顶部图标 -->
+      <div class="tw-flex tw-items-center tw-justify-between tw-mb-2 tw-relative">
+        <div class="tw-flex tw-flex-col tw-items-center tw-w-full">
+          <div class="">
+            <h2 class="tw-text-3xl tw-font-semibold">团队报表</h2>
+          </div>
+          <div class="tw-flex tw-gap-10 tw-mt-6 tw-mb-4">
+            <img src="@/assets/person_icon.svg" alt="person" class="tw-w-12 tw-h-12 tw-mx-auto" @click="handleTableTypeChange('person')" />
+            <img src="@/assets/group_icon.svg" alt="group" class="tw-w-12 tw-h-12 tw-mx-auto" @click="handleTableTypeChange('group')" />
+          </div>
+        </div>
+        <div class="tw-absolute tw-right-0 tw-flex tw-flex-col tw-items-end">
+          <button class="tw-text-red-500 tw-text-sm tw-border tw-border-solid tw-border-black tw-rounded tw-px-4 tw-py-2 tw-mb-4" @click="handleClose">关闭</button>
         </div>
       </div>
 
-      <table class="tw-w-full tw-mt-4 tw-border-collapse tw-border tw-border-gray-300">
-        <thead>
-          <tr>
-            <th class="tw-border tw-px-4 tw-py-2 tw-text-left">日期+订单编号</th>
-            <th class="tw-border tw-px-4 tw-py-2 tw-text-left">
-              <span v-if="isIndividual">商户</span>
-              <span v-else>成员</span>
-            </th>
-            <th class="tw-border tw-px-4 tw-py-2 tw-text-center">订单状态</th>
-            <th class="tw-border tw-px-4 tw-py-2 tw-text-center">金额USDT</th>
-          </tr>
-        </thead>
-        <tbody>
-          <tr v-for="(item, index) in filteredData" :key="index">
-            <td class="tw-border tw-px-4 tw-py-2">{{ item.date }}</td>
-            <td class="tw-border tw-px-4 tw-py-2">{{ item.member }}</td>
-            <td class="tw-border tw-px-4 tw-py-2 tw-text-center">{{ item.status }}</td>
-            <td class="tw-border tw-px-4 tw-py-2 tw-text-center">{{ item.amount }}</td>
-          </tr>
-        </tbody>
-      </table>
+      <div class="tw-w-full tw-flex tw-gap-4 tw-mb-4">
+        <!-- 开始时间选择器 -->
+        <el-date-picker
+          v-model="startTime"
+          type="datetime"
+          placeholder="选择开始时间"
+          format="YYYY-MM-DD"
+          class="tw-w-full"
+        />
+        
+        ~
 
-      <div class="tw-mt-4 tw-flex tw-justify-between">
-        <span v-if="isIndividual">总计：{{ totalAmountIndividual }} USDT</span>
-        <span v-else>总人数：{{ totalMembers }} 总计：{{ totalAmountTeam }} USDT</span>
+        <!-- 结束时间选择器 -->
+        <el-date-picker
+          v-model="endTime"
+          type="datetime"
+          placeholder="选择结束时间"
+          format="YYYY-MM-DD"
+          class="tw-w-full"
+        />
       </div>
+
+      <!-- 包裹表格的容器 -->
+      <div 
+        class="table-wrapper" 
+        :class="{ 
+          'animate': animate,
+          'from-left': listQuery.tableType === 'person', 
+          'from-right': listQuery.tableType === 'group'
+        }"
+      >
+        <person-table
+          :tableType="listQuery.tableType"
+          @table-update-start="handleTableUpdateStart"
+          @table-update-end="handleTableUpdateEnd"
+          v-show="listQuery.tableType == 'person'"
+        ></person-table>
+        <group-table
+          :tableType="listQuery.tableType"
+          @table-update-start="handleTableUpdateStart"
+          @table-update-end="handleTableUpdateEnd"
+          v-show="listQuery.tableType == 'group'"
+        ></group-table>
+      </div>
+
+      <!-- 按钮 -->
+      <button
+        class="tw-w-full tw-bg-rose-500 tw-text-white tw-font-semibold tw-rounded-full tw-py-2 tw-mt-10 hover:tw-bg-rose-600"
+        @click="handleClose"
+      >
+        关闭
+      </button>
+
+      <!-- 底部版权 -->
+      <p class="tw-text-xs tw-text-gray-400 tw-mt-4">Copy@ JH嘉禾商城</p>
     </div>
   </div>
 </template>
 
 <script setup>
-import { ref, computed } from 'vue';
 
-const isIndividual = ref(false); // 控制报表类型（个人 / 团队）
-const dateRange = ref('2025-08-05 ~ 2025-08-22'); // 日期范围
-const filteredData = ref([
-  { date: '20250706_068', member: 'JH012', status: '成功', amount: 100 },
-  { date: '20250706_066', member: 'JH023', status: '成功', amount: 88 },
-  { date: '20250706_053', member: 'JH015', status: '成功', amount: 125 },
-  { date: '20250706_048', member: 'JH095', status: '成功', amount: 95 },
-  { date: '20250706_030', member: 'JH063', status: '成功', amount: 150 },
-  { date: '20250706_021', member: 'JH035', status: '成功', amount: 220 },
-  { date: '20250706_006', member: 'JH035', status: '成功', amount: 130 }
-]);
+import { useRouter } from 'vue-router';
+import { ref, reactive, watch, nextTick } from 'vue'
+import PersonTable from './components/PersonTable.vue'
+import GroupTable from './components/GroupTable.vue'
 
-// 计算团队报表的总人数和总金额
-const totalMembers = computed(() => filteredData.value.length);
-const totalAmountTeam = computed(() => {
-  return filteredData.value.reduce((total, item) => total + item.amount, 0);
-});
+const router = useRouter()
+const startTime = ref(null);
+const endTime = ref(null);
 
-// 计算个人报表的总金额
-const totalAmountIndividual = computed(() => {
-  return filteredData.value
-    .filter(item => item.member === 'JH001') // 仅显示 'JH001' 的记录
-    .reduce((total, item) => total + item.amount, 0);
-});
+const animate = ref(false)
+const tableWrapper = ref(null)
 
-// 切换报表类型
-const toggleView = () => {
-  isIndividual.value = !isIndividual.value;
-};
+const listQuery = reactive({
+  tableType: 'person',
+})
 
-// 关闭按钮功能
-const close = () => {
-  // 这里可以添加关闭操作，例如隐藏组件
-};
+const handleClose = () => {
+  router.push('/')
+}
+
+const handleWithdraw = () => {
+  router.push('/withdraw/detail')
+}
+
+const handleTableTypeChange = (tableType) => {
+  listQuery.tableType = tableType
+}
+
+function handleTableUpdateStart() {
+  if (tableWrapper.value) {
+    scrollTopCache = tableWrapper.value.scrollTop
+  }
+  animate.value = false;
+}
+
+async function handleTableUpdateEnd() {
+  nextTick(() => {
+    if (tableWrapper.value) {
+      tableWrapper.value.scrollTop = scrollTopCache
+    }
+  })
+
+  // 增加一定延时，以便播放动画效果
+  await new Promise(resolve => setTimeout(resolve, 300));
+  animate.value = true;
+}
+
+watch(() => listQuery.tableType, async () => {
+  animate.value = false
+  await nextTick()
+  setTimeout(() => {
+    animate.value = true
+  }, 300)
+})
+
 </script>
 
-<style lang="scss" scoped>
-.app-wrapper {
-  background: #e6f1f7;
-  border-radius: 10px;
-  padding: 20px;
+<style scoped lang="scss">
+.table-wrapper {
+  position: relative;
+  // left: -100%; /* 初始位置在屏幕外 */
+  transform: translateY(-50%); /* 垂直居中 */
+  color: white;
+  // transition: left 1s ease-out;
+  // transition: left 1s cubic-bezier(0.1, 0, 0.5, 1); /* 自定义贝塞尔曲线 */
+  visibility: hidden;
 }
 
-.tw-text-red {
-  color: #e74c3c;
+.table-wrapper.from-left {
+  left: -100%; /* 初始位置在屏幕外 */
+  transition: left 1s ease-out;
 }
 
-.tw-bg-gradient-to-b {
-  background: linear-gradient(to bottom, #e6f1f7, #7fb3d5);
+.table-wrapper.from-right {
+  left: 100%; /* 初始位置在屏幕外 */
+  transition: left 1s ease-out;
 }
 
-.tw-text-blue-800 {
-  color: #1d4b73;
+.table-wrapper.animate {
+  left: 50%; /* 结束时 div 移动到屏幕中央 */
+  // transform: translateX(-50%) translateY(-50%); /* 确保居中 */
+  transform: translateX(-50%); /* 确保居中 */
+  visibility: visible;
 }
 
-.tw-px-4,
-.tw-py-2 {
-  padding: 0.5rem 1rem;
-}
 
-.tw-text-lg {
-  font-size: 1.125rem;
-}
+// .table-wrapper {
+//   position: relative;
+//   left: -100%; /* 初始位置在屏幕外 */
+//   transform: translateY(-50%); /* 垂直居中 */
+//   color: white;
+//   visibility: hidden;
+//   transition: transform 1s ease-out; /* 使用transform来控制动画 */
+// }
 
-.tw-w-full {
-  width: 100%;
-}
+// .table-wrapper.from-left {
+//   transform: translateX(-100%) translateY(-50%); /* 从左侧进入 */
+// }
 
-.tw-border-collapse {
-  border-collapse: collapse;
-}
+// .table-wrapper.from-right {
+//   transform: translateX(100%) translateY(-50%); /* 从右侧进入 */
+// }
 
-.tw-border {
-  border: 1px solid #ddd;
-}
+// .table-wrapper.animate {
+//   visibility: visible;
+// }
 
-.tw-text-left {
-  text-align: left;
-}
-
-.tw-text-center {
-  text-align: center;
-}
-
-.tw-mt-4 {
-  margin-top: 1rem;
-}
-
-.tw-flex {
-  display: flex;
-}
-
-.tw-justify-between {
-  justify-content: space-between;
-}
-
-.tw-bg-red-500 {
-  background-color: #e74c3c;
-}
-
-.tw-bg-blue-500 {
-  background-color: #3498db;
-}
-
-.tw-rounded-lg {
-  border-radius: 0.5rem;
-}
 </style>

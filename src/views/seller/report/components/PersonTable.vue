@@ -1,30 +1,42 @@
 <template>
-  <el-table
-    :data="list"
-    border
-    fit
-    highlight-current-row
-    class="main-table"
-    key="marketTable"
-    style="height: 600px; overflow: auto;"
-    @row-click="handleRowClick"
-  >
-    <el-table-column label="商户" width="'30%'" align="center">
-      <template v-slot="{ row }">
-        <span>{{ row.author }}</span>
-      </template>
-    </el-table-column>
-    <el-table-column label="售卖数量" width="'40%'" align="center">
-      <template v-slot="{ row }">
-        <span>{{ row.author }}</span>
-      </template>
-    </el-table-column>
-    <el-table-column label="等值人民币" width="'30%'" align="center">
-      <template v-slot="{ row }">
-        <span>{{ row.author }}</span>
-      </template>
-    </el-table-column>
-  </el-table>
+  <div>
+    <el-table
+      :data="list"
+      border
+      fit
+      highlight-current-row
+      class="main-table"
+      key="personTable"
+      style="height: 500px; overflow: auto;"
+      @row-click="handleRowClick"
+    >
+      <el-table-column label="日期" align="center">
+        <template v-slot="{ row }">
+          <span>{{ `20250706_0074` }}</span>
+        </template>
+      </el-table-column>
+      <el-table-column label="商户" align="center">
+        <template v-slot="{ row }">
+          <span>{{ row.author }}</span>
+        </template>
+      </el-table-column>
+      <el-table-column label="订单状态" align="center" min-width="90">
+        <template v-slot="{ row }">
+          <span>{{ row.author }}</span>
+        </template>
+      </el-table-column>
+      <el-table-column label="金额" align="center">
+        <template v-slot="{ row }">
+          <span>{{ row.author }}</span>
+        </template>
+      </el-table-column>
+    </el-table>
+
+    <!-- 固定的底部行 -->
+    <div class="sticky-bottom">
+      <span class="tw-mr-4">总计：1325</span>
+    </div>
+  </div>
 </template>
 
 <script setup>
@@ -36,7 +48,6 @@ import store from '@/store';
 const emit = defineEmits();
 
 const props = defineProps({
-  channel: String,
   tableType: String,
 });
 
@@ -47,7 +58,6 @@ const list = ref([]);
 const listQuery = reactive({
   page: 1,
   limit: 100,
-  channel: props.channel,
   tableType: props.tableType,
 });
 
@@ -58,13 +68,7 @@ let isFirstCall = true;
 const getList = async () => {
   try {
     emit('table-update-start');
-    if (listQuery.channel == 'ali_pay') {
-        listQuery.page = 1
-    } else if (listQuery.channel == 'bank_pay') {
-        listQuery.page = 2
-    } else if (listQuery.channel == 'wechat_pay') {
-        listQuery.page = 3
-    }
+    listQuery.page = 1
     const response = await fetchList(listQuery);
     emit('table-update-end');
     list.value = response.data.items;
@@ -73,23 +77,6 @@ const getList = async () => {
   }
 };
 
-// 监听 channel 变化，获取数据
-watch(
-  () => props.channel,
-  (newChannel) => {
-    // 只有在 channel 变化时，才更新数据
-    listQuery.channel = newChannel;
-    
-    // 确保只有在 channel 改变时才调用 getList
-    if (!isFirstCall && props.tableType === 'market') {
-      getList();
-    } else {
-      isFirstCall = false; // 第一次加载后设置为 false
-    }
-  },
-  { immediate: true } // immediate 保证在首次渲染时监听
-);
-
 watch(
   () => props.tableType,
   (newTableType) => {
@@ -97,7 +84,7 @@ watch(
     listQuery.tableType = newTableType;
     
     // 确保只有在 channel 改变时才调用 getList
-    if (!isFirstCall && props.tableType === 'market') {
+    if (!isFirstCall && props.tableType === 'person') {
       getList();
     } else {
       isFirstCall = false; // 第一次加载后设置为 false
@@ -153,5 +140,15 @@ const handleRowClick = (row) => {
 :deep(.el-table__body tr) {
   background-color: transparent !important;
   border: 1px solid #7f7f7f !important;
+}
+
+.sticky-bottom {
+  position: sticky;
+  bottom: 0;
+  border: 1px solid black;
+  z-index: 10;
+  padding: 10px;
+  color: black;
+  text-align: right;
 }
 </style>

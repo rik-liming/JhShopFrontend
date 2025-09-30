@@ -21,7 +21,7 @@
       </div>
     </div>
 
-    <div class="transaction-container" v-if="store.user().user?.value?.role === 'agent' || store.user().user?.value?.role === 'seller'">
+    <div class="transaction-container">
       <div class="transaction-menu">
         <div class="left-menu" @click="onDeposit">
           <img src="@/assets/buy_icon.svg" class="buy-icon">
@@ -29,8 +29,8 @@
         </div>
 
         <div class="right-menu">
-          <div class="publish-container right-menu-item hover-effect" @click="onOrderPublish">
-            <div class="publish-wrapper">
+          <div class="avatar-container right-menu-item hover-effect" @click="onTradePublish">
+            <div class="avatar-wrapper">
               <img src="@/assets/sale_icon.png" class="sale-icon">
               <span>发布交易</span>
             </div>
@@ -40,65 +40,71 @@
     </div>
 
     <div class="app-container" @scroll="onScroll">
-      <div class="filter-container tw-flex tw-flex-items-center tw-border tw-border-solid tw-border-black tw-border-opacity-30 tw-pt-6 tw-px-4 tw-mb-4">
-        <div class="tw-w-1/3">
-          <el-select v-model="listQuery.channel" clearable class="filter-item">
-            <el-option v-for="item in channelOptions" :key="item.value" :label="item.label" :value="item.value" />
-          </el-select>
-        </div>
-        <div class="tw-w-1/3">
-          <el-select v-model="listQuery.tableType" clearable class="filter-item">
-            <el-option v-for="item in tableTypeOptions" :key="item.value" :label="item.label" :value="item.value" />
-          </el-select>
-        </div>
-        <div class="tw-flex tw-flex-col tw-w-1/3">
-          <div class="tw-flex tw-justify-between ">
-            <p class="tw-text-left tw-font-bold">市场汇率：</p>
-            <p class="tw-text-lg tw-text-right">7.23</p>
-          </div>
-          <div class="tw-flex tw-justify-between ">
-            <p class="tw-text-left tw-font-bold">刷新：</p>
-            <p class="tw-text-lg tw-text-right tw-text-red-400">3s</p>
-          </div>
-        </div>
-        <!-- <el-select v-model="listQuery.sort" style="width: 140px" class="filter-item">
+      <div class="filter-container">
+        <el-select v-model="listQuery.channel" clearable style="width: 90px" class="filter-item">
+          <el-option v-for="item in channelOptions" :key="item.value" :label="item.label" :value="item.value" />
+        </el-select>
+        <el-select v-model="listQuery.tableType" clearable class="filter-item" style="width: 130px">
+          <el-option v-for="item in tableTypeOptions" :key="item.value" :label="item.label" :value="item.value" />
+        </el-select>
+        <el-select v-model="listQuery.sort" style="width: 140px" class="filter-item" @change="handleFilter">
           <el-option v-for="item in sortOptions" :key="item.key" :label="item.label" :value="item.key" />
-        </el-select> -->
+        </el-select>
       </div>
 
       <!-- 包裹表格的容器 -->
-      <div class="table-wrapper" :class="{ 'animate': animate }">
-          <market-table
-            :channel="listQuery.channel"
-            :tableType="listQuery.tableType"
-            @table-update-start="handleTableUpdateStart"
-            @table-update-end="handleTableUpdateEnd"
-            v-show="listQuery.tableType == 'market'"
-          ></market-table>
-          <order-table
-            :channel="listQuery.channel"
-            :tableType="listQuery.tableType"
-            @table-update-start="handleTableUpdateStart"
-            @table-update-end="handleTableUpdateEnd"
-            v-show="listQuery.tableType == 'order'"
-          ></order-table>
-          <finance-table
-            :channel="listQuery.channel"
-            :tableType="listQuery.tableType"
-            @table-update-start="handleTableUpdateStart"
-            @table-update-end="handleTableUpdateEnd"
-            v-show="listQuery.tableType == 'finance'"
-          ></finance-table>
+      <div class="table-wrapper">
+        <!-- 使用 transition 来滑动表格 -->
+        <transition name="slide-fade" mode="out-in">
+          <el-table
+            v-loading="listLoading"
+            :data="list"
+            border
+            fit
+            highlight-current-row
+            style="width: 100%;"
+            @sort-change="sortChange"
+            :key="tableKey"
+          >
+            <el-table-column label="ID" prop="id" sortable="custom" align="center" width="80" :class-name="getSortClass('id')">
+              <template v-slot="{row}">
+                <span>{{ row.id }}</span>
+              </template>
+            </el-table-column>
+            <el-table-column label="Date" width="150px" align="center">
+              <template v-slot="{row}">
+                <span>{{ parseTime(row.timestamp, '{y}-{m}-{d} {h}:{i}') }}</span>
+              </template>
+            </el-table-column>
+            <el-table-column label="Author" width="110px" align="center">
+              <template v-slot="{row}">
+                <span>{{ row.author }}</span>
+              </template>
+            </el-table-column>
+            <el-table-column label="Imp" width="80px">
+              <template v-slot="{row}">
+                <svg-icon v-for="n in row.importance" :key="n" icon-class="star" class="meta-item__icon" />
+              </template>
+            </el-table-column>
+            <el-table-column label="Status" class-name="status-col" width="100">
+              <template v-slot="{row}">
+                <el-tag :type="statusFilter(row.status)">
+                  {{ row.status }}
+                </el-tag>
+              </template>
+            </el-table-column>
+          </el-table>
+        </transition>
       </div>
 
       <!-- 分页功能修改 -->
-      <!-- <pagination v-show="total > 0" :total="total" v-model:page="listQuery.page" v-model:limit="listQuery.limit" @pagination="getList" /> -->
+      <pagination v-show="total > 0" :total="total" v-model:page="listQuery.page" v-model:limit="listQuery.limit" @pagination="getList" />
     </div>
   </div>
 </template>
 
 <script setup>
-import { ref, reactive, onMounted, markRaw, watch, computed, nextTick } from 'vue'
+import { ref, reactive, onMounted, markRaw, watch } from 'vue'
 import { Vue3Marquee } from 'vue3-marquee'
 import { toast } from 'vue3-toastify'
 import Pagination from '@/components/Pagination'
@@ -108,9 +114,6 @@ import { parseTime } from '@/utils'
 import Navbar from './navbar.vue';
 import store from '@/store';
 import { useRouter } from 'vue-router';
-import MarketTable from './components/MarketTable.vue'
-import OrderTable from './components/OrderTable.vue'
-import FinanceTable from './components/FinanceTable.vue'
 
 // --- 广告轮播图片 ---
 const ad_imgs = [
@@ -120,32 +123,26 @@ const ad_imgs = [
 ]
 
 // --- 表格数据 ---
-const tableWrapper = ref(null)
-let scrollTopCache = 0
 
 const tableKey = ref(0)
 const channelOptions = ref(
   [
     {
       'label': '支付宝',
-      'value': 'ali_pay'
+      'value': 'alipay'
     },
     {
       'label': '银行卡',
-      'value': 'bank_pay'
+      'value': 'bank'
     },
     {
       'label': '微信',
-      'value': 'wechat_pay'
+      'value': 'wechat'
     },
   ]
 )
 const tableTypeOptions = ref(
   [
-    {
-      'label': '市场',
-      'value': 'market'
-    },
     {
       'label': '订单',
       'value': 'order'
@@ -156,50 +153,85 @@ const tableTypeOptions = ref(
     },
   ]
 )
-
+const sortOptions = ref(
+  [{ label: 'ID Ascending', key: '+id' }, { label: 'ID Descending', key: '-id' }]
+)
+const list = ref([])
+const total = ref(0)
+const listLoading = ref(true)
 const listQuery = reactive({
-  channel: 'ali_pay',
-  tableType: 'market',
+  page: 1,
+  limit: 20,
+  channel: 'alipay',
+  title: undefined,
+  tableType: 'order',
+  sort: '+id'
 })
 
 const router = useRouter();
 
-const animate = ref(false)
+// --- 生命周期 ---
+onMounted(() => {
+  getList()
+})
 
-function onOrderPublish() {
-  router.push('/order/seller/publish')
+watch(() => listQuery.page, () => {
+  getList()
+})
+
+// --- 方法 ---
+function getList() {
+  listLoading.value = true
+  fetchList(listQuery).then(response => {
+    list.value = response.data.items
+    total.value = response.data.total
+    setTimeout(() => {
+      listLoading.value = false
+    }, 1500)
+  })
+}
+
+function handleFilter() {
+  listQuery.page = 1
+  getList()
+}
+
+function sortChange({ prop, order }) {
+  if (prop === 'id') {
+    sortByID(order)
+  }
+}
+
+function sortByID(order) {
+  listQuery.sort = order === 'ascending' ? '+id' : '-id'
+  handleFilter()
+}
+
+function statusFilter(status) {
+  const statusMap = { published: 'success', draft: 'info', deleted: 'danger' }
+  return statusMap[status]
+}
+
+function getSortClass(key) {
+  const sort = this.listQuery.sort;
+  return sort === `+${key}` ? 'ascending' : 'descending';
+}
+
+function onScroll(event) {
+  const bottom = event.target.scrollHeight === event.target.scrollTop + event.target.clientHeight
+  if (bottom && list.length < total.value) {
+    listQuery.page += 1
+    getList()
+  }
+}
+
+function onTradePublish() {
+  router.push('/trade')
 };
 
 function onDeposit() {
   router.push('/deposit')
 };
-
-function handleTableUpdateStart() {
-  if (tableWrapper.value) {
-    scrollTopCache = tableWrapper.value.scrollTop
-  }
-  animate.value = false;
-}
-
-async function handleTableUpdateEnd() {
-  nextTick(() => {
-    if (tableWrapper.value) {
-      tableWrapper.value.scrollTop = scrollTopCache
-    }
-  })
-
-  // 增加一定延时，以便播放动画效果
-  await new Promise(resolve => setTimeout(resolve, 300));
-  animate.value = true;
-}
-
-watch(() => listQuery.tableType, async () => {
-  animate.value = false
-  await nextTick()
-  setTimeout(() => {
-    animate.value = true
-  }, 300)
-})
 
 </script>
 
@@ -222,21 +254,16 @@ watch(() => listQuery.tableType, async () => {
   font-size: 18px;
 }
 
+/* Transition for table sliding effect */
 .table-wrapper {
   position: relative;
-  left: -100%; /* 初始位置在屏幕外 */
-  transform: translateY(-50%); /* 垂直居中 */
-  color: white;
-  transition: left 1s ease-out;
-  // transition: left 1s cubic-bezier(0.1, 0, 0.5, 1); /* 自定义贝塞尔曲线 */
-  visibility: hidden;
 }
 
-.table-wrapper.animate {
-  left: 50%; /* 结束时 div 移动到屏幕中央 */
-  // transform: translateX(-50%) translateY(-50%); /* 确保居中 */
-  transform: translateX(-50%); /* 确保居中 */
-  visibility: visible;
+.slide-fade-enter-active, .slide-fade-leave-active {
+  transition: transform 0.5s ease;
+}
+.slide-fade-enter, .slide-fade-leave-to /* .slide-fade-leave-active in <2.1.8 */ {
+  transform: translateX(100%);
 }
 
 .transaction-container {
@@ -306,10 +333,10 @@ watch(() => listQuery.tableType, async () => {
         }
       }
 
-      .publish-container {
+      .avatar-container {
         margin-right: 10px;
 
-        .publish-wrapper {
+        .avatar-wrapper {
           margin-top: 5px;
           position: relative;
           height: 60px;
@@ -322,6 +349,14 @@ watch(() => listQuery.tableType, async () => {
             width: 31px;
             height: 28px;
             // border-radius: 10px;
+          }
+
+          .el-icon-caret-bottom {
+            cursor: pointer;
+            position: absolute;
+            right: -20px;
+            top: 25px;
+            font-size: 12px;
           }
         }
       }
@@ -355,16 +390,13 @@ watch(() => listQuery.tableType, async () => {
   cursor: pointer;
 }
 
+// .publish-btn:hover {
+//   color: #409EFF; /* Element Plus 默认主题蓝色 */
+// }
+
 .sale-icon {
   width: 40px;
   height: 40px;
-}
-
-:deep(.el-select__wrapper) {
-  background-color: transparent !important;
-  box-shadow: none !important;
-  font-size: 18px !important;
-  font-weight: bold !important;
 }
 
 </style>

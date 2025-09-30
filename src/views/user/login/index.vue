@@ -373,13 +373,16 @@ export default defineComponent({
   }
 
   .footer {
-    position: absolute;
-    bottom: 10px;
-    left: 148px;
+    // position: absolute;
+    // bottom: 10px;
+    // left: 148px;
     // margin-top: 20px;
+
     font-size: 11px;
+    text-align: center;
     color: #333333;
     opacity: 0.57;
+    margin: 80px 0 10px;
   }
 
   :deep(div.el-dialog.custom-dialog) {

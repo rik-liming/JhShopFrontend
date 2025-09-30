@@ -21,7 +21,7 @@
       </div>
     </div>
 
-    <div class="transaction-container" v-if="store.user().user?.value?.role === 'agent' || store.user().user?.value?.role === 'seller'">
+    <div class="transaction-container">
       <div class="transaction-menu">
         <div class="left-menu" @click="onDeposit">
           <img src="@/assets/buy_icon.svg" class="buy-icon">
@@ -29,7 +29,7 @@
         </div>
 
         <div class="right-menu">
-          <div class="publish-container right-menu-item hover-effect" @click="onOrderPublish">
+          <div class="publish-container right-menu-item hover-effect" @click="onTradePublish">
             <div class="publish-wrapper">
               <img src="@/assets/sale_icon.png" class="sale-icon">
               <span>发布交易</span>
@@ -40,27 +40,13 @@
     </div>
 
     <div class="app-container" @scroll="onScroll">
-      <div class="filter-container tw-flex tw-flex-items-center tw-border tw-border-solid tw-border-black tw-border-opacity-30 tw-pt-6 tw-px-4 tw-mb-4">
-        <div class="tw-w-1/3">
-          <el-select v-model="listQuery.channel" clearable class="filter-item">
-            <el-option v-for="item in channelOptions" :key="item.value" :label="item.label" :value="item.value" />
-          </el-select>
-        </div>
-        <div class="tw-w-1/3">
-          <el-select v-model="listQuery.tableType" clearable class="filter-item">
-            <el-option v-for="item in tableTypeOptions" :key="item.value" :label="item.label" :value="item.value" />
-          </el-select>
-        </div>
-        <div class="tw-flex tw-flex-col tw-w-1/3">
-          <div class="tw-flex tw-justify-between ">
-            <p class="tw-text-left tw-font-bold">市场汇率：</p>
-            <p class="tw-text-lg tw-text-right">7.23</p>
-          </div>
-          <div class="tw-flex tw-justify-between ">
-            <p class="tw-text-left tw-font-bold">刷新：</p>
-            <p class="tw-text-lg tw-text-right tw-text-red-400">3s</p>
-          </div>
-        </div>
+      <div class="filter-container">
+        <el-select v-model="listQuery.channel" clearable style="width: 90px" class="filter-item">
+          <el-option v-for="item in channelOptions" :key="item.value" :label="item.label" :value="item.value" />
+        </el-select>
+        <el-select v-model="listQuery.tableType" clearable class="filter-item" style="width: 130px">
+          <el-option v-for="item in tableTypeOptions" :key="item.value" :label="item.label" :value="item.value" />
+        </el-select>
         <!-- <el-select v-model="listQuery.sort" style="width: 140px" class="filter-item">
           <el-option v-for="item in sortOptions" :key="item.key" :label="item.label" :value="item.key" />
         </el-select> -->
@@ -68,37 +54,23 @@
 
       <!-- 包裹表格的容器 -->
       <div class="table-wrapper" :class="{ 'animate': animate }">
-          <market-table
-            :channel="listQuery.channel"
-            :tableType="listQuery.tableType"
+          <!-- 根据 tableType 动态渲染表格 -->
+          <component 
+            :is="currentTable" 
+            :channel="listQuery.channel" 
             @table-update-start="handleTableUpdateStart"
             @table-update-end="handleTableUpdateEnd"
-            v-show="listQuery.tableType == 'market'"
-          ></market-table>
-          <order-table
-            :channel="listQuery.channel"
-            :tableType="listQuery.tableType"
-            @table-update-start="handleTableUpdateStart"
-            @table-update-end="handleTableUpdateEnd"
-            v-show="listQuery.tableType == 'order'"
-          ></order-table>
-          <finance-table
-            :channel="listQuery.channel"
-            :tableType="listQuery.tableType"
-            @table-update-start="handleTableUpdateStart"
-            @table-update-end="handleTableUpdateEnd"
-            v-show="listQuery.tableType == 'finance'"
-          ></finance-table>
+          />
       </div>
 
       <!-- 分页功能修改 -->
-      <!-- <pagination v-show="total > 0" :total="total" v-model:page="listQuery.page" v-model:limit="listQuery.limit" @pagination="getList" /> -->
+      <pagination v-show="total > 0" :total="total" v-model:page="listQuery.page" v-model:limit="listQuery.limit" @pagination="getList" />
     </div>
   </div>
 </template>
 
 <script setup>
-import { ref, reactive, onMounted, markRaw, watch, computed, nextTick } from 'vue'
+import { ref, reactive, onMounted, markRaw, watch, computed } from 'vue'
 import { Vue3Marquee } from 'vue3-marquee'
 import { toast } from 'vue3-toastify'
 import Pagination from '@/components/Pagination'
@@ -120,8 +92,6 @@ const ad_imgs = [
 ]
 
 // --- 表格数据 ---
-const tableWrapper = ref(null)
-let scrollTopCache = 0
 
 const tableKey = ref(0)
 const channelOptions = ref(
@@ -166,8 +136,21 @@ const router = useRouter();
 
 const animate = ref(false)
 
-function onOrderPublish() {
-  router.push('/order/seller/publish')
+const currentTable = computed(() => {
+  switch(listQuery.tableType) {
+    case 'market':
+      return MarketTable;
+    case 'order':
+      return OrderTable;
+    case 'finance':
+      return FinanceTable;
+    default:
+      return MarketTable;
+  }
+});
+
+function onTradePublish() {
+  router.push('/trade')
 };
 
 function onDeposit() {
@@ -175,31 +158,14 @@ function onDeposit() {
 };
 
 function handleTableUpdateStart() {
-  if (tableWrapper.value) {
-    scrollTopCache = tableWrapper.value.scrollTop
-  }
   animate.value = false;
 }
 
 async function handleTableUpdateEnd() {
-  nextTick(() => {
-    if (tableWrapper.value) {
-      tableWrapper.value.scrollTop = scrollTopCache
-    }
-  })
-
   // 增加一定延时，以便播放动画效果
   await new Promise(resolve => setTimeout(resolve, 300));
   animate.value = true;
 }
-
-watch(() => listQuery.tableType, async () => {
-  animate.value = false
-  await nextTick()
-  setTimeout(() => {
-    animate.value = true
-  }, 300)
-})
 
 </script>
 
@@ -358,13 +324,6 @@ watch(() => listQuery.tableType, async () => {
 .sale-icon {
   width: 40px;
   height: 40px;
-}
-
-:deep(.el-select__wrapper) {
-  background-color: transparent !important;
-  box-shadow: none !important;
-  font-size: 18px !important;
-  font-weight: bold !important;
 }
 
 </style>

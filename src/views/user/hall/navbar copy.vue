@@ -5,7 +5,7 @@
 
     <div class="right-menu">
         <div class="right-menu-item">
-          <notification-bell @toggleClick="showMessageBox" />
+          <!-- <notification-bell @toggleClick="showMessageBox" /> -->
         </div>
 
         <div class="right-menu-item">
@@ -13,9 +13,9 @@
         </div>
     </div>
 
-    <el-dialog title="消息列表" v-model="isDialogVisible" width="80%">
-      <notification-table />
-    </el-dialog>
+    <!-- <el-dialog title="消息列表" v-model="isDialogVisible">
+
+    </el-dialog> -->
   </div>
 </template>
 
@@ -23,18 +23,18 @@
 import { mapState } from 'pinia';
 import store from '@/store';
 import Hamburger from '@/components/Hamburger';
-import NotificationBell from '@/components/NotificationBell';
+// import NotificationBell from '@/components/NotificationBell';
 import AvatarWithId from '@/components/AvatarWithId';
-import NotificationTable from '@/components/NotificationTable';
+// import NotificationTable from '@/components/NotificationTable';
 import { defineComponent } from 'vue';
 
 export default defineComponent({
   name: 'Navbar',
   components: {
     Hamburger,
-    NotificationBell,
+    // NotificationBell,
     AvatarWithId,
-    NotificationTable,
+    // NotificationTable,
   },
   computed: {
     ...mapState(store.app, [
@@ -44,7 +44,7 @@ export default defineComponent({
   },
   data() {
     return {
-      isDialogVisible: false
+      isDialogVisible = false;
     }
   },
   methods: {
@@ -115,12 +115,5 @@ export default defineComponent({
       }
     }
   }
-}
-
-:deep(.el-dialog) {
-  background-image: url('@/assets/main_background.jpg'); /* 设置背景图片 */
-  background-size: cover; /* 背景图片覆盖整个区域 */
-  background-position: center; /* 背景图片居中 */
-  background-repeat: no-repeat; /* 背景图片不重复 */
 }
 </style>

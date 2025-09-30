@@ -36,8 +36,11 @@
 import { ref, onMounted, reactive, watch, defineEmits, nextTick } from 'vue';
 import { fetchList } from '@/api/article';
 import { useRouter } from 'vue-router';
+import store from '@/store';
 
 const emit = defineEmits();
+
+const userStore = store.user()
 
 const props = defineProps({
   channel: String,
@@ -122,9 +125,16 @@ onMounted(() => {
 const router = useRouter();
 
 const handleRowClick = (row) => {
-  // 根据点击的行的数据，构造目标路由地址
-  const targetPage = `/pay?tradeId=${row.id}`; // 假设根据 row.id 构造跳转路径
-  router.push(targetPage); // 跳转到 /buy 页面，带上 tradeId 参数
+  const role = userStore.user?.value?.role
+  let targetPage = ''
+  if (role === 'buyer') {
+    // 根据点击的行的数据，构造目标路由地址
+    targetPage = `/order/buyer/detail?tradeId=${row.id}`; // 假设根据 row.id 构造跳转路径
+    router.push(targetPage); // 跳转到 /buy 页面，带上 tradeId 参数
+  } else if (role === 'seller' || role === 'agent') {
+    targetPage = `/order/seller/detail?tradeId=${row.id}`; // 假设根据 row.id 构造跳转路径
+    router.push(targetPage); // 跳转到 /buy 页面，带上 tradeId 参数
+  }
 };
 </script>
 

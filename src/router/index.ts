@@ -7,7 +7,7 @@ import {
   Sell as IconWithdraw,
   SoldOut as IconDeposit,
   DArrowRight as IconTransfer,
-  Plus as IconTrade,
+  Plus as IconPublish,
   Money as IconFinance,
   SwitchButton as IconLogout,
 } from '@element-plus/icons-vue';
@@ -112,7 +112,6 @@ export const asyncRoutes:RouteRecordRaw[] = [
       hidden: true,
       roles: ['buyer']
     },
-    redirect: '/order/buyer/buy',
     children: [
       {
         path: '',
@@ -129,7 +128,6 @@ export const asyncRoutes:RouteRecordRaw[] = [
       hidden: true,
       roles: ['buyer']
     },
-    redirect: '/order/buyer/detail',
     children: [
       {
         path: '',
@@ -146,7 +144,6 @@ export const asyncRoutes:RouteRecordRaw[] = [
       hidden: true,
       roles: ['seller', 'agent']
     },
-    redirect: '/order/selller/detail',
     children: [
       {
         path: '',
@@ -211,7 +208,6 @@ export const asyncRoutes:RouteRecordRaw[] = [
       hidden: true,
       roles: ['seller', 'agent']
     },
-    redirect: '/report/index',
     children: [
       {
         path: '',
@@ -226,7 +222,6 @@ export const asyncRoutes:RouteRecordRaw[] = [
     path: '/deposit',
     name: 'Deposit',
     component: Layout,
-    redirect: '/deposit/index',
     meta: { 
       roles: ['seller', 'agent']
     },
@@ -249,7 +244,7 @@ export const asyncRoutes:RouteRecordRaw[] = [
     },
     children: [
       {
-        path: 'transfer',
+        path: '',
         component: () => import('@/views/seller/transfer/index.vue'),
         name: 'TransferIndex',
         meta: { title: '转账', icon: markRaw(IconTransfer), affix: true }
@@ -266,7 +261,7 @@ export const asyncRoutes:RouteRecordRaw[] = [
     },
     children: [
       {
-        path: 'withdraw',
+        path: '',
         component: () => import('@/views/seller/withdraw/index.vue'),
         name: 'WithdrawIndex',
         meta: { title: '提现', icon: markRaw(IconWithdraw), affix: true }
@@ -283,7 +278,7 @@ export const asyncRoutes:RouteRecordRaw[] = [
     },
     children: [
       {
-        path: 'order',
+        path: 'index',
         component: () => import('@/views/user/order/index.vue'),
         name: 'OrderIndex',
         meta: { title: '订单', icon: 'shopping', affix: true }
@@ -291,19 +286,18 @@ export const asyncRoutes:RouteRecordRaw[] = [
     ]
   },
   {
-    path: '/trade',
-    name: 'Trade',
+    path: '/order/seller/publish',
+    name: 'OrderSellerPublish',
     component: Layout,
-    redirect: '/trade/index',
     meta: { 
       roles: ['seller', 'agent']
     },
     children: [
       {
         path: '',
-        component: () => import('@/views/seller/trade/index.vue'),
-        name: 'TradeIndex',
-        meta: { title: '发布交易', icon: markRaw(IconTrade), affix: true }
+        component: () => import('@/views/seller/order/publish.vue'),
+        name: 'OrderSellerPublishIndex',
+        meta: { title: '发布交易', icon: markRaw(IconPublish), affix: true }
       }
     ]
   },
