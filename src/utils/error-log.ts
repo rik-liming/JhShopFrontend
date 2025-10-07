@@ -25,12 +25,12 @@ export function checkEnableLogs(app: App) {
       // Don't ask me why I use Vue.nextTick, it just a hack.
       // detail see https://forum.vuejs.org/t/dispatch-in-vue-config-errorhandler-has-some-problem/23500
       nextTick(() => {
-        store.errorLog().addErrorLog({
-          err,
-          instance,
-          info,
-          url: window.location.href
-        });
+        // store.errorLog().addErrorLog({
+        //   err,
+        //   instance,
+        //   info,
+        //   url: window.location.href
+        // });
         console.error(err, info);
       });
     };

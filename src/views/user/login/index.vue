@@ -264,18 +264,21 @@ export default defineComponent({
   .title-container {
     display: flex;
     flex-direction: column;
-    margin-top: 142px;
+    margin-top: 62px;
     margin-left: 80px;
 
     .welcome {
       font-size: 20px;
       color: #4b7902;
       font-weight: 400;
+      font-family: "Times New Roman", Times, serif;
     }
+
     .app-name {
       font-size: 30px;
       font-weight: 700;
       color: #000;
+      font-family: 'STXingkaiSC-Bold', 'Xingkai SC Bold', 'Xingkai SC', serif;
     }
   }
 
@@ -285,6 +288,7 @@ export default defineComponent({
     justify-content: center;
     align-items: center;
     margin-top: 10px;
+    margin-bottom: 50px;
 
     .logo {
       width: 211px;
@@ -312,6 +316,8 @@ export default defineComponent({
   .custom-form-item .el-form-item__label {
     display: block; /* Ensure label is on a new line */
     margin-bottom: 0.5rem; /* Space between label and input */
+    font-family: 'PingFangSC-Regular', 'PingFang SC' !important;
+    color: #333333 !important;
   }
 
   :deep(.el-form-item--label-right .el-form-item__label) {
@@ -333,6 +339,7 @@ export default defineComponent({
   :deep(.el-input input) {
     color: black !important;
     font-size: 16px !important;
+    --el-input-placeholder-color: #333333 !important;
   }
 
   .custom-form-item .el-input input {
@@ -342,7 +349,7 @@ export default defineComponent({
 
   :deep(.el-form-item__error) {
     padding-top: 12px !important;
-    color: red !important;
+    color: #ea5543 !important;
   }
 
   .custom-form-item .el-input {
@@ -373,16 +380,15 @@ export default defineComponent({
   }
 
   .footer {
-    // position: absolute;
-    // bottom: 10px;
-    // left: 148px;
-    // margin-top: 20px;
-
+    // position: fixed;
+    // bottom: 6px;
+    // left: calc(50% - 54px);
     font-size: 11px;
     text-align: center;
+    font-family: Arial Normal, Arial;
     color: #333333;
     opacity: 0.57;
-    margin: 80px 0 10px;
+    margin: 140px 0 10px;
   }
 
   :deep(div.el-dialog.custom-dialog) {

@@ -9,7 +9,7 @@ import '@/styles/index.scss';
 import SvgIcon from './icons'; // icon
 import * as permission from './permission'; // permission control
 import vPermission from './directive/permission/index'; // permission control
-import { checkEnableLogs } from './utils/error-log'; // error log
+// import { checkEnableLogs } from './utils/error-log'; // error log
 
 import 'vuetify/styles'
 // Vuetify 核心
@@ -39,7 +39,7 @@ const app = createApp(App);
 setupStore(app);
 app.component('svg-icon', SvgIcon);
 app.directive('permission', vPermission);
-checkEnableLogs(app);
+// checkEnableLogs(app);
 
 // 挂载 Vuetify
 app.use(vuetify)
