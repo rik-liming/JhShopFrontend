@@ -13,7 +13,7 @@
         </div>
     </div>
 
-    <el-dialog title="消息列表" v-model="isDialogVisible" width="80%">
+    <el-dialog title="系统消息" v-model="isDialogVisible" width="80%">
       <notification-table />
     </el-dialog>
   </div>

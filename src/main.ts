@@ -45,6 +45,10 @@ checkEnableLogs(app);
 app.use(vuetify)
 app.directive('waves', waves)
 
-await permission.initDynamicRoutes()
+async function initDynamicRoutes() {
+  await permission.initDynamicRoutes()
+}
+initDynamicRoutes()
+
 app.use(router);
 app.mount('#app');

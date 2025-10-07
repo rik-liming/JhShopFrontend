@@ -12,7 +12,6 @@
 </template>
 
 <script>
-import RightPanel from '@/components/RightPanel';
 import { AppMain, Settings, Sidebar, TagsView } from './components';
 import ResizeMixin from './mixin/ResizeHandler';
 import { mapState } from 'pinia';
@@ -25,7 +24,6 @@ export default defineComponent({
   name: 'LayoutIndex',
   components: {
     AppMain,
-    RightPanel,
     Settings,
     Sidebar,
     TagsView

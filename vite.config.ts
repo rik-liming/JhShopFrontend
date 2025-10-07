@@ -93,6 +93,9 @@ export default defineConfig(({ command, mode }) => {
           }
         }
       }
-    }
+    },
+    build: {
+      target: 'es2020',  // 设置构建目标为 es2020
+    },
   };
 });

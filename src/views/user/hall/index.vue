@@ -90,9 +90,6 @@
             v-show="listQuery.tableType == 'finance'"
           ></finance-table>
       </div>
-
-      <!-- 分页功能修改 -->
-      <!-- <pagination v-show="total > 0" :total="total" v-model:page="listQuery.page" v-model:limit="listQuery.limit" @pagination="getList" /> -->
     </div>
   </div>
 </template>
@@ -101,7 +98,6 @@
 import { ref, reactive, onMounted, markRaw, watch, computed, nextTick } from 'vue'
 import { Vue3Marquee } from 'vue3-marquee'
 import { toast } from 'vue3-toastify'
-import Pagination from '@/components/Pagination'
 import waves from '@/directive/waves'
 import { fetchList } from '@/api/article'
 import { parseTime } from '@/utils'
