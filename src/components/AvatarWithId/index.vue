@@ -6,13 +6,14 @@
       :class="{ 'is-rotating': isRotating }"
       :style="{ width: iconSize + 'px', height: iconSize + 'px' }"
     />
-    <span class="id-text">ID: {{ user?.value?.id }}</span>
+    <span class="id-text">ID: {{ formatIdDisplay(user?.value?.id) }}</span>
   </div>
 </template>
 
 <script setup>
 import { ref, watch } from 'vue'
 import store from '@/store'
+import { formatIdDisplay } from '@/utils/tool'
 
 // 动画状态
 const isRotating = ref(false)
