@@ -1,5 +1,4 @@
 import { defineStore } from 'pinia';
-import { login as apiLogin, logout as apiLogout, getInfo as apiGetInfo } from '@/api/user.jsb';
 import router, { resetRouter } from '@/router';
 import tagsViewStore from './tagsView';
 import permissionStore from './permission';
@@ -46,33 +45,6 @@ export default defineStore({
       }
     },
 
-    // get user info
-    async getInfo() {
-      try {
-        const response = await apiGetInfo(this.token);
-        const { data } = response;
-
-        if (!data) {
-          throw new Error('Verification failed, please Login again.');
-        }
-
-        const { roles, name, avatar, introduction } = data;
-
-        if (!roles || roles.length <= 0) {
-          throw new Error('getInfo: roles must be a non-null array!');
-        }
-
-        this.roles = roles;
-        this.name = name;
-        this.avatar = avatar;
-        this.introduction = introduction;
-
-        return data;
-      } catch (error) {
-        throw error;
-      }
-    },
-
     // user logout
     async logout() {
       try {
@@ -90,33 +62,5 @@ export default defineStore({
         throw error;
       }
     },
-
-    // remove token
-    resetToken() {
-      this.token = '';
-      this.role = '';
-    },
-
-    // dynamically modify permissions
-    async changeRoles(role: string) {
-      const token = role + '-token';
-      this.token = token;
-      // setToken(token);
-
-      const infoRes = await this.getInfo();
-      const roles = infoRes.roles || [];
-
-      resetRouter();
-
-      // generate accessible routes map based on roles
-      const accessRoutes = await permissionStore().generateRoutes(roles);
-
-      // dynamically add accessible routes
-      accessRoutes.forEach(item => {
-        router.addRoute(item);
-      });
-
-      tagsViewStore().delAllViews();
-    }
   }
 });
