@@ -54,11 +54,11 @@
         <div class="tw-flex tw-flex-col tw-w-1/3">
           <div class="tw-flex tw-justify-between ">
             <p class="tw-text-left tw-font-bold">市场汇率：</p>
-            <p class="tw-text-lg tw-text-right">7.23</p>
+            <p class="tw-text-lg tw-text-right">{{ getExchangeRate() }}</p>
           </div>
           <div class="tw-flex tw-justify-between ">
             <p class="tw-text-left tw-font-bold">刷新：</p>
-            <p class="tw-text-lg tw-text-right tw-text-red-400">3s</p>
+            <p class="tw-text-lg tw-text-right tw-text-red-400">{{ countdown }}s</p>
           </div>
         </div>
         <!-- <el-select v-model="listQuery.sort" style="width: 140px" class="filter-item">
@@ -95,7 +95,7 @@
 </template>
 
 <script setup>
-import { ref, reactive, onMounted, markRaw, watch, computed, nextTick } from 'vue'
+import { ref, reactive, onMounted, markRaw, watch, computed, nextTick, onBeforeUnmount } from 'vue'
 import { Vue3Marquee } from 'vue3-marquee'
 import { toast } from 'vue3-toastify'
 import waves from '@/directive/waves'
@@ -195,6 +195,58 @@ watch(() => listQuery.tableType, async () => {
   setTimeout(() => {
     animate.value = true
   }, 300)
+})
+
+function getExchangeRate() {
+  const configStore = store.config();
+  console.log(configStore)
+  if (!configStore || !configStore.config) {
+    return 0.00;
+  }
+  let exchangeRate = 0.00;
+  switch (listQuery.channel) {
+    case 'alipay':
+      exchangeRate = configStore.config.value.exchange_rate_alipay;
+      break;
+    case 'wechat':
+      exchangeRate = configStore.config.value.exchange_rate_wechat;
+      break;
+    case 'bank':
+      exchangeRate = configStore.config.value.exchange_rate_bank;
+      break;
+  }
+  return exchangeRate;
+}
+
+let countdown = ref(10)
+let timer = null
+
+// 启动倒计时
+const startCountdown = () => {
+  if (timer) {
+    clearInterval(timer)
+  }
+  countdown.value = 10
+  timer = setInterval(() => {
+    if (countdown.value > 0) {
+      countdown.value -= 1
+    } else {
+      // 倒计时到0时重新开始
+      countdown.value = 10
+    }
+  }, 1000)
+}
+
+// 页面加载时开始倒计时
+onMounted(() => {
+  startCountdown()
+})
+
+// 页面卸载前清理定时器
+onBeforeUnmount(() => {
+  if (timer) {
+    clearInterval(timer)
+  }
 })
 
 </script>

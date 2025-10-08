@@ -211,6 +211,7 @@ export default defineComponent({
     },
     async submitOtp() {
       const userStore = store.user()
+      const configStore = store.config()
       try {
         const response = await userStore.verifyOtp(this.loginForm.email, this.otp)
         if (response.data.code == 10000) {
@@ -218,10 +219,13 @@ export default defineComponent({
 
           // 登录成功后，同步个人账户信息
           await userStore.getUserInfo()
+          // 同步全局配置
+          await configStore.getConfig(userStore.loginToken)
         } else {
           ElMessage.error(response.data.msg);
         }
       } catch (e) {
+        console.log(e)
         ElMessage.error("登录失败，请重试")
       }
     },
