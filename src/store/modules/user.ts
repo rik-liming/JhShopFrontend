@@ -3,6 +3,7 @@ import router, { resetRouter } from '@/router';
 import tagsViewStore from './tagsView';
 import permissionStore from './permission';
 import * as AuthApi from '@/api/auth'
+import * as UserApi from '@/api/user'
 import { useStorage } from '@vueuse/core'
 
 export interface IUser {
@@ -14,12 +15,18 @@ export interface IUser {
   role: string
 }
 
+export interface IUserAccount {
+  totalBalance: number
+  availableBalance: number
+}
+
 export default defineStore({
   id: 'user',
   state: () => ({
     // 分开存储
     loginToken: useStorage('loginToken', ''),
     user: useStorage<IUser>('user', {} as IUser),
+    account: useStorage<IUserAccount>('account', {} as IUserAccount),
   }),
   actions: {
     // user verify otp and login
@@ -37,6 +44,24 @@ export default defineStore({
             avatar: user.avatar,
             email: user.email,
             role: user.role,
+          }
+        }
+        return response
+      } catch (error) {
+        throw error;
+      }
+    },
+
+    // get user info
+    async getUserInfo() {
+      try {
+        const response = await UserApi.getUserInfo(this.loginToken)
+        if (response.data.code == 10000) {
+          const { account, user } = response.data.data;
+
+          this.account.value = {
+            totalBalance: account.total_balance,
+            availableBalance: account.available_balance
           }
         }
         return response

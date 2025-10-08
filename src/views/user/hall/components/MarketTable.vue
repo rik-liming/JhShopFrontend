@@ -11,17 +11,17 @@
   >
     <el-table-column label="商户" width="'30%'" align="center">
       <template v-slot="{ row }">
-        <span>{{ row.author }}</span>
+        <span>{{ formatIdDisplay(row.user_id) }}</span>
       </template>
     </el-table-column>
     <el-table-column label="售卖数量" width="'40%'" align="center">
       <template v-slot="{ row }">
-        <span>{{ row.author }}</span>
+        <span>{{ row.remain_amount }}</span>
       </template>
     </el-table-column>
     <el-table-column label="等值人民币" width="'30%'" align="center">
       <template v-slot="{ row }">
-        <span>{{ row.author }}</span>
+        <span>{{ row.amount }}</span>
       </template>
     </el-table-column>
   </el-table>
@@ -29,10 +29,10 @@
 
 <script setup>
 import { ref, onMounted, reactive, watch, defineEmits, nextTick } from 'vue';
-import { fetchList } from '@/api/article';
 import { useRouter } from 'vue-router';
 import store from '@/store';
-
+import * as OrderApi from '@/api/order'
+import { formatIdDisplay } from '@/utils/tool'
 const emit = defineEmits();
 
 const props = defineProps({
@@ -58,16 +58,17 @@ let isFirstCall = true;
 const getList = async () => {
   try {
     emit('table-update-start');
-    if (listQuery.channel == 'ali_pay') {
-        listQuery.page = 1
-    } else if (listQuery.channel == 'bank_pay') {
-        listQuery.page = 2
-    } else if (listQuery.channel == 'wechat_pay') {
-        listQuery.page = 3
+    
+    const response = await OrderApi.getOrderListing(userStore.loginToken, {
+      page: listQuery.page,
+      pagesize: listQuery.limit,
+      channel: listQuery.channel
+    })
+    if (response.data.code === 10000) {
+      list.value = response.data.data.orderListings;
     }
-    const response = await fetchList(listQuery);
     emit('table-update-end');
-    list.value = response.data.items;
+    
   } catch (error) {
     console.error('获取数据失败', error);
   }

@@ -1,5 +1,4 @@
 import requestBase from './base';
-import { pick } from 'lodash';
 
 // request register
 export async function register(data) {

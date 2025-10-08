@@ -215,6 +215,9 @@ export default defineComponent({
         const response = await userStore.verifyOtp(this.loginForm.email, this.otp)
         if (response.data.code == 10000) {
           this.$router.push({ path: this.redirect || '/', query: this.otherQuery })
+
+          // 登录成功后，同步个人账户信息
+          await userStore.getUserInfo()
         } else {
           ElMessage.error(response.data.msg);
         }

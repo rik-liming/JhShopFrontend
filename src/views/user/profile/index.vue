@@ -16,7 +16,7 @@
       </div>
       
 
-      <!-- 标题 & 汇率 -->
+      <!-- 标题 -->
       <h2 class="tw-text-lg tw-font-semibold">会员信息</h2>
       <hr class="tw-my-3 tw-border-gray-300" />
 
@@ -24,24 +24,27 @@
       <div class="tw-mt-8 tw-mb-8">
         <div class="tw-flex tw-justify-between tw-space-x-4">
           <p class="tw-text-left">会员号：</p>
-          <p class="tw-font-semibold tw-text-right">JH001</p>
+          <p class="tw-font-semibold tw-text-right">{{ formatIdDisplay(userStore?.user?.value?.id) }}</p>
         </div>
         <div class="tw-flex tw-justify-between tw-space-x-4">
           <p class="tw-text-left">注册邮箱：</p>
-          <p class="tw-font-semibold tw-text-right">23sdfs@test.com</p>
+          <p class="tw-font-semibold tw-text-right">{{ userStore?.user?.value?.email }}</p>
         </div>
       </div>
 
       <div class="tw-mt-8 tw-mb-8">
         <div class="tw-flex tw-justify-between tw-space-x-4">
           <p class="tw-text-left">角色：</p>
-          <p class="tw-font-semibold tw-text-right">商户</p>
+          <p class="tw-font-semibold tw-text-right">{{ formatRole(userStore?.user?.value?.role) }}</p>
         </div>
-        <div class="tw-flex tw-justify-between tw-space-x-4">
+        <div class="tw-flex tw-justify-between tw-space-x-4" v-if="userStore?.user?.value?.role === 'agent'">
           <p class="tw-text-left">邀请码：</p>
           <p class="tw-font-semibold tw-text-right">4474544</p>
         </div>
-        <div class="tw-flex tw-justify-between tw-space-x-4">
+        <div 
+          class="tw-flex tw-justify-between tw-space-x-4" 
+          v-if="userStore?.user?.value?.role === 'agent' 
+          || userStore?.user?.value?.role === 'seller'">
           <p class="tw-text-left">团队报表：</p>
           <router-link to="/report" class="tw-text-md">点击查看详情 🔍</router-link>
         </div>
@@ -65,11 +68,11 @@
       <div class="tw-mt-8 tw-mb-8">
         <div class="tw-flex tw-justify-between tw-space-x-4">
           <p class="tw-text-left">总资产：</p>
-          <p class="tw-font-semibold tw-text-right">1520 USDT</p>
+          <p class="tw-font-semibold tw-text-right">{{ userStore?.account?.value?.totalBalance }} USDT</p>
         </div>
         <div class="tw-flex tw-justify-between tw-space-x-4">
           <p class="tw-text-left">可用资产：</p>
-          <p class="tw-font-semibold tw-text-right">1000 USDT</p>
+          <p class="tw-font-semibold tw-text-right">{{ userStore?.account?.value?.availableBalance }} USDT</p>
         </div>
       </div>
 
@@ -103,16 +106,14 @@ import { ref } from 'vue'
 import Hamburger from '@/components/Hamburger';
 import NotificationBell from '@/components/NotificationBell';
 import store from '@/store';
+import { formatIdDisplay, formatRole } from '@/utils/tool'
 
 const appStore = store.app()
+const userStore = store.user()
 const router = useRouter()
 
 const handleClose = () => {
   router.push('/')
-}
-
-const handleTransfer = () => {
-  router.push('/transfer/detail')
 }
 
 const toggleSidebar = () => {
@@ -126,6 +127,8 @@ const profileIconClick = () => {
 const showMessageBox = () => {
   alert("show message");
 }
+
+
 
 </script>
 

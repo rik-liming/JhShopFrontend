@@ -124,15 +124,15 @@ const channelOptions = ref(
   [
     {
       'label': '支付宝',
-      'value': 'ali_pay'
+      'value': 'alipay'
     },
     {
       'label': '银行卡',
-      'value': 'bank_pay'
+      'value': 'bank'
     },
     {
       'label': '微信',
-      'value': 'wechat_pay'
+      'value': 'wechat'
     },
   ]
 )
@@ -154,7 +154,7 @@ const tableTypeOptions = ref(
 )
 
 const listQuery = reactive({
-  channel: 'ali_pay',
+  channel: 'alipay',
   tableType: 'market',
 })
 

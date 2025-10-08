@@ -24,60 +24,45 @@
       <div class="tw-mb-6 tw-mt-8">
         <div class="tw-flex tw-justify-between tw-space-x-4">
           <p class="tw-text-left">商户号：</p>
-          <p class="tw-font-semibold tw-text-right">JH001</p>
+          <p class="tw-font-semibold tw-text-right">{{ formatIdDisplay(userStore.user?.value?.id) }}</p>
         </div>
         <div class="tw-flex tw-justify-between tw-space-x-4">
           <p class="tw-text-left">总资产：</p>
-          <p class="tw-font-semibold tw-text-right">1650 USDT</p>
+          <p class="tw-font-semibold tw-text-right">{{ userStore?.account?.value?.totalBalance }} USDT</p>
         </div>
         <div class="tw-flex tw-justify-between tw-space-x-4">
           <p class="tw-text-left">可用资产：</p>
-          <p class="tw-font-semibold tw-text-right">1250 USDT</p>
+          <p class="tw-font-semibold tw-text-right">{{ userStore?.account?.value?.availableBalance }} USDT</p>
         </div>
       </div>
 
-      <!-- 出售数量 -->
-      <div class="tw-mt-6 tw-text-left">
-        <label class="tw-block tw-text-lg tw-mb-1">出售数量（USDT）：</label>
-        <input
-          type="number"
-          value="350"
-          class="tw-w-full tw-border tw-border-gray tw-border-solid tw-rounded-md tw-px-3 tw-py-2 tw-text-red-500 focus:tw-outline-none focus:tw-ring-2 focus:tw-ring-blue-400"
-        />
-      </div>
+      <!-- 使用 el-form 和 el-form-item -->
+      <el-form :model="form" ref="formRef" label-width="100px" class="tw-mt-6">
+        
+        <!-- 出售数量 -->
+        <el-form-item label="出售数量（USDT）" prop="amount" :rules="amountRules">
+          <el-input-number v-model="form.amount" :min="1" :max="Math.floor(userStore?.account?.value?.availableBalance)" label="出售数量" class="tw-w-full" />
+        </el-form-item>
 
-      <!-- 最低购买金额 -->
-      <div class="tw-mt-4 tw-text-left">
-        <label class="tw-block tw-text-lg tw-mb-1">最低购买金额</label>
-        <div class="tw-relative">
-          <!-- 包裹 select 的 div -->
-          <select class="tw-w-1/2 tw-border tw-rounded-md tw-px-3 tw-py-2 tw-pl-3">
-            <option class="">0 USDT</option>
-            <option class="">100 USDT</option>
-            <option class="">500 USDT</option>
-          </select>
-          <!-- 自定义箭头 -->
-          <div class="tw-absolute tw-left-1/3 tw-top-2 tw-transform tw--translate-y-1/2 tw-text-black select-arrow">
-            ▼
-          </div>
-        </div>
-      </div>
+        <!-- 最低购买金额 -->
+        <el-form-item label="最低购买金额" prop="minAmount" :rules="minAmountRules">
+          <el-select v-model="form.minAmount" placeholder="选择最低购买金额" class="tw-w-1/2">
+            <el-option label="0 USDT" value="0" />
+            <el-option label="100 USDT" value="100" />
+            <el-option label="500 USDT" value="500" />
+          </el-select>
+        </el-form-item>
 
-      <!-- 卖场选择 -->
-      <div class="tw-mt-4 tw-text-left">
-        <label class="tw-block tw-text-sm tw-mb-1">卖场选择</label>
-        <div class="tw-relative">
-            <select class="tw-w-1/2 tw-border tw-rounded-md tw-px-3 tw-py-2">
-            <option>支付宝</option>
-            <option>微信</option>
-            <option>银行卡</option>
-            </select>
-            <!-- 自定义箭头 -->
-            <div class="tw-absolute tw-left-1/3 tw-top-2 tw-transform tw--translate-y-1/2 tw-text-black select-arrow">
-            ▼
-            </div>
-        </div>
-      </div>
+        <!-- 卖场选择 -->
+        <el-form-item label="卖场选择" prop="paymentMethod" :rules="paymentMethodRules">
+          <el-select v-model="form.paymentMethod" placeholder="选择支付方式" class="tw-w-1/2">
+            <el-option label="支付宝" value="alipay" />
+            <el-option label="微信" value="wechat" />
+            <el-option label="银行卡" value="bank" />
+          </el-select>
+        </el-form-item>
+
+      </el-form>
 
       <!-- 按钮 -->
       <button
@@ -100,18 +85,99 @@
 </template>
 
 <script setup>
+import { ref } from 'vue';
 import { useRouter } from 'vue-router';
+import store from '@/store';
+import axios from 'axios';
+import { formatIdDisplay } from '@/utils/tool';
+import { ElMessage } from 'element-plus';
+import * as OrderApi from '@/api/order';
 
-const router = useRouter()
+// 支付方式选择项
+const paymentMethodOptions = [
+  { key: 'alipay', label: '支付宝' },
+  { key: 'wechat', label: '微信' },
+  { key: 'bank', label: '银行卡' },
+];
 
+const formRef = ref(null);
+// 表单数据
+const form = ref({
+  amount: 350, // 出售数量
+  minAmount: 0, // 最低购买金额
+  paymentMethod: 'alipay', // 支付方式
+});
+
+// 表单验证规则
+const amountRules = [
+  { required: true, message: '请输入出售数量', trigger: 'blur' },
+  { type: 'number', min: 1, message: '数量必须大于0', trigger: 'blur' },
+  {
+    validator: (rule, value, callback) => {
+      if (value > userStore?.account?.value?.availableBalance) {
+        callback(new Error(`数量不能大于可用余额 ${userStore?.account?.value?.availableBalance} USDT`));
+      } else {
+        callback();
+      }
+    },
+    trigger: 'blur',
+  },
+];
+const minAmountRules = [
+  { required: true, message: '请选择最低购买金额', trigger: 'change' },
+  {
+    validator: (rule, value, callback) => {
+      if (value > userStore?.account?.value?.availableBalance) {
+        callback(new Error(`数量不能大于可用余额 ${userStore?.account?.value?.availableBalance} USDT`));
+      } else {
+        callback();
+      }
+    },
+    trigger: 'blur',
+  },
+];
+const paymentMethodRules = [
+  { required: true, message: '请选择支付方式', trigger: 'change' },
+];
+
+const router = useRouter();
+const userStore = store.user();
+
+// 关闭按钮操作
 const handleClose = () => {
-  router.push('/')
-}
+  router.push('/');
+};
 
-const handlePublish = () => {
-  alert('publish');
-  router.push('/')
-}
+// 发布按钮操作
+const handlePublish = async () => {
+  try {
+    // 表单验证
+    await formRef.value.validate();
+
+    // 构建请求数据
+    const payload = {
+      amount: form.value.amount,
+      min_sale_amount: form.value.minAmount,
+      payment_method: form.value.paymentMethod,
+    };
+
+    // 发送请求到 /api/publish
+    const response = await OrderApi.createOrderListing(userStore.loginToken, payload)
+
+    if (response.data.code === 10000) {
+      ElMessage.success('交易发布成功');
+      await userStore.getUserInfo()
+      setTimeout(() => {
+        router.push('/'); // 发布成功后跳转  
+      }, 3000);
+    } else {
+      ElMessage.error(response.data.msg || '发布失败');
+    }
+  } catch (error) {
+    console.log(error)
+    ElMessage.error('发布失败，请重试');
+  }
+};
 </script>
 
 <style scoped lang="scss">
