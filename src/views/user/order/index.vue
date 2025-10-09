@@ -11,8 +11,6 @@
         </div>
       </div>
       
-
-      <!-- 标题 & 汇率 -->
       <h2 class="tw-text-lg tw-font-semibold tw-mb-10">订单</h2>
 
       <div class="tw-mb-20">
@@ -24,20 +22,26 @@
           class="main-table"
           key="notificationTable"
           style="height: 600px; overflow: auto;"
+          @row-click="handleRowClick"
         >
-          <el-table-column label="日期" align="center">
+          <el-table-column label="订单编号" align="center">
             <template v-slot="{ row }">
-              <span>{{ `20250706_0074` }}</span>
+              <span :class="getStatusClass(row.status)">{{ formatOrderIdDisplay(row.id, row.created_at) }}</span>
             </template>
           </el-table-column>
-          <el-table-column label="类型" align="center">
+          <el-table-column label="金额" align="center">
             <template v-slot="{ row }">
-              <span>{{ row.author }}</span>
+              <span :class="getStatusClass(row.status)">{{ row.amount }} USTD</span>
+            </template>
+          </el-table-column>
+          <el-table-column label="市场" align="center">
+            <template v-slot="{ row }">
+              <span :class="getStatusClass(row.status)">{{ formatPaymentMethod(row.payment_method) }}</span>
             </template>
           </el-table-column>
           <el-table-column label="状态" align="center" min-width="90">
             <template v-slot="{ row }">
-              <span>{{ row.author }}</span>
+              <span :class="getStatusClass(row.status)">{{ payStatusMap[row.status] }}</span>
             </template>
           </el-table-column>
         </el-table>
@@ -53,16 +57,23 @@
 
 import { useRouter } from 'vue-router';
 import { ref, onMounted, reactive, watch, defineEmits, nextTick } from 'vue';
-import { fetchList } from '@/api/article';
+import * as OrderApi from '@/api/order'
+import store from '@/store'
+import { formatIdDisplay, formatOrderIdDisplay, formatPaymentMethod } from '@/utils/tool'
 
+const payStatusMap = {
+  0: '待买家付款',
+  1: '待卖家确认',
+  2: '已确认',
+  3: '已完成',
+  '-1': '超时未支付',
+}
+
+const userStore = store.user()
 const router = useRouter()
 
 const handleClose = () => {
   router.push('/')
-}
-
-const handleTransfer = () => {
-  router.push('/transfer/detail')
 }
 
 // 定义数据
@@ -75,9 +86,25 @@ const listQuery = reactive({
 // 获取数据的逻辑
 const getList = async () => {
   try {
-    listQuery.page = 1
-    const response = await fetchList(listQuery);
-    list.value = response.data.items;
+    let response = null
+    if (userStore.user?.value?.role === 'buyer') {
+      response = await OrderApi.getMyBuyerOrder(userStore.loginToken, {
+        page: listQuery.page,
+        pagesize: listQuery.limit,
+      })
+      if (response.data.code === 10000) {
+        list.value = response.data.data.orders;
+      }
+    } else if (userStore.user?.value?.role === 'seller' 
+    || userStore.user?.value?.role === 'agent' ) {
+      response = await OrderApi.getMySellerOrder(userStore.loginToken, {
+        page: listQuery.page,
+        pagesize: listQuery.limit,
+      })
+      if (response.data.code === 10000) {
+        list.value = response.data.data.orders;
+      }
+    }
   } catch (error) {
     console.error('获取数据失败', error);
   }
@@ -91,14 +118,37 @@ onMounted(() => {
   });
 });
 
+const handleRowClick = (row) => {
+  const role = userStore.user?.value?.role
+  let targetPage = ''
+  if (role === 'buyer') {
+    // 根据点击的行的数据，构造目标路由地址
+    targetPage = `/order/buyer/detail?orderId=${row.id}`; // 假设根据 row.id 构造跳转路径
+    router.push(targetPage); // 跳转到 /buy 页面，带上 tradeId 参数
+  } else if (role === 'seller' || role === 'agent') {
+    targetPage = `/order/seller/detail?orderId=${row.id}`; // 假设根据 row.id 构造跳转路径
+    router.push(targetPage); // 跳转到 /buy 页面，带上 tradeId 参数
+  }
+};
+
+const getStatusClass = (status) => {
+  switch (status) {
+    case 0:
+      return 'waitBuyerPay';
+    case 1:
+      return 'buyerConfirm';
+    case 2:
+      return 'sellerConfirm';
+    case 3:
+      return 'complete';
+    default:
+      return '';
+  }
+}
+
 </script>
 
 <style scoped lang="scss">
-.transfer-text {
-    text-decoration: underline rgb(215, 215, 215);
-    text-decoration-thickness: 3px; /* 增加下划线的粗细 */
-    text-underline-offset: 5px; /* 增加下划线与文字的距离 */
-}
 
 .main-table {
   width: 100%;
@@ -125,5 +175,21 @@ onMounted(() => {
 :deep(.el-table__body tr) {
   background-color: transparent !important;
   border: 1px solid #7f7f7f !important;
+}
+
+:deep(.el-table__body tr .waitBuyerPay) {
+  color: red;
+}
+
+:deep(.el-table__body tr .buyerConfirm) {
+  color: yellow;
+}
+
+:deep(.el-table__body tr .sellerConfirm) {
+  color: green;
+}
+
+:deep(.el-table__body tr .complete) {
+  color: blue;
 }
 </style>

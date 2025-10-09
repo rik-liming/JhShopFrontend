@@ -11,22 +11,22 @@
     >
         <el-table-column label="订单编号" width="'40%'" align="center">
             <template v-slot="{row}">
-            <span>{{ formatOrderIdDisplay(row.id, row.created_at) }}</span>
+            <span :class="getStatusClass(row.status)">{{ formatOrderIdDisplay(row.id, row.created_at) }}</span>
             </template>
         </el-table-column>
         <el-table-column label="金额 USDT" width="'20%'" align="center">
             <template v-slot="{row}">
-            <span>{{ row.amount }}</span>
+            <span :class="getStatusClass(row.status)">{{ row.amount }}</span>
             </template>
         </el-table-column>
         <el-table-column label="市场" width="'20%'" align="center">
             <template v-slot="{row}">
-            <span>{{ formatPaymentMethod(row.payment_method) }}</span>
+            <span :class="getStatusClass(row.status)">{{ formatPaymentMethod(row.payment_method) }}</span>
             </template>
         </el-table-column>
         <el-table-column label="状态" width="'20%'" align="center">
             <template v-slot="{row}">
-            <span>{{ payStatusMap[row.status] }}</span>
+            <span :class="getStatusClass(row.status)">{{ payStatusMap[row.status] }}</span>
             </template>
         </el-table-column>
     </el-table>
@@ -159,6 +159,21 @@ const handleRowClick = (row) => {
     router.push(targetPage); // 跳转到 /buy 页面，带上 tradeId 参数
   }
 };
+
+const getStatusClass = (status) => {
+  switch (status) {
+    case 0:
+      return 'waitBuyerPay';
+    case 1:
+      return 'buyerConfirm';
+    case 2:
+      return 'sellerConfirm';
+    case 3:
+      return 'complete';
+    default:
+      return '';
+  }
+}
 </script>
 
 <style scoped lang="scss">
@@ -188,4 +203,21 @@ const handleRowClick = (row) => {
   background-color: transparent !important;
   border: 1px solid #7f7f7f !important;
 }
+
+:deep(.el-table__body tr .waitBuyerPay) {
+  color: red;
+}
+
+:deep(.el-table__body tr .buyerConfirm) {
+  color: yellow;
+}
+
+:deep(.el-table__body tr .sellerConfirm) {
+  color: green;
+}
+
+:deep(.el-table__body tr .complete) {
+  color: blue;
+}
+
 </style>

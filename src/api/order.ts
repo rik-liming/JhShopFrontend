@@ -49,7 +49,10 @@ export async function getMyBuyerOrder(loginToken, queryParams) {
     const { channel, page, pagesize } = queryParams;
 
     // 构建请求的基础 URL
-    let requestUrl = `/api/order/buyer/my?page=${page}&pagesize=${pagesize}&channel=${channel}`;
+    let requestUrl = `/api/order/buyer/my?page=${page}&pagesize=${pagesize}`;
+    if (channel) {
+        requestUrl += `&channel=${channel}`
+    }
 
     const response = await requestBase.get(requestUrl, {
         headers: {
@@ -64,9 +67,36 @@ export async function getMySellerOrder(loginToken, queryParams) {
     const { channel, page, pagesize } = queryParams;
 
     // 构建请求的基础 URL
-    let requestUrl = `/api/order/seller/my?page=${page}&pagesize=${pagesize}&channel=${channel}`;
+    let requestUrl = `/api/order/seller/my?page=${page}&pagesize=${pagesize}`;
+    if (channel) {
+        requestUrl += `&channel=${channel}`
+    }
 
     const response = await requestBase.get(requestUrl, {
+        headers: {
+            Authorization: `Bearer ${loginToken}`,
+        }
+    })
+    return response
+}
+
+// request order detail
+export async function getOrderDetail(loginToken, orderId) {
+
+    // 构建请求的基础 URL
+    let requestUrl = `/api/order/detail?orderId=${orderId}`;
+
+    const response = await requestBase.get(requestUrl, {
+        headers: {
+            Authorization: `Bearer ${loginToken}`,
+        }
+    })
+    return response
+}
+
+// request order confirm
+export async function orderConfirm(loginToken, data) {
+    const response = await requestBase.post('/api/order/confirm', data, {
         headers: {
             Authorization: `Bearer ${loginToken}`,
         }
