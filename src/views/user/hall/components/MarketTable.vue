@@ -21,7 +21,7 @@
     </el-table-column>
     <el-table-column label="等值人民币" width="'30%'" align="center">
       <template v-slot="{ row }">
-        <span>{{ row.amount }}</span>
+        <span>{{ getExchangeCNY(row.amount) }}</span>
       </template>
     </el-table-column>
   </el-table>
@@ -33,6 +33,8 @@ import { useRouter } from 'vue-router';
 import store from '@/store';
 import * as OrderApi from '@/api/order'
 import { formatIdDisplay } from '@/utils/tool'
+import Decimal from 'decimal.js'
+
 const emit = defineEmits();
 
 const props = defineProps({
@@ -41,6 +43,7 @@ const props = defineProps({
 });
 
 const userStore = store.user()
+const configStore = store.config()
 
 // 定义数据
 const list = ref([]);
@@ -59,7 +62,7 @@ const getList = async () => {
   try {
     emit('table-update-start');
     
-    const response = await OrderApi.getOrderListing(userStore.loginToken, {
+    const response = await OrderApi.getOrderListingByPage(userStore.loginToken, {
       page: listQuery.page,
       pagesize: listQuery.limit,
       channel: listQuery.channel
@@ -122,10 +125,40 @@ const handleRowClick = (row) => {
   const role = userStore.user?.value?.role
   if (role === 'buyer') {
     // 根据点击的行的数据，构造目标路由地址
-    const targetPage = `/order/buyer/buy?tradeId=${row.id}`; // 假设根据 row.id 构造跳转路径
+    const targetPage = `/order/buyer/buy?orderListingId=${row.id}`; // 假设根据 row.id 构造跳转路径
     router.push(targetPage); // 跳转到 /buy 页面，带上 tradeId 参数
   }
 };
+
+function getExchangeRate() {
+  const configStore = store.config();
+  console.log(configStore)
+  if (!configStore || !configStore.config) {
+    return 0.00;
+  }
+  let exchangeRate = 0.00;
+  switch (listQuery.channel) {
+    case 'alipay':
+      exchangeRate = configStore.config.value.exchange_rate_alipay;
+      break;
+    case 'wechat':
+      exchangeRate = configStore.config.value.exchange_rate_wechat;
+      break;
+    case 'bank':
+      exchangeRate = configStore.config.value.exchange_rate_bank;
+      break;
+  }
+  return exchangeRate;
+}
+
+const getExchangeCNY = (amount) => {
+  const num1 = new Decimal(amount);  // 第一个数
+  const num2 = new Decimal(getExchangeRate());    // 第二个数
+
+  // 相乘并保留 2 位小数
+  const result = num1.mul(num2).toFixed(2, Decimal.ROUND_UP);
+  return result
+}
 </script>
 
 <style scoped lang="scss">

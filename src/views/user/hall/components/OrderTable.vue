@@ -11,22 +11,22 @@
     >
         <el-table-column label="订单编号" width="'40%'" align="center">
             <template v-slot="{row}">
-            <span>{{ row.author }}</span>
+            <span>{{ formatOrderIdDisplay(row.id, row.created_at) }}</span>
             </template>
         </el-table-column>
-        <el-table-column label="金额" width="'20%'" align="center">
+        <el-table-column label="金额 USDT" width="'20%'" align="center">
             <template v-slot="{row}">
-            <span>{{ row.author }}</span>
+            <span>{{ row.amount }}</span>
             </template>
         </el-table-column>
         <el-table-column label="市场" width="'20%'" align="center">
             <template v-slot="{row}">
-            <span>{{ row.author }}</span>
+            <span>{{ formatPaymentMethod(row.payment_method) }}</span>
             </template>
         </el-table-column>
         <el-table-column label="状态" width="'20%'" align="center">
             <template v-slot="{row}">
-            <span>{{ row.author }}</span>
+            <span>{{ payStatusMap[row.status] }}</span>
             </template>
         </el-table-column>
     </el-table>
@@ -34,9 +34,18 @@
 
 <script setup>
 import { ref, onMounted, reactive, watch, defineEmits, nextTick } from 'vue';
-import { fetchList } from '@/api/article';
 import { useRouter } from 'vue-router';
 import store from '@/store';
+import * as OrderApi from '@/api/order'
+import { formatIdDisplay, formatOrderIdDisplay, formatPaymentMethod } from '@/utils/tool'
+
+const payStatusMap = {
+  0: '待付款',
+  1: '待卖家确认',
+  2: '已确认',
+  3: '已完成',
+  '-1': '超时未支付',
+}
 
 const emit = defineEmits();
 
@@ -65,16 +74,30 @@ let isFirstCall = true;
 const getList = async () => {
   try {
     emit('table-update-start');
-    if (listQuery.channel == 'ali_pay') {
-        listQuery.page = 1
-    } else if (listQuery.channel == 'bank_pay') {
-        listQuery.page = 2
-    } else if (listQuery.channel == 'wechat_pay') {
-        listQuery.page = 3
+    
+    let response = null
+    if (userStore.user?.value?.role === 'buyer') {
+      response = await OrderApi.getMyBuyerOrder(userStore.loginToken, {
+        page: listQuery.page,
+        pagesize: listQuery.limit,
+        channel: listQuery.channel
+      })
+      if (response.data.code === 10000) {
+        list.value = response.data.data.orders;
+      }
+    } else if (userStore.user?.value?.role === 'seller' 
+    || userStore.user?.value?.role === 'agent' ) {
+      response = await OrderApi.getMySellerOrder(userStore.loginToken, {
+        page: listQuery.page,
+        pagesize: listQuery.limit,
+        channel: listQuery.channel
+      })
+      if (response.data.code === 10000) {
+        list.value = response.data.data.orders;
+      }
     }
-    const response = await fetchList(listQuery);
+
     emit('table-update-end');
-    list.value = response.data.items;
   } catch (error) {
     console.error('获取数据失败', error);
   }
@@ -129,10 +152,10 @@ const handleRowClick = (row) => {
   let targetPage = ''
   if (role === 'buyer') {
     // 根据点击的行的数据，构造目标路由地址
-    targetPage = `/order/buyer/detail?tradeId=${row.id}`; // 假设根据 row.id 构造跳转路径
+    targetPage = `/order/buyer/detail?orderId=${row.id}`; // 假设根据 row.id 构造跳转路径
     router.push(targetPage); // 跳转到 /buy 页面，带上 tradeId 参数
   } else if (role === 'seller' || role === 'agent') {
-    targetPage = `/order/seller/detail?tradeId=${row.id}`; // 假设根据 row.id 构造跳转路径
+    targetPage = `/order/seller/detail?orderId=${row.id}`; // 假设根据 row.id 构造跳转路径
     router.push(targetPage); // 跳转到 /buy 页面，带上 tradeId 参数
   }
 };
