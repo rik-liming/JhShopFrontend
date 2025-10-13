@@ -65,7 +65,8 @@
         </div>
       </div>
 
-      <div class="tw-mt-8 tw-mb-8">
+      <div class="tw-mt-8 tw-mb-8" v-if="userStore?.user?.value?.role === 'agent' 
+          || userStore?.user?.value?.role === 'seller'">
         <div class="tw-flex tw-justify-between tw-space-x-4">
           <p class="tw-text-left">总资产：</p>
           <p class="tw-font-semibold tw-text-right">{{ userStore?.account?.value?.totalBalance }} USDT</p>
@@ -77,7 +78,8 @@
       </div>
 
       <!-- 收款卡管理 -->
-      <div class="tw-mt-8 tw-mb-8">
+      <div class="tw-mt-8 tw-mb-8" v-if="userStore?.user?.value?.role === 'agent' 
+          || userStore?.user?.value?.role === 'seller'">
         <div class="tw-flex tw-justify-between tw-space-x-4">
           <p class="tw-text-left">收款卡管理</p>
         </div>

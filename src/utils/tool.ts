@@ -1,5 +1,16 @@
 export function formatIdDisplay(id) {
+    if (!id) {
+        return ''
+    }
     return `JH${id.toString().padStart(4, '0')}`;
+}
+
+export function exactIdFromDisplay(displayId) {
+    const match = displayId.match(/^JH(\d+)$/);
+    if (match) {
+        return parseInt(match[1], 10);
+    }
+    return 0;
 }
 
 export function formatRole(role) {

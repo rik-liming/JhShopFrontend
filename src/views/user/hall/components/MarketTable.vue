@@ -132,7 +132,6 @@ const handleRowClick = (row) => {
 
 function getExchangeRate() {
   const configStore = store.config();
-  console.log(configStore)
   if (!configStore || !configStore.config) {
     return 0.00;
   }

@@ -5,7 +5,7 @@ import {
   Help as IconHelp, 
   HomeFilled as IconHome,
   Sell as IconWithdraw,
-  SoldOut as IconDeposit,
+  SoldOut as IconRecharge,
   DArrowRight as IconTransfer,
   Plus as IconPublish,
   Money as IconFinance,
@@ -43,6 +43,21 @@ export const constantRoutes:RouteRecordRaw[] = [
     name: 'Login',
     component: () => import('@/views/user/login/index.vue'),
     meta: { hidden: true }
+  },
+  {
+    path: '/forcelogout',
+    name: 'ForceLogout',
+    component: () => import('@/views/user/login/index.vue'),
+    meta: { hidden: true },
+    beforeEnter: async(to, from, next) => {
+      try {
+        await store.user().logout();
+        next('/login'); // 跳转到登录页面
+      } catch (error) {
+        console.error('Logout failed:', error);
+        next('/login'); // 如果注销失败，也跳转到登录页面
+      }
+    } 
   },
   {
     path: '/register',
@@ -147,8 +162,8 @@ export const asyncRoutes:RouteRecordRaw[] = [
     ]
   },
   {
-    path: '/deposit/detail',
-    name: 'DepositDetail',
+    path: '/recharge/detail',
+    name: 'RechargeDetail',
     component: Layout,
     meta: { 
       hidden: true,
@@ -157,8 +172,8 @@ export const asyncRoutes:RouteRecordRaw[] = [
     children: [
       {
         path: '',
-        name: 'DepositDetailIndex',
-        component: () => import('@/views/seller/deposit/detail.vue')
+        name: 'RechargeDetailIndex',
+        component: () => import('@/views/seller/recharge/detail.vue')
       }
     ]
   },
@@ -213,8 +228,8 @@ export const asyncRoutes:RouteRecordRaw[] = [
 
   // 需要展示在侧边栏的
   {
-    path: '/deposit',
-    name: 'Deposit',
+    path: '/recharge',
+    name: 'Recharge',
     component: Layout,
     meta: { 
       roles: ['seller', 'agent']
@@ -222,9 +237,9 @@ export const asyncRoutes:RouteRecordRaw[] = [
     children: [
       {
         path: '',
-        component: () => import('@/views/seller/deposit/index.vue'),
-        name: 'DepositIndex',
-        meta: { title: '充值', icon: markRaw(IconDeposit), affix: true }
+        component: () => import('@/views/seller/recharge/index.vue'),
+        name: 'RechargeIndex',
+        meta: { title: '充值', icon: markRaw(IconRecharge), affix: true }
       }
     ]
   },
@@ -301,7 +316,7 @@ export const asyncRoutes:RouteRecordRaw[] = [
     component: Layout,
     redirect: '/finance/index',
     meta: { 
-      roles: ['buyer', 'seller', 'agent']
+      roles: ['seller', 'agent']
     },
     children: [
       {
@@ -332,9 +347,10 @@ export const asyncRoutes:RouteRecordRaw[] = [
     path: '/logout',
     name: 'Logout',
     component: Layout,
+    redirect: '/logout/index',
     children: [
       {
-        path: 'index',
+        path: '',
         component: () => import('@/views/user/login/index.vue'),
         name: 'LogoutIndex',
         meta: { title: '登出', icon: markRaw(IconLogout), affix: false }

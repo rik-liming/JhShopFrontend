@@ -1,6 +1,6 @@
 <template>
   <div class="tw-w-full tw-min-h-screen tw-flex tw-items-center tw-justify-center">
-    <div class="tw-w-[360px] tw-p-2 tw-text-center">
+    <div class="tw-w-[360px] tw-p-2 tw-text-center" v-if="!loading">
       <!-- 顶部图标 -->
       <div class="tw-flex tw-items-center tw-justify-between tw-mb-10 tw-relative">
         <h1 class="tw-text-left tw-text-2xl">订单详情</h1>
@@ -139,6 +139,7 @@ const order = ref({
   total_price: 0,
   total_cny_price: 0
 });
+const loading = ref(true)
 
 const payStatusMap = {
   0: '等待买家付款',
@@ -154,6 +155,7 @@ const fetchOrderDetails = async (orderId) => {
     const response = await OrderApi.getOrderDetail(userStore.loginToken, orderId)
     if (response.data.code === 10000) {
       order.value = response.data.data.order;
+      loading.value = false
     }
   } catch (error) {
     console.error('Error fetching order details:', error);

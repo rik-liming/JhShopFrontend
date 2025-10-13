@@ -4,8 +4,8 @@
       <navbar />
     </div>
     <div class="promotion-container">
-      <div class="carousel-wrapper" v-if="store.app().device !== 'mobile'">
-        <VCarousel height="200" show-arrows="hover" cycle hide-delimiter-background :interval="2000">
+      <div class="carousel-wrapper" v-if="store.app().device === 'mobile'">
+        <VCarousel height="100" show-arrows="hover" cycle hide-delimiter-background :interval="3000">
           <VCarouselItem v-for="(item, index) in ad_imgs" :key="index">
             <img :src="item" style="width: 100%; height: 100%; object-fit: cover;" />
           </VCarouselItem>
@@ -23,7 +23,7 @@
 
     <div class="transaction-container" v-if="store.user().user?.value?.role === 'agent' || store.user().user?.value?.role === 'seller'">
       <div class="transaction-menu">
-        <div class="left-menu" @click="onDeposit">
+        <div class="left-menu" @click="onRecharge">
           <img src="@/assets/buy_icon.svg" class="buy-icon">
           <span>充值</span>
         </div>
@@ -48,7 +48,7 @@
         </div>
         <div class="tw-w-1/3">
           <el-select v-model="listQuery.tableType" clearable class="filter-item">
-            <el-option v-for="item in tableTypeOptions" :key="item.value" :label="item.label" :value="item.value" />
+            <el-option v-for="item in getTableTypeOptions()" :key="item.value" :label="item.label" :value="item.value" />
           </el-select>
         </div>
         <div class="tw-flex tw-flex-col tw-w-1/3">
@@ -115,6 +115,8 @@ const ad_imgs = [
   new URL('@/assets/scroll_ad_3.png', import.meta.url).href
 ]
 
+const userStore = store.user()
+
 // --- 表格数据 ---
 const tableWrapper = ref(null)
 let scrollTopCache = 0
@@ -136,22 +138,23 @@ const channelOptions = ref(
     },
   ]
 )
-const tableTypeOptions = ref(
-  [
-    {
-      'label': '市场',
-      'value': 'market'
-    },
-    {
-      'label': '订单',
-      'value': 'order'
-    },
-    {
-      'label': '财务变动',
-      'value': 'finance'
-    },
-  ]
-)
+
+const getTableTypeOptions = () => {
+  const tableTypeOptions = [
+    { label: '市场', value: 'market', role: 'all' },
+    { label: '订单', value: 'order', role: 'seller,agent,buyer' },
+    { label: '财务变动', value: 'finance', role: 'seller,agent' },
+  ];
+
+  // 根据不同的角色过滤元素
+  if (userStore.user?.value?.role === 'buyer') {
+    return tableTypeOptions.filter(option => option.role === 'all' || option.role.includes('buyer'));
+  } else if (userStore.user?.value?.role === 'seller' || userStore.user?.value?.role === 'agent') {
+    return tableTypeOptions;
+  } else {
+    return tableTypeOptions.filter(option => option.role === 'all');
+  }
+}
 
 const listQuery = reactive({
   channel: 'alipay',
@@ -166,8 +169,8 @@ function onOrderPublish() {
   router.push('/order/seller/publish')
 };
 
-function onDeposit() {
-  router.push('/deposit')
+function onRecharge() {
+  router.push('/recharge')
 };
 
 function handleTableUpdateStart() {
@@ -199,7 +202,6 @@ watch(() => listQuery.tableType, async () => {
 
 function getExchangeRate() {
   const configStore = store.config();
-  console.log(configStore)
   if (!configStore || !configStore.config) {
     return 0.00;
   }

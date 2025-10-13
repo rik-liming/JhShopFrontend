@@ -20,15 +20,15 @@
       <div class="tw-my-4">
         <div class="tw-flex tw-justify-between tw-space-x-4">
           <p class="tw-text-left">商户号：</p>
-          <p class="tw-font-semibold tw-text-right">JH001</p>
+          <p class="tw-font-semibold tw-text-right">{{ formatIdDisplay(transferData?.sender_user_id) }}</p>
         </div>
         <div class="tw-flex tw-justify-between tw-space-x-4">
           <p class="tw-text-left">总资产：</p>
-          <p class="tw-font-semibold tw-text-right">1650 USDT</p>
+          <p class="tw-font-semibold tw-text-right">{{ transferData?.transaction?.balance_before }} USDT</p>
         </div>
         <div class="tw-flex tw-justify-between tw-space-x-4">
           <p class="tw-text-left">转账金额：</p>
-          <p class="tw-font-semibold tw-text-right tw-text-red-600">1250 USDT</p>
+          <p class="tw-font-semibold tw-text-right tw-text-red-600">- {{ transferData?.amount }} USDT</p>
         </div>
       </div>
 
@@ -38,15 +38,15 @@
       <div class="tw-my-6">
         <div class="tw-flex tw-justify-between tw-space-x-4">
           <p class="tw-text-left">USDT币价：</p>
-          <p class="tw-font-semibold tw-text-right">JH001</p>
+          <p class="tw-font-semibold tw-text-right">{{ transferData?.exchange_rate }}</p>
         </div>
         <div class="tw-flex tw-justify-between tw-space-x-4">
           <p class="tw-text-left">USDT金额：</p>
-          <p class="tw-font-semibold tw-text-right">1650 USDT</p>
+          <p class="tw-font-semibold tw-text-right">{{ transferData?.amount }} USDT</p>
         </div>
         <div class="tw-flex tw-justify-between tw-space-x-4">
           <p class="tw-text-left">CNY金额：</p>
-          <p class="tw-font-semibold tw-text-right">1250 USDT</p>
+          <p class="tw-font-semibold tw-text-right">{{ transferData?.cny_amount }} 元</p>
         </div>
       </div>
 
@@ -56,19 +56,19 @@
       <div class="tw-my-6">
         <div class="tw-flex tw-justify-between tw-space-x-4">
           <p class="tw-text-left">对方商户号：</p>
-          <p class="tw-font-semibold tw-text-right">JH001</p>
+          <p class="tw-font-semibold tw-text-right">{{ formatIdDisplay(transferData?.receiver_user_id) }}</p>
         </div>
         <div class="tw-flex tw-justify-between tw-space-x-4">
-          <p class="tw-text-left">充值时间：</p>
-          <p class="tw-font-semibold tw-text-right">JH001</p>
+          <p class="tw-text-left">转账时间：</p>
+          <p class="tw-font-semibold tw-text-right">{{ transferData?.created_at }}</p>
         </div>
         <div class="tw-flex tw-justify-between tw-space-x-4">
           <p class="tw-text-left">订单编号：</p>
-          <p class="tw-font-semibold tw-text-right">1650 USDT</p>
+          <p class="tw-font-semibold tw-text-right">{{ transferData?.transaction_id }}</p>
         </div>
         <div class="tw-flex tw-justify-between tw-space-x-4">
           <p class="tw-text-left">订单状态：</p>
-          <p class="tw-font-semibold tw-text-right tw-text-red-600">等待平台确认</p>
+          <p class="tw-font-semibold tw-text-right tw-text-red-600">{{ transferStatusMap[transferData?.status] }}</p>
         </div>
       </div>
 
@@ -87,35 +87,54 @@
 </template>
 
 <script setup>
-import { useRouter } from 'vue-router';
+import { useRouter, useRoute } from 'vue-router';
+import { ref, onMounted } from 'vue';
+import { formatIdDisplay } from '@/utils/tool'
+import * as TransferApi from '@/api/transfer'
+import store from '@/store'
+
+const transferStatusMap = {
+  0: '待平台确认',
+  1: '已通过',
+  '-1': '已驳回',
+}
 
 const router = useRouter()
+const route = useRoute()
+
+const userStore = store.user()
+const configStore = store.config()
+
+const transaction_id = route.query.transaction_id
+const transferData = ref(null);
 
 const handleClose = () => {
   router.push('/')
 }
 
 const handleConfirm = () => {
-  alert('确认');
   router.push('/')
 }
+// 页面加载时获取充值数据
+onMounted(() => {
+  fetchTransferDetail();
+});
+
+// 获取充值详情数据
+const fetchTransferDetail = async () => {
+  try {
+    const response = await TransferApi.getTransferDetail(userStore.loginToken, transaction_id)
+    if (response.data.code === 10000) {
+      transferData.value = response.data.data.transfer;
+    } else {
+      console.error('获取数据失败');
+    }
+  } catch (error) {
+    console.error('请求错误:', error);
+  }
+};
+
 </script>
 
 <style scoped lang="scss">
-/* select 去除浏览器默认的箭头 */
-select {
-  appearance: none; /* 去除默认箭头 */
-  -webkit-appearance: none; /* Safari 和 Chrome */
-  -moz-appearance: none; /* Firefox */
-}
-
-/* 自定义的下拉箭头 */
-.tw-relative select {
-  padding-right: 30px; /* 给右侧留出空间，显示箭头 */
-}
-
-.tw-relative .tw-absolute {
-  pointer-events: none; /* 防止箭头干扰 select 的点击 */
-  font-size: 16px; /* 箭头的大小 */
-}
 </style>

@@ -151,10 +151,7 @@ const handleClose = () => {
 
 // 提交表单
 const handleSubmit = async() => {
-  // 触发表单验证
   // 如果表单验证通过，则进行提交操作
-  console.log(formData.value);
-
   formData.value.order_listing_id = orderListing.id;
   formData.value.buy_user_id = userStore.user?.value?.id
   formData.value.payment_method = orderListing.payment_method
