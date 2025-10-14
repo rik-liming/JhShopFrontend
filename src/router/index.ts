@@ -10,6 +10,7 @@ import {
   Plus as IconPublish,
   Money as IconFinance,
   SwitchButton as IconLogout,
+  Histogram as IconReport,
 } from '@element-plus/icons-vue';
 import store from '@/store';
 
@@ -209,22 +210,6 @@ export const asyncRoutes:RouteRecordRaw[] = [
       }
     ]
   },
-  {
-    path: '/report',
-    name: 'Report',
-    component: Layout,
-    meta: { 
-      hidden: true,
-      roles: ['seller', 'agent']
-    },
-    children: [
-      {
-        path: '',
-        name: 'ReportIndex',
-        component: () => import('@/views/seller/report/index.vue')
-      }
-    ]
-  },
 
   // 需要展示在侧边栏的
   {
@@ -320,7 +305,7 @@ export const asyncRoutes:RouteRecordRaw[] = [
     },
     children: [
       {
-        path: 'finance',
+        path: '',
         component: () => import('@/views/user/finance/index.vue'),
         name: 'FinanceIndex',
         meta: { title: '财务变动', icon: markRaw(IconFinance), affix: true }
@@ -338,6 +323,23 @@ export const asyncRoutes:RouteRecordRaw[] = [
         component: () => import('@/views/user/profile/index.vue'),
         name: 'ProfileIndex',
         meta: { title: '会员信息', icon: 'user', affix: true }
+      }
+    ]
+  },
+
+  {
+    path: '/report',
+    name: 'Report',
+    component: Layout,
+    meta: { 
+      roles: ['seller', 'agent']
+    },
+    children: [
+      {
+        path: '',
+        name: 'ReportIndex',
+        component: () => import('@/views/seller/report/index.vue'),
+        meta: { title: '报表', icon: markRaw(IconReport), affix: true }
       }
     ]
   },

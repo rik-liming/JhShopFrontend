@@ -193,10 +193,10 @@ export default defineComponent({
         try {
           const loginResp = await AuthApi.login(this.loginForm)
           if (loginResp.data.code == 10000) {
-            if (loginResp.data.data.qrCodeUrl) {
+            if (loginResp.data.data.qr_code_url) {
               this.needBindOtp = true
-              this.qrCodeUrl = loginResp.data.data.qrCodeUrl
-            } else if (loginResp.data.data.needOtp) {
+              this.qrCodeUrl = loginResp.data.data.qr_code_url
+            } else if (loginResp.data.data.need_otp) {
               this.needVerifyOtp = true
             }
           } else {
@@ -213,7 +213,7 @@ export default defineComponent({
       const userStore = store.user()
       const configStore = store.config()
       try {
-        const response = await userStore.verifyOtp(this.loginForm.email, this.otp)
+        const response = await userStore.verifyOtp(this.loginForm.user_name, this.otp)
         if (response.data.code == 10000) {
           this.$router.push({ path: this.redirect || '/', query: this.otherQuery })
 

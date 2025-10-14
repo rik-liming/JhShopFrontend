@@ -4,8 +4,14 @@
       <navbar />
     </div>
     <div class="promotion-container">
-      <div class="carousel-wrapper" v-if="store.app().device === 'mobile'">
-        <VCarousel height="100" show-arrows="hover" cycle hide-delimiter-background :interval="3000">
+      <div class="carousel-wrapper">
+        <VCarousel
+          :height="store.app().device === 'mobile' ? '100' : '200'"
+          show-arrows="hover" 
+          cycle 
+          hide-delimiter-background 
+          :interval="3000"
+        >
           <VCarouselItem v-for="(item, index) in ad_imgs" :key="index">
             <img :src="item" style="width: 100%; height: 100%; object-fit: cover;" />
           </VCarouselItem>
@@ -39,8 +45,8 @@
       </div>
     </div>
 
-    <div class="app-container" @scroll="onScroll">
-      <div class="filter-container tw-flex tw-flex-items-center tw-border tw-border-solid tw-border-black tw-border-opacity-30 tw-pt-6 tw-px-4 tw-mb-4">
+    <div class="app-container tw-mt-[-10px]" @scroll="onScroll">
+      <div class="filter-container tw-flex tw-flex-items-center tw-border tw-border-solid tw-border-black tw-border-opacity-30 tw-px-4 tw-pt-4 tw-mb-4">
         <div class="tw-w-1/3">
           <el-select v-model="listQuery.channel" clearable class="filter-item">
             <el-option v-for="item in channelOptions" :key="item.value" :label="item.label" :value="item.value" />
@@ -57,7 +63,7 @@
             <p class="tw-text-lg tw-text-right">{{ getExchangeRate() }}</p>
           </div>
           <div class="tw-flex tw-justify-between ">
-            <p class="tw-text-left tw-font-bold">刷新：</p>
+            <p class="tw-text-left tw-font-bold tw-ml-4">刷新：</p>
             <p class="tw-text-lg tw-text-right tw-text-red-400">{{ countdown }}s</p>
           </div>
         </div>
@@ -264,7 +270,7 @@ onBeforeUnmount(() => {
 }
 
 .marquee-container {
-  margin: 4px 20px;
+  margin: 4px 20px 0px 20px;
 }
 
 .marquee-text {
@@ -415,6 +421,17 @@ onBeforeUnmount(() => {
   box-shadow: none !important;
   font-size: 18px !important;
   font-weight: bold !important;
+  color: black !important;
+}
+
+:deep(.el-select__placeholder) {
+  color: black !important;
+  font-size: 20px !important;
+  margin-top: 4px !important;
+}
+
+:deep(.el-select__caret) {
+  color: black !important;
 }
 
 </style>

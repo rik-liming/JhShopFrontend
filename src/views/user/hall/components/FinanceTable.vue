@@ -9,24 +9,24 @@
         style="height: 600px; overflow: auto;"
         @row-click="handleRowClick"
     >
-        <el-table-column label="财务变动" width="'40%'" align="center">
+        <el-table-column label="记录编号" width="'40%'" align="center">
             <template v-slot="{row}">
-            <span>{{ row.author }}</span>
+            <span>{{ row.transaction_id }}</span>
             </template>
         </el-table-column>
         <el-table-column label="金额" width="'20%'" align="center">
             <template v-slot="{row}">
-            <span>{{ row.author }}</span>
+            <span>{{ row.amount }}</span>
             </template>
         </el-table-column>
         <el-table-column label="类型" width="'20%'" align="center">
             <template v-slot="{row}">
-            <span>{{ row.author }}</span>
+            <span>{{ row.transaction_type }}</span>
             </template>
         </el-table-column>
         <el-table-column label="余额" width="'20%'" align="center">
             <template v-slot="{row}">
-            <span>{{ row.author }}</span>
+            <span>{{ row.balance_after }}</span>
             </template>
         </el-table-column>
     </el-table>
@@ -34,10 +34,13 @@
 
 <script setup>
 import { ref, onMounted, reactive, watch, defineEmits, nextTick } from 'vue';
-import { fetchList } from '@/api/article';
 import { useRouter } from 'vue-router';
+import store from '@/store';
+import * as FinanceApi from '@/api/finance'
 
 const emit = defineEmits();
+
+const userStore = store.user()
 
 const props = defineProps({
   channel: String,
@@ -48,11 +51,8 @@ const props = defineProps({
 const list = ref([]);
 const listQuery = reactive({
   page: 1,
-  limit: 20,
+  limit: 100,
   channel: props.channel,
-  title: undefined,
-  tableType: 'finance',
-  sort: '+id'
 });
 
 // 用于防止重复调用的标志位
@@ -62,16 +62,17 @@ let isFirstCall = true;
 const getList = async () => {
   try {
     emit('table-update-start');
-    if (listQuery.channel == 'ali_pay') {
-        listQuery.page = 1
-    } else if (listQuery.channel == 'bank_pay') {
-        listQuery.page = 2
-    } else if (listQuery.channel == 'wechat_pay') {
-        listQuery.page = 3
+    
+    const response = await FinanceApi.getMyFinanceRecord(userStore.loginToken, {
+      page: listQuery.page,
+      pagesize: listQuery.limit,
+      channel: listQuery.channel
+    })
+    if (response.data.code === 10000) {
+      list.value = response.data.data.records;
     }
-    const response = await fetchList(listQuery);
+
     emit('table-update-end');
-    list.value = response.data.items;
   } catch (error) {
     console.error('获取数据失败', error);
   }
@@ -120,9 +121,30 @@ onMounted(() => {
 
 const router = useRouter();
 const handleRowClick = (row) => {
-  // 根据点击的行的数据，构造目标路由地址
-  const targetPage = `/deposit/detail?transactionId=${row.id}`;
-  router.push(targetPage);
+  let targetPage = ''
+  switch(row.transaction_type) {
+    case 'recharge':
+      targetPage = `/charge/detail?transactionId=${row.transaction_id}`
+      break;
+    case 'transfer':
+      targetPage = `/transfer/detail?transactionId=${row.transaction_id}`
+      break;
+    case 'withdraw':
+      targetPage = `/withdraw/detail?transactionId=${row.transaction_id}`
+      break;
+    case 'order':
+      const role = userStore.user?.value?.role
+      if (role === 'buyer') {
+        targetPage = `/order/buyer/detail?orderId=${row.order_id}`;
+      } else if (role === 'seller' || role === 'agent') {
+        targetPage = `/order/seller/detail?orderId=${row.order_id}`;
+      }
+      break;
+  }
+
+  if (targetPage.length > 0) {
+    router.push(targetPage);
+  }
 };
 </script>
 

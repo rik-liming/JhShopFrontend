@@ -67,6 +67,9 @@ const getList = async () => {
       pagesize: listQuery.limit,
       channel: listQuery.channel
     })
+
+    console.log("get response....", response)
+
     if (response.data.code === 10000) {
       list.value = response.data.data.orderListings;
     }

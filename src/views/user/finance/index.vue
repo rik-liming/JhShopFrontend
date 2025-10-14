@@ -24,21 +24,27 @@
           class="main-table"
           key="notificationTable"
           style="height: 600px; overflow: auto;"
+          @row-click="handleRowClick"
         >
-          <el-table-column label="日期" align="center">
-            <template v-slot="{ row }">
-              <span>{{ `20250706_0074` }}</span>
-            </template>
+          <el-table-column label="记录编号" width="'40%'" align="center">
+              <template v-slot="{row}">
+              <span>{{ row.transaction_id }}</span>
+              </template>
           </el-table-column>
-          <el-table-column label="类型" align="center">
-            <template v-slot="{ row }">
-              <span>{{ row.author }}</span>
-            </template>
+          <el-table-column label="金额" width="'20%'" align="center">
+              <template v-slot="{row}">
+              <span>{{ row.amount }}</span>
+              </template>
           </el-table-column>
-          <el-table-column label="状态" align="center" min-width="90">
-            <template v-slot="{ row }">
-              <span>{{ row.author }}</span>
-            </template>
+          <el-table-column label="类型" width="'20%'" align="center">
+              <template v-slot="{row}">
+              <span>{{ row.transaction_type }}</span>
+              </template>
+          </el-table-column>
+          <el-table-column label="余额" width="'20%'" align="center">
+              <template v-slot="{row}">
+              <span>{{ row.balance_after }}</span>
+              </template>
           </el-table-column>
         </el-table>
       </div>
@@ -53,16 +59,14 @@
 
 import { useRouter } from 'vue-router';
 import { ref, onMounted, reactive, watch, defineEmits, nextTick } from 'vue';
-import { fetchList } from '@/api/article';
+import * as FinanceApi from '@/api/finance'
+import store from '@/store';
 
 const router = useRouter()
+const userStore = store.user()
 
 const handleClose = () => {
   router.push('/')
-}
-
-const handleTransfer = () => {
-  router.push('/transfer/detail')
 }
 
 // 定义数据
@@ -75,9 +79,14 @@ const listQuery = reactive({
 // 获取数据的逻辑
 const getList = async () => {
   try {
-    listQuery.page = 1
-    const response = await fetchList(listQuery);
-    list.value = response.data.items;
+    const response = await FinanceApi.getMyFinanceRecord(userStore.loginToken, {
+      page: listQuery.page,
+      pagesize: listQuery.limit,
+      channel: listQuery.channel
+    })
+    if (response.data.code === 10000) {
+      list.value = response.data.data.records;
+    }
   } catch (error) {
     console.error('获取数据失败', error);
   }
@@ -91,6 +100,32 @@ onMounted(() => {
   });
 });
 
+const handleRowClick = (row) => {
+  let targetPage = ''
+  switch(row.transaction_type) {
+    case 'recharge':
+      targetPage = `/charge/detail?transactionId=${row.transaction_id}`
+      break;
+    case 'transfer':
+      targetPage = `/transfer/detail?transactionId=${row.transaction_id}`
+      break;
+    case 'withdraw':
+      targetPage = `/withdraw/detail?transactionId=${row.transaction_id}`
+      break;
+    case 'order':
+      const role = userStore.user?.value?.role
+      if (role === 'buyer') {
+        targetPage = `/order/buyer/detail?orderId=${row.order_id}`;
+      } else if (role === 'seller' || role === 'agent') {
+        targetPage = `/order/seller/detail?orderId=${row.order_id}`;
+      }
+      break;
+  }
+
+  if (targetPage.length > 0) {
+    router.push(targetPage);
+  }
+};
 </script>
 
 <style scoped lang="scss">

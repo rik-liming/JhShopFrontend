@@ -95,7 +95,7 @@ const route = useRoute();
 const userStore = store.user()
 const configStore = store.config()
 
-const transaction_id = route.query.transaction_id
+const transaction_id = route.query.transactionId
 
 const rechargeStatusMap = {
   0: '待平台确认',

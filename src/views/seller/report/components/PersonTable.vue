@@ -10,14 +10,14 @@
       style="height: 500px; overflow: auto;"
       @row-click="handleRowClick"
     >
-      <el-table-column label="日期" align="center">
+      <el-table-column label="订单号" align="center">
         <template v-slot="{ row }">
-          <span>{{ `20250706_0074` }}</span>
+          <span>{{ row.id }}</span>
         </template>
       </el-table-column>
       <el-table-column label="商户" align="center">
         <template v-slot="{ row }">
-          <span>{{ row.author }}</span>
+          <span>{{ formatIdDisplay(row.sell_user_id) }}</span>
         </template>
       </el-table-column>
       <el-table-column label="订单状态" align="center" min-width="90">
@@ -34,32 +34,30 @@
 
     <!-- 固定的底部行 -->
     <div class="sticky-bottom">
-      <span class="tw-mr-4">总计：1325</span>
+      <span class="tw-mr-4">总计：{{ totalAmount }} USDT</span>
     </div>
   </div>
 </template>
 
 <script setup>
 import { ref, onMounted, reactive, watch, defineEmits, nextTick } from 'vue';
-import { fetchList } from '@/api/article';
 import { useRouter } from 'vue-router';
 import store from '@/store';
+import * as OrderApi from '@/api/order'
+import { formatIdDisplay } from '@/utils/tool'
 
 const emit = defineEmits();
 
 const props = defineProps({
-  tableType: String,
+  startTime: String,
+  endTime: String,
 });
 
 const userStore = store.user()
 
 // 定义数据
 const list = ref([]);
-const listQuery = reactive({
-  page: 1,
-  limit: 100,
-  tableType: props.tableType,
-});
+const totalAmount = ref(0.00);
 
 // 用于防止重复调用的标志位
 let isFirstCall = true;
@@ -68,30 +66,20 @@ let isFirstCall = true;
 const getList = async () => {
   try {
     emit('table-update-start');
-    listQuery.page = 1
-    const response = await fetchList(listQuery);
+    
+    const response = await OrderApi.getMyOrderReport(userStore.loginToken, {
+      startTime: props.startTime,
+      endTime: props.endTime,
+    })
+    if (response.data.code === 10000) {
+      list.value = response.data.data.orders;
+    }
+
     emit('table-update-end');
-    list.value = response.data.items;
   } catch (error) {
     console.error('获取数据失败', error);
   }
 };
-
-watch(
-  () => props.tableType,
-  (newTableType) => {
-    // 只有在 channel 变化时，才更新数据
-    listQuery.tableType = newTableType;
-    
-    // 确保只有在 channel 改变时才调用 getList
-    if (!isFirstCall && props.tableType === 'person') {
-      getList();
-    } else {
-      isFirstCall = false; // 第一次加载后设置为 false
-    }
-  },
-  { immediate: true } // immediate 保证在首次渲染时监听
-);
 
 // 生命周期钩子，组件加载时获取数据
 onMounted(() => {
@@ -100,6 +88,24 @@ onMounted(() => {
     getList();
   });
 });
+
+// 监听 startTime 变化，获取数据
+watch(
+  () => props.startTime,
+  () => {
+    getList();
+  },
+  { immediate: true } // immediate 保证在首次渲染时监听
+);
+
+// 监听 endTime 变化，获取数据
+watch(
+  () => props.endTime,
+  () => {
+    getList();
+  },
+  { immediate: true } // immediate 保证在首次渲染时监听
+);
 
 // 跳转到指定页面
 const router = useRouter();

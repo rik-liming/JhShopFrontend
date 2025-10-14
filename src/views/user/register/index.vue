@@ -39,9 +39,9 @@
           />
         </el-form-item>
 
-        <el-form-item prop="confirmPassword" label="密码确认" class="custom-form-item">
+        <el-form-item prop="confirm_password" label="密码确认" class="custom-form-item">
           <el-input
-            v-model="registerForm.confirmPassword"
+            v-model="registerForm.confirm_password"
             type="password"
             placeholder="Password"
             show-password
@@ -49,9 +49,9 @@
           />
         </el-form-item>
 
-        <el-form-item prop="inviteCode" label="邀请码" class="custom-form-item">
+        <el-form-item prop="invite_code" label="邀请码" class="custom-form-item">
           <el-input
-            v-model="registerForm.inviteCode"
+            v-model="registerForm.invite_code"
             placeholder="12345678"
             clearable
           />
@@ -133,14 +133,14 @@ export default defineComponent({
       registerForm: {
         email: '',
         password: '',
-        confirmPassword: '',
-        inviteCode: '',
+        confirm_password: '',
+        invite_code: '',
       },
       registerRules: {
         email: [{ required: true, trigger: 'blur', validator: validateEmail }],
         password: [{ required: true, trigger: 'blur', validator: validatePassword }],
-        confirmPassword: [{ required: true, trigger: 'blur', validator: validateConfirmPassword }],
-        inviteCode: [{ required: true, trigger: 'blur', validator: validateInviteCode }]
+        confirm_password: [{ required: true, trigger: 'blur', validator: validateConfirmPassword }],
+        invite_code: [{ required: true, trigger: 'blur', validator: validateInviteCode }]
       },
       passwordType: 'password',
       loading: false,

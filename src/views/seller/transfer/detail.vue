@@ -105,7 +105,7 @@ const route = useRoute()
 const userStore = store.user()
 const configStore = store.config()
 
-const transaction_id = route.query.transaction_id
+const transactionId = route.query.transactionId
 const transferData = ref(null);
 
 const handleClose = () => {
@@ -123,7 +123,7 @@ onMounted(() => {
 // 获取充值详情数据
 const fetchTransferDetail = async () => {
   try {
-    const response = await TransferApi.getTransferDetail(userStore.loginToken, transaction_id)
+    const response = await TransferApi.getTransferDetail(userStore.loginToken, transactionId)
     if (response.data.code === 10000) {
       transferData.value = response.data.data.transfer;
     } else {

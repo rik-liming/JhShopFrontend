@@ -103,3 +103,33 @@ export async function orderConfirm(loginToken, data) {
     })
     return response
 }
+
+// request my order report
+export async function getMyOrderReport(loginToken, queryParams) {
+
+    const { startTime, endTime } = queryParams;
+
+    // 构建请求的基础 URL
+    let requestUrl = `/api/order/report/my?startTime=${startTime}&endTime=${endTime}`;
+
+    const response = await requestBase.get(requestUrl, {
+        headers: {
+            Authorization: `Bearer ${loginToken}`,
+        }
+    })
+    return response
+}
+
+// request group order report
+export async function getGroupOrderReport(loginToken) {
+
+    // 构建请求的基础 URL
+    let requestUrl = `/api/order/report/group`;
+
+    const response = await requestBase.get(requestUrl, {
+        headers: {
+            Authorization: `Bearer ${loginToken}`,
+        }
+    })
+    return response
+}

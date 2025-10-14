@@ -8,8 +8,8 @@
             <h2 class="tw-text-3xl tw-font-semibold">团队报表</h2>
           </div>
           <div class="tw-flex tw-gap-10 tw-mt-6 tw-mb-4">
-            <img src="@/assets/person_icon.svg" alt="person" class="tw-w-12 tw-h-12 tw-mx-auto" @click="handleTableTypeChange('person')" />
-            <img src="@/assets/group_icon.svg" alt="group" class="tw-w-12 tw-h-12 tw-mx-auto" @click="handleTableTypeChange('group')" />
+            <img src="@/assets/person_icon.svg" alt="person" class="tw-w-12 tw-h-12 tw-mx-auto cursor-pointer" @click="handleTableTypeChange('person')" />
+            <img v-if="userStore.user?.value?.value === 'agent'" src="@/assets/group_icon.svg" alt="group" class="tw-w-12 tw-h-12 tw-mx-auto cursor-pointer" @click="handleTableTypeChange('group')" />
           </div>
         </div>
         <div class="tw-absolute tw-right-0 tw-flex tw-flex-col tw-items-end">
@@ -21,9 +21,10 @@
         <!-- 开始时间选择器 -->
         <el-date-picker
           v-model="startTime"
-          type="datetime"
+          type="date"
           placeholder="选择开始时间"
           format="YYYY-MM-DD"
+          value-format="YYYY-MM-DD"
           class="tw-w-full"
         />
         
@@ -32,9 +33,10 @@
         <!-- 结束时间选择器 -->
         <el-date-picker
           v-model="endTime"
-          type="datetime"
+          type="date"
           placeholder="选择结束时间"
           format="YYYY-MM-DD"
+          value-format="YYYY-MM-DD"
           class="tw-w-full"
         />
       </div>
@@ -49,12 +51,14 @@
         }"
       >
         <person-table
-          :tableType="listQuery.tableType"
+          :startTime="startTime"
+          :endTime="endTime"
           @table-update-start="handleTableUpdateStart"
           @table-update-end="handleTableUpdateEnd"
           v-show="listQuery.tableType == 'person'"
         ></person-table>
         <group-table
+          v-if="userStore.user?.value?.role === 'agent'"
           :tableType="listQuery.tableType"
           @table-update-start="handleTableUpdateStart"
           @table-update-end="handleTableUpdateEnd"
@@ -82,10 +86,12 @@ import { useRouter } from 'vue-router';
 import { ref, reactive, watch, nextTick } from 'vue'
 import PersonTable from './components/PersonTable.vue'
 import GroupTable from './components/GroupTable.vue'
+import store from '@/store'
 
+const userStore = store.user()
 const router = useRouter()
-const startTime = ref(null);
-const endTime = ref(null);
+const startTime = ref(new Date().toISOString().split('T')[0]);
+const endTime = ref(new Date().toISOString().split('T')[0]);
 
 const animate = ref(false)
 const tableWrapper = ref(null)
@@ -96,10 +102,6 @@ const listQuery = reactive({
 
 const handleClose = () => {
   router.push('/')
-}
-
-const handleWithdraw = () => {
-  router.push('/withdraw/detail')
 }
 
 const handleTableTypeChange = (tableType) => {

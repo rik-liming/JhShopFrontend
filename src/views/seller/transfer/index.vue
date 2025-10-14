@@ -128,8 +128,8 @@ const handleTransfer = async() => {
 
     if (resp.data.code === 10000) {
       ElMessage.success('提交转账成功');
-      const transaction_id = resp.data.data.transfer.transaction_id
-      router.push(`/transfer/detail?transaction_id=${transaction_id}`);
+      const transactionId = resp.data.data.transfer.transaction_id
+      router.push(`/transfer/detail?transactionId=${transactionId}`);
     } else {
       ElMessage.error(resp.data.msg);
     }  
