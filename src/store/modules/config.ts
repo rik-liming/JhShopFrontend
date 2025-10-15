@@ -7,9 +7,11 @@ export interface IConfig {
   payment_qr_code: string
   transfer_fee: number
   withdrawl_fee: number
+  exchange_rate_platform: number
   exchange_rate_alipay: number
   exchange_rate_wechat: number
   exchange_rate_bank: number
+  advertisement_text: string
 }
 
 export default defineStore({
@@ -30,9 +32,11 @@ export default defineStore({
             payment_qr_code: config.payment_qr_code,
             transfer_fee: config.transfer_fee,
             withdrawl_fee: config.withdrawl_fee,
+            exchange_rate_platform: config.exchange_rate_platform,
             exchange_rate_alipay: config.exchange_rate_alipay,
             exchange_rate_wechat: config.exchange_rate_wechat,
             exchange_rate_bank: config.exchange_rate_bank,
+            advertisement_text: config.advertisement_text
           }
         }
         return response

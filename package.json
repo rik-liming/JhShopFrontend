@@ -7,7 +7,7 @@
     "tw:init": "tailwindcss init -p",
     "tw:build": "tailwindcss -i ./src/input.css -o ./dist/output.css",
     "tw:watch": "tailwindcss -i ./src/input.css -o ./dist/output.css --watch",
-    "dev:test": "vite --mode dev_test",
+    "dev:test": "vite --mode dev_test --host 0.0.0.0",
     "dev:prod": "vite --mode dev_prod",
     "build:test": "vite build --mode build_test",
     "build:prod": "vite build --mode build_prod",

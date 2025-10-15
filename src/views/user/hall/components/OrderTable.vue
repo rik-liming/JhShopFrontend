@@ -8,26 +8,33 @@
         key="orderTable"
         style="height: 600px; overflow: auto;"
         @row-click="handleRowClick"
+        @touchstart="onTouchStart"
+        @touchmove="onTouchMove"
+        @touchend="onTouchEnd"
     >
         <el-table-column label="订单编号" width="'40%'" align="center">
-            <template v-slot="{row}">
-            <span :class="getStatusClass(row.status)">{{ formatOrderIdDisplay(row.id, row.created_at) }}</span>
-            </template>
+          <template v-slot="{row}">
+            <span v-if="row.status" :class="getStatusClass(row.status)">{{ formatOrderIdDisplay(row.id, row.created_at) }}</span>
+            <span v-else>-</span>
+          </template>
         </el-table-column>
         <el-table-column label="金额 USDT" width="'20%'" align="center">
-            <template v-slot="{row}">
-            <span :class="getStatusClass(row.status)">{{ row.amount }}</span>
-            </template>
+          <template v-slot="{row}">
+            <span v-if="row.status" :class="getStatusClass(row.status)">{{ row.amount }}</span>
+            <span v-else>-</span>
+          </template>
         </el-table-column>
         <el-table-column label="市场" width="'20%'" align="center">
-            <template v-slot="{row}">
-            <span :class="getStatusClass(row.status)">{{ formatPaymentMethod(row.payment_method) }}</span>
-            </template>
+          <template v-slot="{row}">
+            <span v-if="row.status" :class="getStatusClass(row.status)">{{ formatPaymentMethod(row.payment_method) }}</span>
+            <span v-else>-</span>
+          </template>
         </el-table-column>
         <el-table-column label="状态" width="'20%'" align="center">
-            <template v-slot="{row}">
-            <span :class="getStatusClass(row.status)">{{ payStatusMap[row.status] }}</span>
-            </template>
+          <template v-slot="{row}">
+            <span v-if="row.status" :class="getStatusClass(row.status)">{{ payStatusMap[row.status] }}</span>
+            <span v-else>-</span>
+          </template>
         </el-table-column>
     </el-table>
 </template>
@@ -52,7 +59,7 @@ const emit = defineEmits();
 const userStore = store.user()
 
 const props = defineProps({
-  channel: String,
+  currentShowTable: String,
   tableType: String,
 });
 
@@ -61,11 +68,13 @@ const list = ref([]);
 const listQuery = reactive({
   page: 1,
   limit: 20,
-  channel: props.channel,
-  title: undefined,
   tableType: 'order',
-  sort: '+id'
 });
+const minTableRowCount = ref(15)
+const isRefreshing = ref(false)
+const touchStartY = ref(0) // 触摸开始位置
+const touchMoveY = ref(0) // 触摸移动位置
+const threshold = ref(200) // 下拉刷新阈值
 
 // 用于防止重复调用的标志位
 let isFirstCall = true;
@@ -74,6 +83,10 @@ let isFirstCall = true;
 const getList = async () => {
   try {
     emit('table-update-start');
+
+    setTimeout(() => {
+      emit('table-update-end');  
+    }, 100);
     
     let response = null
     if (userStore.user?.value?.role === 'buyer') {
@@ -82,9 +95,7 @@ const getList = async () => {
         pagesize: listQuery.limit,
         channel: listQuery.channel
       })
-      if (response.data.code === 10000) {
-        list.value = response.data.data.orders;
-      }
+      
     } else if (userStore.user?.value?.role === 'seller' 
     || userStore.user?.value?.role === 'agent' ) {
       response = await OrderApi.getMySellerOrder(userStore.loginToken, {
@@ -92,42 +103,38 @@ const getList = async () => {
         pagesize: listQuery.limit,
         channel: listQuery.channel
       })
-      if (response.data.code === 10000) {
-        list.value = response.data.data.orders;
+    }
+
+    if (response.data.code === 10000) {
+      const orders = response.data.data.orders;
+
+      // 判断是否少于 15 条数据
+      if (orders.length < minTableRowCount.value) {
+        // 填充空数据到 15 条
+        list.value = [
+          ...orders, // 将接口返回的数据放在前面
+          ...Array(minTableRowCount.value - orders.length).fill({}) // 填充空数据
+        ];
+      } else {
+        list.value = Array(minTableRowCount.value).fill({});
       }
     }
-
-    emit('table-update-end');
   } catch (error) {
     console.error('获取数据失败', error);
+    list.value = Array(minTableRowCount.value).fill({});
   }
 };
-
-// 监听 channel 变化，获取数据
-watch(
-  () => props.channel,
-  (newChannel) => {
-    // 只有在 channel 变化时，才更新数据
-    listQuery.channel = newChannel;
-    
-    // 确保只有在 channel 改变时才调用 getList
-    if (!isFirstCall && props.tableType === 'order') {
-      getList();
-    } else {
-      isFirstCall = false; // 第一次加载后设置为 false
-    }
-  },
-  { immediate: true } // immediate 保证在首次渲染时监听
-);
 
 watch(
   () => props.tableType,
   (newTableType) => {
     // 只有在 channel 变化时，才更新数据
     listQuery.tableType = newTableType;
-    
-    // 确保只有在 channel 改变时才调用 getList
-    if (!isFirstCall && props.tableType === 'order') {
+
+    if (!isFirstCall 
+      && props.currentShowTable === 'my'
+      && props.tableType === 'order'
+    ) {
       getList();
     } else {
       isFirstCall = false; // 第一次加载后设置为 false
@@ -174,17 +181,49 @@ const getStatusClass = (status) => {
       return '';
   }
 }
+
+const onTouchStart = (event) => {
+  // 记录触摸开始的位置
+  touchStartY.value = event.changedTouches[0].clientY;
+}
+
+const onTouchMove = (event) => {
+  // 获取触摸移动的 Y 轴位置
+  touchMoveY.value = event.changedTouches[0].clientY;
+
+  // 如果下拉距离超过阈值，显示刷新提示
+  if (touchMoveY.value - touchStartY.value > threshold.value) {
+    isRefreshing.value = true;
+  }
+}
+
+const onTouchEnd = () => {
+  // 判断是否触发刷新
+  if (touchMoveY.value - touchStartY.value > threshold.value) {
+    triggerRefresh();
+  } else {
+    isRefreshing.value = false;
+  }
+}
+
+// 触发刷新
+const triggerRefresh = () => {
+  isRefreshing.value = true; // 显示刷新状态
+  getList()
+}
+
 </script>
 
 <style scoped lang="scss">
+
 .main-table {
   width: 100%;
   background-color: transparent !important;
-  border: 1px solid black !important;
+  border: 1px solid rgba(0,0,0,0.4) !important;
 }
 
 :deep(.el-table__header th) {
-  border: 1px solid #7f7f7f !important;
+  border: 1px solid rgba(127,127,127,0.4) !important;
   background-color: transparent !important;
   font-size: 16px;
   font-weight: bold;
@@ -196,12 +235,12 @@ const getStatusClass = (status) => {
 }
 
 :deep(.el-table__body td) {
-  border: 1px solid #7f7f7f !important;
+  border: 1px solid rgba(127,127,127,0.2) !important;
 }
 
 :deep(.el-table__body tr) {
   background-color: transparent !important;
-  border: 1px solid #7f7f7f !important;
+  border: 1px solid rgba(127,127,127,0.4) !important;
 }
 
 :deep(.el-table__body tr .waitBuyerPay) {

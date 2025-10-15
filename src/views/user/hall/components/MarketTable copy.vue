@@ -8,9 +8,6 @@
     key="marketTable"
     style="height: 600px; overflow: auto;"
     @row-click="handleRowClick"
-    @touchstart="onTouchStart"
-    @touchmove="onTouchMove"
-    @touchend="onTouchEnd"
   >
     <el-table-column label="商户" width="'30%'" align="center">
       <template v-slot="{ row }">
@@ -59,10 +56,6 @@ const listQuery = reactive({
   tableType: props.tableType,
 });
 const minTableRowCount = ref(15)
-const isRefreshing = ref(false)
-const touchStartY = ref(0) // 触摸开始位置
-const touchMoveY = ref(0) // 触摸移动位置
-const threshold = ref(200) // 下拉刷新阈值
 
 // 用于防止重复调用的标志位
 let isFirstCall = true;
@@ -166,37 +159,6 @@ const getExchangeCNY = (amount) => {
   const result = num1.mul(num2).toFixed(2, Decimal.ROUND_UP);
   return result
 }
-
-const onTouchStart = (event) => {
-  // 记录触摸开始的位置
-  touchStartY.value = event.changedTouches[0].clientY;
-}
-
-const onTouchMove = (event) => {
-  // 获取触摸移动的 Y 轴位置
-  touchMoveY.value = event.changedTouches[0].clientY;
-
-  // 如果下拉距离超过阈值，显示刷新提示
-  if (touchMoveY.value - touchStartY.value > threshold.value) {
-    isRefreshing.value = true;
-  }
-}
-
-const onTouchEnd = () => {
-  // 判断是否触发刷新
-  if (touchMoveY.value - touchStartY.value > threshold.value) {
-    triggerRefresh();
-  } else {
-    isRefreshing.value = false;
-  }
-}
-
-// 触发刷新
-const triggerRefresh = () => {
-  isRefreshing.value = true; // 显示刷新状态
-  getList()
-}
-
 </script>
 
 <style scoped lang="scss">

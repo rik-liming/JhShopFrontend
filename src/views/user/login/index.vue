@@ -213,7 +213,7 @@ export default defineComponent({
       const userStore = store.user()
       const configStore = store.config()
       try {
-        const response = await userStore.verifyOtp(this.loginForm.user_name, this.otp)
+        const response = await userStore.verifyOtp(this.loginForm.email, this.otp)
         if (response.data.code == 10000) {
           this.$router.push({ path: this.redirect || '/', query: this.otherQuery })
 

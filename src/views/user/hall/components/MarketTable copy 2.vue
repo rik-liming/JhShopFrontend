@@ -1,58 +1,64 @@
 <template>
+  <el-scrollbar
+    class="table-scroll"
+    style="height: 600px; overflow: auto;"
+    @touchstart="onTouchStart"
+    @touchmove="onTouchMove"
+    @touchend="onTouchEnd"
+  >
     <el-table
-        :data="list"
-        border
-        fit
-        highlight-current-row
-        class="main-table"
-        key="financeTable"
-        style="height: 600px; overflow: auto;"
-        @row-click="handleRowClick"
-        @touchstart="onTouchStart"
-        @touchmove="onTouchMove"
-        @touchend="onTouchEnd"
+      :data="list"
+      border
+      fit
+      highlight-current-row
+      class="main-table"
+      key="marketTable"
+      @row-click="handleRowClick"
     >
-        <el-table-column label="记录编号" width="'40%'" align="center">
-          <template v-slot="{row}">
-            <span v-if="row.transaction_id">{{ row.transaction_id }}</span>
-            <span v-else>-</span>
-          </template>
-        </el-table-column>
-        <el-table-column label="金额" width="'20%'" align="center">
-          <template v-slot="{row}">
-            <span v-if="row.amount">{{ row.amount }}</span>
-            <span v-else>-</span>
-          </template>
-        </el-table-column>
-        <el-table-column label="类型" width="'20%'" align="center">
-          <template v-slot="{row}">
-            <span v-if="row.transaction_type">{{ row.transaction_type }}</span>
-            <span v-else>-</span>
-          </template>
-        </el-table-column>
-        <el-table-column label="余额" width="'20%'" align="center">
-          <template v-slot="{row}">
-            <span v-if="row.balance_after">{{ row.balance_after }}</span>
-            <span v-else>-</span>
-          </template>
-        </el-table-column>
+      <el-table-column label="商户" width="'30%'" align="center">
+        <template v-slot="{ row }">
+          <span v-if="row.user_id">{{ formatIdDisplay(row.user_id) }}</span>
+          <span v-else>-</span>
+        </template>
+      </el-table-column>
+      <el-table-column label="售卖数量" width="'40%'" align="center">
+        <template v-slot="{ row }">
+          <span v-if="row.remain_amount">{{ row.remain_amount }}</span>
+          <span v-else>-</span>
+        </template>
+      </el-table-column>
+      <el-table-column label="等值人民币" width="'30%'" align="center">
+        <template v-slot="{ row }">
+          <span v-if="row.amount">{{ getExchangeCNY(row.amount) }}</span>
+          <span v-else>-</span>
+        </template>
+      </el-table-column>
     </el-table>
+
+    <!-- 下拉刷新提示 -->
+    <div v-if="isRefreshing" class="refreshing-indicator">
+      正在加载...
+    </div>
+  </el-scrollbar>
 </template>
 
 <script setup>
 import { ref, onMounted, reactive, watch, defineEmits, nextTick } from 'vue';
 import { useRouter } from 'vue-router';
 import store from '@/store';
-import * as FinanceApi from '@/api/finance'
+import * as OrderApi from '@/api/order'
+import { formatIdDisplay } from '@/utils/tool'
+import Decimal from 'decimal.js'
 
 const emit = defineEmits();
-
-const userStore = store.user()
 
 const props = defineProps({
   currentShowTable: String,
   tableType: String,
 });
+
+const userStore = store.user()
+const configStore = store.config()
 
 // 定义数据
 const list = ref([]);
@@ -61,8 +67,7 @@ const listQuery = reactive({
   limit: 100,
   tableType: props.tableType,
 });
-
-const minTableRowCount = ref(200)
+const minTableRowCount = ref(15)
 const isRefreshing = ref(false)
 const touchStartY = ref(0) // 触摸开始位置
 const touchMoveY = ref(0) // 触摸移动位置
@@ -77,22 +82,24 @@ const getList = async () => {
     emit('table-update-start');
 
     setTimeout(() => {
-      emit('table-update-end');
+      emit('table-update-end');  
     }, 100);
     
-    const response = await FinanceApi.getMyFinanceRecord(userStore.loginToken, {
+    const response = await OrderApi.getOrderListingByPage(userStore.loginToken, {
       page: listQuery.page,
-      pagesize: listQuery.limit,
+      page_size: listQuery.limit,
+      channel: listQuery.tableType
     })
+
     if (response.data.code === 10000) {
-      const records = response.data.data.records;
+      const orderListings = response.data.data.orderListings;
 
       // 判断是否少于 15 条数据
-      if (records.length < minTableRowCount.value) {
-        // 填充空数据到 15 条
+      if (orderListings.length < minTableRowCount.value) {
+        // 填充空数据到 20 条
         list.value = [
-          ...records, // 将接口返回的数据放在前面
-          ...Array(minTableRowCount.value - records.length).fill({}) // 填充空数据
+          ...orderListings, // 将接口返回的数据放在前面
+          ...Array(minTableRowCount.value - orderListings.length).fill({}) // 填充空数据
         ];
       } else {
         list.value = Array(minTableRowCount.value).fill({});
@@ -111,10 +118,7 @@ watch(
     listQuery.tableType = newTableType;
     
     // 确保只有在 tableType 改变时才调用 getList
-    if (!isFirstCall 
-      && props.currentShowTable === 'my'
-      && props.tableType === 'finance'
-    ) {
+    if (!isFirstCall && props.currentShowTable === 'market') {
       getList();
     } else {
       isFirstCall = false; // 第一次加载后设置为 false
@@ -131,33 +135,46 @@ onMounted(() => {
   });
 });
 
+// 跳转到指定页面
 const router = useRouter();
-const handleRowClick = (row) => {
-  let targetPage = ''
-  switch(row.transaction_type) {
-    case 'recharge':
-      targetPage = `/charge/detail?transactionId=${row.transaction_id}`
-      break;
-    case 'transfer':
-      targetPage = `/transfer/detail?transactionId=${row.transaction_id}`
-      break;
-    case 'withdraw':
-      targetPage = `/withdraw/detail?transactionId=${row.transaction_id}`
-      break;
-    case 'order':
-      const role = userStore.user?.value?.role
-      if (role === 'buyer') {
-        targetPage = `/order/buyer/detail?orderId=${row.order_id}`;
-      } else if (role === 'seller' || role === 'agent') {
-        targetPage = `/order/seller/detail?orderId=${row.order_id}`;
-      }
-      break;
-  }
 
-  if (targetPage.length > 0) {
-    router.push(targetPage);
+const handleRowClick = (row) => {
+  const role = userStore.user?.value?.role
+  if (role === 'buyer') {
+    // 根据点击的行的数据，构造目标路由地址
+    const targetPage = `/order/buyer/buy?orderListingId=${row.id}`; // 假设根据 row.id 构造跳转路径
+    router.push(targetPage); // 跳转到 /buy 页面，带上 tradeId 参数
   }
 };
+
+function getExchangeRate() {
+  const configStore = store.config();
+  if (!configStore || !configStore.config) {
+    return 0.00;
+  }
+  let exchangeRate = 0.00;
+  switch (listQuery.channel) {
+    case 'alipay':
+      exchangeRate = configStore.config.value.exchange_rate_alipay;
+      break;
+    case 'wechat':
+      exchangeRate = configStore.config.value.exchange_rate_wechat;
+      break;
+    case 'bank':
+      exchangeRate = configStore.config.value.exchange_rate_bank;
+      break;
+  }
+  return exchangeRate;
+}
+
+const getExchangeCNY = (amount) => {
+  const num1 = new Decimal(amount);  // 第一个数
+  const num2 = new Decimal(getExchangeRate());    // 第二个数
+
+  // 相乘并保留 2 位小数
+  const result = num1.mul(num2).toFixed(2, Decimal.ROUND_UP);
+  return result
+}
 
 const onTouchStart = (event) => {
   // 记录触摸开始的位置
@@ -188,6 +205,7 @@ const triggerRefresh = () => {
   isRefreshing.value = true; // 显示刷新状态
   getList()
 }
+
 </script>
 
 <style scoped lang="scss">
@@ -216,5 +234,11 @@ const triggerRefresh = () => {
 :deep(.el-table__body tr) {
   background-color: transparent !important;
   border: 1px solid rgba(127,127,127,0.4) !important;
+}
+
+.refreshing-indicator {
+  text-align: center;
+  padding: 10px;
+  color: #999;
 }
 </style>

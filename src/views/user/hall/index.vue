@@ -21,13 +21,14 @@
       <div class="marquee-container">
         <Vue3Marquee :duration="10">
           <span class="marquee-text">
-            欢迎来到财富的世界！By嘉禾商城
+            <!-- 欢迎来到财富的世界！By嘉禾商城 -->
+            {{ configStore?.config?.value?.advertisement_text }}
           </span>
         </Vue3Marquee>
       </div>
     </div>
 
-    <div class="transaction-container" v-if="store.user().user?.value?.role === 'agent' || store.user().user?.value?.role === 'seller'">
+    <div class="transaction-container" v-if="userStore.user?.value?.role === 'agent' || userStore?.value?.role === 'seller'">
       <div class="transaction-menu">
         <div class="left-menu" @click="onRecharge">
           <img src="@/assets/buy_icon.svg" class="buy-icon">
@@ -46,15 +47,35 @@
     </div>
 
     <div class="app-container tw-mt-[-10px]" @scroll="onScroll">
-      <div class="filter-container tw-flex tw-flex-items-center tw-border tw-border-solid tw-border-black tw-border-opacity-30 tw-px-4 tw-pt-4 tw-mb-4">
+      <div class="filter-container tw-flex tw-flex-items-center justify-center tw-border tw-border-solid tw-border-black tw-border-opacity-30 tw-px-4 tw-pt-4 tw-mb-4">
         <div class="tw-w-1/3">
-          <el-select v-model="listQuery.channel" clearable class="filter-item">
-            <el-option v-for="item in channelOptions" :key="item.value" :label="item.label" :value="item.value" />
+          <el-select 
+            v-model="listQuery.marketTableType"
+            class="filter-item"
+            :class="{ 'selected-table': listQuery.currentShowTable == 'market' }"
+            @change="updateCurrentShowTable('market')"
+          >
+            <el-option 
+              v-for="item in marketTableTypeOptions" 
+              :key="item.value" 
+              :label="item.label" 
+              :value="item.value" 
+            />
           </el-select>
         </div>
         <div class="tw-w-1/3">
-          <el-select v-model="listQuery.tableType" clearable class="filter-item">
-            <el-option v-for="item in getTableTypeOptions()" :key="item.value" :label="item.label" :value="item.value" />
+          <el-select 
+            v-model="listQuery.myTableType"
+            class="filter-item"
+            :class="{ 'selected-table': listQuery.currentShowTable == 'my' }"
+            @change="updateCurrentShowTable('my')"
+          >
+            <el-option 
+              v-for="item in myTableTypeOptions" 
+              :key="item.value" 
+              :label="item.label" 
+              :value="item.value" 
+            />
           </el-select>
         </div>
         <div class="tw-flex tw-flex-col tw-w-1/3">
@@ -75,25 +96,25 @@
       <!-- 包裹表格的容器 -->
       <div class="table-wrapper" :class="{ 'animate': animate }">
           <market-table
-            :channel="listQuery.channel"
-            :tableType="listQuery.tableType"
+            :currentShowTable="listQuery.currentShowTable"
+            :tableType="listQuery.marketTableType"
             @table-update-start="handleTableUpdateStart"
             @table-update-end="handleTableUpdateEnd"
-            v-show="listQuery.tableType == 'market'"
+            v-show="listQuery.currentShowTable == 'market'"
           ></market-table>
           <order-table
-            :channel="listQuery.channel"
-            :tableType="listQuery.tableType"
+            :currentShowTable="listQuery.currentShowTable"
+            :tableType="listQuery.myTableType"
             @table-update-start="handleTableUpdateStart"
             @table-update-end="handleTableUpdateEnd"
-            v-show="listQuery.tableType == 'order'"
+            v-show="listQuery.myTableType == 'order' && listQuery.currentShowTable == 'my'"
           ></order-table>
           <finance-table
-            :channel="listQuery.channel"
-            :tableType="listQuery.tableType"
+            :currentShowTable="listQuery.currentShowTable"
+            :tableType="listQuery.myTableType"
             @table-update-start="handleTableUpdateStart"
             @table-update-end="handleTableUpdateEnd"
-            v-show="listQuery.tableType == 'finance'"
+            v-show="listQuery.myTableType == 'finance' && listQuery.currentShowTable == 'my'"
           ></finance-table>
       </div>
     </div>
@@ -105,7 +126,6 @@ import { ref, reactive, onMounted, markRaw, watch, computed, nextTick, onBeforeU
 import { Vue3Marquee } from 'vue3-marquee'
 import { toast } from 'vue3-toastify'
 import waves from '@/directive/waves'
-import { fetchList } from '@/api/article'
 import { parseTime } from '@/utils'
 import Navbar from './navbar.vue';
 import store from '@/store';
@@ -122,49 +142,28 @@ const ad_imgs = [
 ]
 
 const userStore = store.user()
+const configStore = store.config()
 
 // --- 表格数据 ---
 const tableWrapper = ref(null)
 let scrollTopCache = 0
 
 const tableKey = ref(0)
-const channelOptions = ref(
-  [
-    {
-      'label': '支付宝',
-      'value': 'alipay'
-    },
-    {
-      'label': '银行卡',
-      'value': 'bank'
-    },
-    {
-      'label': '微信',
-      'value': 'wechat'
-    },
-  ]
-)
+const marketTableTypeOptions = [
+  { label: '支付宝', value: 'alipay' },
+  { label: '银行卡', value: 'bank' },
+  { label: '微信', value: 'wechat' },
+]
 
-const getTableTypeOptions = () => {
-  const tableTypeOptions = [
-    { label: '市场', value: 'market', role: 'all' },
-    { label: '订单', value: 'order', role: 'seller,agent,buyer' },
-    { label: '财务变动', value: 'finance', role: 'seller,agent' },
-  ];
-
-  // 根据不同的角色过滤元素
-  if (userStore.user?.value?.role === 'buyer') {
-    return tableTypeOptions.filter(option => option.role === 'all' || option.role.includes('buyer'));
-  } else if (userStore.user?.value?.role === 'seller' || userStore.user?.value?.role === 'agent') {
-    return tableTypeOptions;
-  } else {
-    return tableTypeOptions.filter(option => option.role === 'all');
-  }
-}
+const myTableTypeOptions = [
+  { label: '订单', value: 'order' },
+  { label: '财务变动', value: 'finance' },
+]
 
 const listQuery = reactive({
-  channel: 'alipay',
-  tableType: 'market',
+  currentShowTable: 'market',  // market/my
+  myTableType: 'order',        // order/finance
+  marketTableType: 'alipay',   // alipay/wechat/bank
 })
 
 const router = useRouter();
@@ -198,21 +197,12 @@ async function handleTableUpdateEnd() {
   animate.value = true;
 }
 
-watch(() => listQuery.tableType, async () => {
-  animate.value = false
-  await nextTick()
-  setTimeout(() => {
-    animate.value = true
-  }, 300)
-})
-
 function getExchangeRate() {
-  const configStore = store.config();
   if (!configStore || !configStore.config) {
     return 0.00;
   }
   let exchangeRate = 0.00;
-  switch (listQuery.channel) {
+  switch (listQuery.marketTableType) {
     case 'alipay':
       exchangeRate = configStore.config.value.exchange_rate_alipay;
       break;
@@ -257,6 +247,10 @@ onBeforeUnmount(() => {
   }
 })
 
+const updateCurrentShowTable = (currentShowTable) => {
+  listQuery.currentShowTable = currentShowTable
+}
+
 </script>
 
 <style scoped lang="scss">
@@ -298,7 +292,8 @@ onBeforeUnmount(() => {
 .transaction-container {
   display: flex;
   justify-content: center;
-  margin-top: 10px;
+  // margin-top: -10px;
+  margin-bottom: -10px;
 
   .transaction-menu {
     width: 90%;
@@ -427,11 +422,25 @@ onBeforeUnmount(() => {
 :deep(.el-select__placeholder) {
   color: black !important;
   font-size: 20px !important;
-  margin-top: 4px !important;
+  margin: 4px 0px !important;
 }
 
 :deep(.el-select__caret) {
   color: black !important;
+}
+
+.filter-item.selected-table {
+  // background-color: rgba(0, 0, 0, 0.1);
+  // border-radius: 4px; /* 如果想要圆角效果 */
+  // transform: scale(1.05); /* 放大 5% */
+  // box-shadow: 0 0 10px rgba(0, 0, 0, 0.2); /* 添加阴影效果 */
+  // transition: transform 0.3s ease, box-shadow 0.3s ease; /* 添加平滑过渡效果 */
+  color: black !important;
+}
+
+:deep(.filter-item.selected-table .el-select__placeholder) {
+  color: blue !important;
+  font-size: 24px !important;
 }
 
 </style>

@@ -12,10 +12,10 @@ export async function createOrderListing(loginToken, orderParams) {
 
 // request order listing
 export async function getOrderListingByPage(loginToken, queryParams) {
-    const { channel, page, pagesize } = queryParams;
+    const { channel, page, page_size } = queryParams;
 
     // 构建请求的基础 URL
-    let requestUrl = `/api/order_listing/page?page=${page}&pagesize=${pagesize}&channel=${channel}`;
+    let requestUrl = `/api/order_listing/page?page=${page}&page_size=${page_size}&channel=${channel}`;
     const response = await requestBase.get(requestUrl, {
         headers: {
             Authorization: `Bearer ${loginToken}`,
