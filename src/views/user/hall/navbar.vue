@@ -98,7 +98,7 @@ export default defineComponent({
 
     .right-menu-item {
       display: inline-block;
-      padding: 0 8px;
+      padding: 0 4px;
       height: 100%;
       line-height: 50px;
       font-size: 18px;

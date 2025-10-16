@@ -7,7 +7,7 @@
 
       <div class="tw-absolute tw-top-16 tw-right-4 tw-flex tw-flex-col tw-items-end tw-z-20">
         <button 
-          class="tw-text-red-500 tw-text-sm tw-border tw-border-solid tw-border-gray-500 tw-rounded tw-px-4 tw-py-2 tw-mb-4" 
+          class="tw-text-[#d9001b] tw-text-[17px] tw-border tw-border-solid tw-border-black tw-border-opacity-40 tw-rounded tw-px-2 tw-py-1 tw-mb-4" 
           @click="handleClose"
         >
           关闭
@@ -70,10 +70,10 @@
         </el-form-item>
 
         <button 
-          class="tw-w-full tw-text-red-500 tw-font-medium"
+          class="tw-w-full tw-text-[#d82d15] tw-font-medium"
           @click="handleClose"
         >
-          取消
+          {{ '取 消' }}
         </button>
       </el-form>
 
@@ -223,14 +223,18 @@ export default defineComponent({
   border-radius: min(11vw, 11vh); /* 取宽和高中较小的比例 */;
   overflow: hidden;
 
+  .register-box {
+    width: 70%;
+  }
+
   .new-label {
     position: absolute;
     color: #95F204;
     font-family: 'Rockwell-Bold', 'Rockwell Bold', 'Rockwell';
     font-size: 28px;
     font-weight: 700;
-    right: 100px;
-    top: 70px;
+    right: 110px;
+    top: 60px;
   }
 
   .logo-container {
@@ -238,12 +242,12 @@ export default defineComponent({
     display: flex;
     justify-content: center;
     align-items: center;
-    margin-top: 80px;
+    margin-top: 70px;
     margin-bottom: 50px;
 
     .logo {
-      width: 190px;
-      height: 180px;
+      width: 174px;
+      height: 168px;
     }
   }
 
@@ -264,10 +268,11 @@ export default defineComponent({
     background: transparent !important;
   }
 
-  .custom-form-item .el-form-item__label {
-    display: block; /* Ensure label is on a new line */
+  :deep(.custom-form-item .el-form-item__label) {
+    display: inline-flex; /* Ensure label is on a new line */
     margin-bottom: 0.5rem; /* Space between label and input */
-    font-family: 'PingFangSC-Regular', 'PingFang SC' !important;
+    font-family: "'PingFangSC-Regular', 'PingFang SC'" !important;
+    font-weight: normal !important;
     color: #333333 !important;
   }
 
@@ -284,7 +289,8 @@ export default defineComponent({
     border-left: 0px !important;
     border-right: 0px !important;
     border-top: 0px !important;
-    --el-input-text-color: #333;
+    --el-input-text-color: #333333;
+    font-family: "'PingFangSC-Regular', 'PingFang SC'" !important;
   }
 
   :deep(.el-input input) {
@@ -320,7 +326,7 @@ export default defineComponent({
     letter-spacing: 4px;
     font-size: 20px;
     border-radius: 20px;
-    width: 278px;
+    width: 300px;
     height: 53px;
     padding: 2px;
     margin-top: 80px;

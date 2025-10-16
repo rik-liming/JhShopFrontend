@@ -225,9 +225,10 @@ const triggerRefresh = () => {
 :deep(.el-table__header th) {
   border: 1px solid rgba(127,127,127,0.4) !important;
   background-color: transparent !important;
-  font-size: 16px;
-  font-weight: bold;
+  font-size: 14px;
+  font-weight: 600;
   color: black;
+  font-family: 'PingFangSC-Semibold', 'PingFang SC Semibold', 'PingFang SC';
 }
 
 :deep(.el-table__header tr) {
@@ -236,6 +237,10 @@ const triggerRefresh = () => {
 
 :deep(.el-table__body td) {
   border: 1px solid rgba(127,127,127,0.2) !important;
+  font-size: 13px;
+  font-weight: normal;
+  color: #333333;
+  font-family: 'Arial Normal', 'Arial';
 }
 
 :deep(.el-table__body tr) {

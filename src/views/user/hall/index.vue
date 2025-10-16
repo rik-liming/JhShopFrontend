@@ -46,7 +46,7 @@
       </div>
     </div>
 
-    <div class="app-container tw-mt-[-10px]" @scroll="onScroll">
+    <div class="tw-mt-2 tw-mx-8" @scroll="onScroll">
       <div class="filter-container tw-flex tw-flex-items-center justify-center tw-border tw-border-solid tw-border-black tw-border-opacity-30 tw-px-4 tw-pt-4 tw-mb-4">
         <div class="tw-w-1/3">
           <el-select 
@@ -80,12 +80,12 @@
         </div>
         <div class="tw-flex tw-flex-col tw-w-1/3">
           <div class="tw-flex tw-justify-between ">
-            <p class="tw-text-left tw-font-bold">市场汇率：</p>
-            <p class="tw-text-lg tw-text-right">{{ getExchangeRate() }}</p>
+            <p class="tw-text-sm tw-text-left tw-font-bold">市场汇率：</p>
+            <p class="tw-text-sm tw-text-right">{{ getExchangeRate() }}</p>
           </div>
           <div class="tw-flex tw-justify-between ">
-            <p class="tw-text-left tw-font-bold tw-ml-4">刷新：</p>
-            <p class="tw-text-lg tw-text-right tw-text-red-400">{{ countdown }}s</p>
+            <p class="tw-text-sm tw-text-left tw-font-bold tw-ml-4">刷新：</p>
+            <p class="tw-text-sm tw-text-right tw-text-red-400">{{ countdown }}s</p>
           </div>
         </div>
         <!-- <el-select v-model="listQuery.sort" style="width: 140px" class="filter-item">
@@ -118,6 +118,9 @@
           ></finance-table>
       </div>
     </div>
+
+    <!-- Footer -->
+    <div class="footer">Copy@ JH嘉禾商城</div>
   </div>
 </template>
 
@@ -256,7 +259,7 @@ const updateCurrentShowTable = (currentShowTable) => {
 <style scoped lang="scss">
 
 .navbar-container {
-  margin-top: 30px;
+  margin-top: 40px;
 }
 
 .carousel-wrapper {
@@ -296,7 +299,7 @@ const updateCurrentShowTable = (currentShowTable) => {
   margin-bottom: -10px;
 
   .transaction-menu {
-    width: 90%;
+    width: 84%;
     height: 70px;
     overflow: hidden;
     position: relative;
@@ -310,7 +313,8 @@ const updateCurrentShowTable = (currentShowTable) => {
       cursor: pointer;
       transition: background .3s;
       -webkit-tap-highlight-color: transparent;
-      font-size: 18px;
+      font-size: 16px;
+      font-family: 'STSongti-SC-Bold', 'Songti SC Bold', 'Songti SC';
       color: #d9001b;
       font-weight: bold;
       display: flex;
@@ -342,7 +346,8 @@ const updateCurrentShowTable = (currentShowTable) => {
         display: inline-block;
         height: 100%;
         line-height: 50px;
-        font-size: 18px;
+        font-size: 16px;
+        font-family: 'STSongti-SC-Bold', 'Songti SC Bold', 'Songti SC';
         color: #d9001b;
         font-weight: bold;
         vertical-align: text-bottom;
@@ -380,23 +385,6 @@ const updateCurrentShowTable = (currentShowTable) => {
   }
 }
 
-.fixed-header {
-  position: fixed;
-  top: 0;
-  right: 0;
-  z-index: 9;
-  width: calc(100% - var(--side-bar-width));
-  transition: width 0.28s;
-}
-
-.hideSidebar .fixed-header {
-  width: calc(100% - 54px)
-}
-
-.mobile .fixed-header {
-  width: 100%;
-}
-
 .publish-btn {
   display: inline-flex;
   align-items: center;
@@ -414,15 +402,16 @@ const updateCurrentShowTable = (currentShowTable) => {
 :deep(.el-select__wrapper) {
   background-color: transparent !important;
   box-shadow: none !important;
-  font-size: 18px !important;
   font-weight: bold !important;
-  color: black !important;
+  // font-size: 28px !important;
+  // color: red !important;
 }
 
 :deep(.el-select__placeholder) {
   color: black !important;
-  font-size: 20px !important;
+  font-size: 18px !important;
   margin: 4px 0px !important;
+  font-family: 'Arial Negreta', 'Arial Normal', 'Arial' !important;
 }
 
 :deep(.el-select__caret) {
@@ -435,12 +424,21 @@ const updateCurrentShowTable = (currentShowTable) => {
   // transform: scale(1.05); /* 放大 5% */
   // box-shadow: 0 0 10px rgba(0, 0, 0, 0.2); /* 添加阴影效果 */
   // transition: transform 0.3s ease, box-shadow 0.3s ease; /* 添加平滑过渡效果 */
-  color: black !important;
+  // color: black !important;
 }
 
 :deep(.filter-item.selected-table .el-select__placeholder) {
   color: blue !important;
-  font-size: 24px !important;
+  font-size: 20px !important;
+}
+
+.footer {
+  font-size: 11px;
+  text-align: center;
+  font-family: Arial Normal, Arial;
+  color: #333333;
+  opacity: 0.57;
+  margin: 50px 0 10px 0;
 }
 
 </style>

@@ -17,16 +17,16 @@ import store from '@/store'
 const isRotating = ref(false)
 
 // 设置初始图标大小
-let iconSize = ref(40)
+let iconSize = ref(34)
 
 // 动态监听 device 的变化
 watch(() => store.app().device, (newDevice) => {
   if (newDevice === 'mobile') {
-    iconSize.value = 40
+    iconSize.value = 34
   } else if (newDevice === 'desktop') {
     iconSize.value = 60
   } else {
-    iconSize.value = 40 // 默认值
+    iconSize.value = 34 // 默认值
   }
 }, { immediate: true }) // { immediate: true } 确保页面加载时会立即获取 device 的值
 

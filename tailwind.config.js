@@ -6,7 +6,15 @@ export default {
     "./src/**/*.{vue,js,ts,jsx,tsx}",
   ],
   theme: {
-    extend: {},
+    extend: {
+      fontFamily: {
+        songti: ["'STSsongti-SC-Bold'", "'Songti SC Bold'", "'Songti SC'", 'serif'],
+        pingfang: ["'PingFangSC-Regular'", "'PingFang SC'"],
+        pingfangsb: ["'PingFangSC-Semibold'", "'PingFang SC Semibold'", "'PingFang SC'"],
+        arial: ["'Arial Normal'", "'Arial'"],
+        times: ["'Times-Roman'", "'Times'"],
+      }
+    },
   },
   plugins: [],
 }

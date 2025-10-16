@@ -260,19 +260,20 @@ export default defineComponent({
   border-radius: min(11vw, 11vh); /* 取宽和高中较小的比例 */;
   overflow: hidden;
 
-  // .login-box {
-  //   width: 360px;
-  //   padding: 30px 20px;
-  //   background: rgba(255, 255, 255, 0.2);
-  //   border-radius: 20px;
-  //   text-align: center;
-  // }
+  .login-box {
+    width: 70%;
+    // padding: 30px 20px;
+    // background: rgba(255, 255, 255, 0.2);
+    // border-radius: 20px;
+    // text-align: center;
+  }
 
   .title-container {
     display: flex;
     flex-direction: column;
-    margin-top: 62px;
-    margin-left: 80px;
+    margin-top: 60px;
+    margin-left: 110px;
+    gap: 0px;
 
     .welcome {
       font-size: 20px;
@@ -286,6 +287,7 @@ export default defineComponent({
       font-weight: 700;
       color: #000;
       font-family: 'STXingkaiSC-Bold', 'Xingkai SC Bold', 'Xingkai SC', serif;
+      margin-top: -10px;
     }
   }
 
@@ -298,8 +300,8 @@ export default defineComponent({
     margin-bottom: 50px;
 
     .logo {
-      width: 211px;
-      height: 200px;
+      width: 180px;
+      height: 178px;
     }
   }
 
@@ -320,10 +322,11 @@ export default defineComponent({
     background: transparent !important;
   }
 
-  .custom-form-item .el-form-item__label {
-    display: block; /* Ensure label is on a new line */
+  :deep(.custom-form-item .el-form-item__label) {
+    display: inline-flex; /* Ensure label is on a new line */
     margin-bottom: 0.5rem; /* Space between label and input */
-    font-family: 'PingFangSC-Regular', 'PingFang SC' !important;
+    font-family: "'PingFangSC-Regular', 'PingFang SC'" !important;
+    font-weight: normal !important;
     color: #333333 !important;
   }
 
@@ -340,7 +343,8 @@ export default defineComponent({
     border-left: 0px !important;
     border-right: 0px !important;
     border-top: 0px !important;
-    --el-input-text-color: #333;
+    --el-input-text-color: #333333;
+    font-family: "'PingFangSC-Regular', 'PingFang SC'" !important;
   }
 
   :deep(.el-input input) {
@@ -372,18 +376,19 @@ export default defineComponent({
     letter-spacing: 4px;
     font-size: 20px;
     border-radius: 20px;
-    width: 278px;
+    width: 300px;
     height: 53px;
     padding: 2px;
     margin-top: 60px;
   }
 
   .register-link {
-    margin-top: 15px;
-    margin-left: 210px;
+    margin-left: 220px;
+    margin-top: -10px;;
     font-size: 16px;
     color: #4B7902;
     cursor: pointer;
+    font-family: 'STSongti-SC-Regular', 'Songti SC';
   }
 
   .footer {
@@ -395,7 +400,7 @@ export default defineComponent({
     font-family: Arial Normal, Arial;
     color: #333333;
     opacity: 0.57;
-    margin: 140px 0 10px;
+    margin: 180px 0 10px;
   }
 
   :deep(div.el-dialog.custom-dialog) {
