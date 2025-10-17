@@ -1,10 +1,11 @@
 import requestBase from './base';
 
 // request create recharge
-export async function createRecharge(loginToken, data) {
-    const response = await requestBase.post('/api/recharge', data, {
+export async function createRecharge(loginToken, formData) {
+    const response = await requestBase.post('/api/recharge', formData, {
         headers: {
             Authorization: `Bearer ${loginToken}`,
+            'Content-Type': 'multipart/form-data',
         }
     })
     return response

@@ -1,7 +1,7 @@
 <template>
   <div class="navbar">
     <hamburger id="hamburger-container" :is-active="sidebar.opened" class="hamburger-container"
-               @toggleClick="toggleSidebar" />
+               @toggleClick="toggleSidebar" style="padding: 10px;"/>
 
     <div class="right-menu">
         <div class="right-menu-item">

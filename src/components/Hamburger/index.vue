@@ -1,5 +1,5 @@
 <template>
-  <div style="padding: 6px 15px;" @click="handleClick">
+  <div style="" @click="handleClick">
     <img
       src="@/assets/logo.png"
       class="hamburger-logo"

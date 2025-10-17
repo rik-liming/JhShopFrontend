@@ -11,7 +11,8 @@
     
     <!-- 上传按钮 -->
     <div
-        class="tw-w-full tw-h-28 tw-bg-gray-100 tw-border tw-border-dashed tw-border-gray-400 tw-rounded-md tw-flex tw-items-center tw-justify-center"
+        v-if="!imageUrl"
+        class="tw-w-full tw-h-36 tw-bg-gray-100 tw-border tw-border-dashed tw-border-gray-400 tw-rounded-md tw-flex tw-items-center tw-justify-center"
         @click="triggerFileInput"
     >
         <div
@@ -23,7 +24,7 @@
 
     <!-- 预览区域 -->
     <div v-if="imageUrl" class="tw-m-4 tw-flex">
-      <img :src="imageUrl" alt="Preview" class="tw-w-32 tw-h-32 tw-object-cover" />
+      <img :src="imageUrl" alt="Preview" class="tw-w-32 tw-h-24 tw-object-contain" @click="openPreview" />
       <button
         @click="removeImage"
         class="tw-text-sm tw-text-red-500 tw-ml-2 tw-ml-4"
@@ -31,6 +32,17 @@
         删除
       </button>
     </div>
+
+    <el-dialog
+      v-model="isPreviewOpen"
+    >
+      <img
+        :src="imageUrl"
+        alt="Preview"
+        class="tw-max-w-full tw-max-h-full tw-object-contain"
+        @click.stop
+      />
+    </el-dialog>
   </div>
 </template>
 
@@ -42,6 +54,7 @@ const emit = defineEmits(['update:file'])
 const imageUrl = ref('') // 用于保存图片预览的 URL
 const selectedFile = ref(null) // 用于保存选择的文件
 const fileInput = ref(null)
+const isPreviewOpen = ref(false);
 
 const handleFileChange = (event) => {
   const file = event.target.files[0]
@@ -70,6 +83,15 @@ const removeImage = () => {
   emit('update:file', null) // 清空父组件传递的文件
   fileInput.value.value = '' // 清空文件选择
 }
+
+const openPreview = () => {
+  isPreviewOpen.value = true;
+};
+
+// 关闭预览
+const closePreview = () => {
+  isPreviewOpen.value = false;
+};
 </script>
 
 <style scoped>
