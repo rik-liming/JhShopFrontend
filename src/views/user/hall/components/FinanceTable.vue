@@ -12,25 +12,25 @@
         @touchmove="onTouchMove"
         @touchend="onTouchEnd"
     >
-        <el-table-column label="记录编号" width="'40%'" align="center">
+        <el-table-column label="记录编号" :width="getAdjustWidth(120)" align="center">
           <template v-slot="{row}">
             <span v-if="row.transaction_id">{{ row.transaction_id }}</span>
             <span v-else>-</span>
           </template>
         </el-table-column>
-        <el-table-column label="金额" width="'20%'" align="center">
+        <el-table-column label="金额 (USTD)" :width="getAdjustWidth(90)" align="center">
           <template v-slot="{row}">
             <span v-if="row.amount">{{ row.amount }}</span>
             <span v-else>-</span>
           </template>
         </el-table-column>
-        <el-table-column label="类型" width="'20%'" align="center">
+        <el-table-column label="类型" :width="getAdjustWidth(64)" align="center">
           <template v-slot="{row}">
-            <span v-if="row.transaction_type">{{ row.transaction_type }}</span>
+            <span v-if="row.transaction_type">{{ transactionTypeMap[row.transaction_type] }}</span>
             <span v-else>-</span>
           </template>
         </el-table-column>
-        <el-table-column label="余额" width="'20%'" align="center">
+        <el-table-column label="余额 (USTD)" :width="getAdjustWidth(90)" align="center">
           <template v-slot="{row}">
             <span v-if="row.balance_after">{{ row.balance_after }}</span>
             <span v-else>-</span>
@@ -48,6 +48,11 @@ import * as FinanceApi from '@/api/finance'
 const emit = defineEmits();
 
 const userStore = store.user()
+const appStore = store.app()
+
+const transactionTypeMap = {
+  recharge: '充值',
+}
 
 const props = defineProps({
   currentShowTable: String,
@@ -136,7 +141,7 @@ const handleRowClick = (row) => {
   let targetPage = ''
   switch(row.transaction_type) {
     case 'recharge':
-      targetPage = `/charge/detail?transactionId=${row.transaction_id}`
+      targetPage = `/recharge/detail?reference_id=${row.reference_id}`
       break;
     case 'transfer':
       targetPage = `/transfer/detail?transactionId=${row.transaction_id}`
@@ -188,6 +193,15 @@ const triggerRefresh = () => {
   isRefreshing.value = true; // 显示刷新状态
   getList()
 }
+
+// 以430为基准，调整width
+const getAdjustWidth = (baseWidth) => {
+  const { body } = document;
+  const rect = body.getBoundingClientRect();
+  
+  return baseWidth / 430 * rect.width;
+}
+
 </script>
 
 <style scoped lang="scss">

@@ -24,7 +24,7 @@
 
     <!-- 预览区域 -->
     <div v-if="imageUrl" class="tw-m-4 tw-flex">
-      <img :src="imageUrl" alt="Preview" class="tw-w-32 tw-h-24 tw-object-contain" @click="openPreview" />
+      <img :src="imageUrl" alt="Preview" class="tw-w-32 tw-h-28 tw-object-contain" @click="openPreview" />
       <button
         @click="removeImage"
         class="tw-text-sm tw-text-red-500 tw-ml-2 tw-ml-4"

@@ -136,8 +136,8 @@ const handleRecharge = async() => {
 
     if (resp.data.code === 10000) {
       ElMessage.success('提交充值成功');
-      const rechargeId = resp.data.data.recharge.id
-      router.push(`/recharge/detail?rechargeId=${rechargeId}`);
+      const reference_id = resp.data.data.recharge.id
+      router.push(`/recharge/detail?reference_id=${reference_id}`);
     } else {
       ElMessage.error(resp.data.msg);
     }

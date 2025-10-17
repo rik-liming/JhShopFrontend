@@ -12,10 +12,10 @@ export async function createRecharge(loginToken, formData) {
 }
 
 // request recharge detail
-export async function getRechargeDetail(loginToken, transactionId) {
+export async function getRechargeDetail(loginToken, id) {
 
     // 构建请求的基础 URL
-    let requestUrl = `/api/recharge/detail?transaction_id=${transactionId}`;
+    let requestUrl = `/api/recharge/detail?id=${id}`;
 
     const response = await requestBase.get(requestUrl, {
         headers: {
