@@ -35,6 +35,7 @@
 
     <el-dialog
       v-model="isPreviewOpen"
+      align-center
     >
       <img
         :src="imageUrl"

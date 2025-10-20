@@ -27,9 +27,9 @@
         </div>
 
         <!-- 总资产 -->
-        <div class="tw-flex tw-justify-between tw-space-x-4 tw-mb-2 tw-font-pingfangsb tw-font-semibold">
+        <div v-if="rechargeData?.status == 1" class="tw-flex tw-justify-between tw-space-x-4 tw-mb-2 tw-font-pingfangsb tw-font-semibold">
           <p class="tw-text-left">总资产：</p>
-          <p class="tw-font-semibold tw-text-right">{{ rechargeData?.balance_before }} USDT</p>
+          <p class="tw-font-semibold tw-text-right">{{ rechargeData?.balance_after }} USDT</p>
         </div>
 
         <!-- 充值金额 -->

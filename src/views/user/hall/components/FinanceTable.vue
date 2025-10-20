@@ -32,7 +32,7 @@
         </el-table-column>
         <el-table-column label="余额 (USTD)" :width="getAdjustWidth(90)" align="center">
           <template v-slot="{row}">
-            <span v-if="row.balance_after">{{ row.balance_after }}</span>
+            <span v-if="row.balance_after && row.balance_after > 0">{{ row.balance_after }}</span>
             <span v-else>-</span>
           </template>
         </el-table-column>
@@ -97,15 +97,16 @@ const getList = async () => {
         // 填充空数据到 15 条
         list.value = [
           ...records, // 将接口返回的数据放在前面
-          ...Array(minTableRowCount.value - records.length).fill({}) // 填充空数据
+          // ...Array(minTableRowCount.value - records.length).fill({}) // 填充空数据
+          ...Array.from({ length: minTableRowCount.value - records.length }, () => ({ fakeId: Math.random() })) // 生成唯一的 fakeId
         ];
       } else {
-        list.value = Array(minTableRowCount.value).fill({});
+        list.value = Array.from({ length: minTableRowCount.value }, () => ({ fakeId: Math.random() })) // 生成唯一的 fakeId
       }
     }
   } catch (error) {
     console.error('获取数据失败', error);
-    list.value = Array(minTableRowCount.value).fill({});
+    list.value = Array.from({ length: minTableRowCount.value }, () => ({ fakeId: Math.random() })) // 生成唯一的 fakeId
   }
 };
 

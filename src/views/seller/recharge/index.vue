@@ -128,6 +128,11 @@ const handleRecharge = async() => {
       return;
     }
 
+    if (form.value.amount <= 0) {
+      ElMessage.error('充值金额必须大于0!');
+      return;
+    }
+
     const formData = new FormData();
     formData.append('amount', form.value.amount);
     formData.append('screenshot', form.value.screenshot)

@@ -113,15 +113,15 @@ const getList = async () => {
         // 填充空数据到 15 条
         list.value = [
           ...orders, // 将接口返回的数据放在前面
-          ...Array(minTableRowCount.value - orders.length).fill({}) // 填充空数据
+          ...Array.from({ length: minTableRowCount.value - orders.length }, () => ({ fakeId: Math.random() })) // 生成唯一的 fakeId
         ];
       } else {
-        list.value = Array(minTableRowCount.value).fill({});
+        list.value = Array.from({ length: minTableRowCount.value }, () => ({ fakeId: Math.random() })) // 生成唯一的 fakeId
       }
     }
   } catch (error) {
     console.error('获取数据失败', error);
-    list.value = Array(minTableRowCount.value).fill({});
+    list.value = Array.from({ length: minTableRowCount.value }, () => ({ fakeId: Math.random() })) // 生成唯一的 fakeId
   }
 };
 

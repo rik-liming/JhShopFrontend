@@ -59,7 +59,10 @@
               v-for="item in marketTableTypeOptions" 
               :key="item.value" 
               :label="item.label" 
-              :value="item.value" 
+              :value="item.value"
+              :class="{
+                'selected-item': listQuery.marketTableType === item.value
+              }" 
             />
           </el-select>
         </div>
@@ -74,7 +77,10 @@
               v-for="item in myTableTypeOptions" 
               :key="item.value" 
               :label="item.label" 
-              :value="item.value" 
+              :value="item.value"
+              :class="{
+                'selected-item': listQuery.myTableType === item.value
+              }" 
             />
           </el-select>
         </div>
@@ -165,7 +171,7 @@ const myTableTypeOptions = [
 
 const listQuery = reactive({
   currentShowTable: 'market',  // market/my
-  myTableType: 'order',        // order/finance
+  myTableType: '我的',        // default/order/finance
   marketTableType: 'alipay',   // alipay/wechat/bank
 })
 
@@ -252,6 +258,12 @@ onBeforeUnmount(() => {
 
 const updateCurrentShowTable = (currentShowTable) => {
   listQuery.currentShowTable = currentShowTable
+
+  if (currentShowTable == 'market') {
+    listQuery.myTableType = "我的"
+  } else if (currentShowTable == 'my') {
+    listQuery.marketTableType = "市场"
+  }
 }
 
 </script>
@@ -439,6 +451,11 @@ const updateCurrentShowTable = (currentShowTable) => {
   color: #333333;
   opacity: 0.57;
   margin: 50px 0 10px 0;
+}
+
+.selected-item {
+  background-color: #19a5f1;
+  color: white;
 }
 
 </style>

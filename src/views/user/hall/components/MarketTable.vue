@@ -79,7 +79,7 @@ const getList = async () => {
     const response = await OrderApi.getOrderListingByPage(userStore.loginToken, {
       page: listQuery.page,
       page_size: listQuery.limit,
-      channel: listQuery.tableType
+      payment_method: listQuery.tableType
     })
 
     if (response.data.code === 10000) {
@@ -90,15 +90,17 @@ const getList = async () => {
         // 填充空数据到 20 条
         list.value = [
           ...orderListings, // 将接口返回的数据放在前面
-          ...Array(minTableRowCount.value - orderListings.length).fill({}) // 填充空数据
+          // ...Array(minTableRowCount.value - orderListings.length).fill({ fakeId: Math.random() }) // 填充空数据
+          ...Array.from({ length: minTableRowCount.value - orderListings.length }, () => ({ fakeId: Math.random() })) // 生成唯一的 fakeId
         ];
       } else {
-        list.value = Array(minTableRowCount.value).fill({});
+        // list.value = Array(minTableRowCount.value).fill({ fakeId: Math.random() });
+        list.value = Array.from({ length: minTableRowCount.value }, () => ({ fakeId: Math.random() })) // 生成唯一的 fakeId
       }
     }
   } catch (error) {
     console.error('获取数据失败', error);
-    list.value = Array(minTableRowCount.value).fill({});
+    list.value = Array.from({ length: minTableRowCount.value }, () => ({ fakeId: Math.random() })) // 生成唯一的 fakeId
   }
 };
 
@@ -130,6 +132,7 @@ onMounted(() => {
 const router = useRouter();
 
 const handleRowClick = (row) => {
+
   const role = userStore.user?.value?.role
   if (role === 'buyer') {
     // 根据点击的行的数据，构造目标路由地址
@@ -144,7 +147,7 @@ function getExchangeRate() {
     return 0.00;
   }
   let exchangeRate = 0.00;
-  switch (listQuery.channel) {
+  switch (listQuery.tableType) {
     case 'alipay':
       exchangeRate = configStore.config.value.exchange_rate_alipay;
       break;
