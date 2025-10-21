@@ -57,11 +57,11 @@ export default defineStore({
       try {
         const response = await UserApi.getUserInfo(this.loginToken)
         if (response.data.code == 10000) {
-          const { account, user } = response.data.data;
+          const { account } = response.data.data;
 
           this.account.value = {
             totalBalance: account.total_balance,
-            availableBalance: account.available_balance
+            availableBalance: account.available_balance,
           }
         }
         return response

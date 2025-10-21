@@ -7,8 +7,13 @@
           <img src="@/assets/logo.png" alt="logo" class="tw-w-[104px] tw-h-[100px] tw-mx-auto" />
         </div>
         <div class="tw-absolute tw-left-0 tw-flex tw-flex-col tw-items-end">
-          <hamburger id="hamburger-container" :is-active="appStore.sidebar.opened" class="hamburger-container"
-               @toggleClick="toggleSidebar" />
+          <hamburger 
+            id="hamburger-container" 
+            :is-active="appStore.sidebar.opened" 
+            class="hamburger-container"
+            :iconStyle="2"
+            @toggleClick="toggleSidebar" 
+          />
         </div>
         <div class="tw-absolute tw-right-0 tw-flex tw-flex-col tw-items-end">
           <button class="tw-text-[#D9001B] tw-font-pingfang tw-text-[17px] tw-border tw-border-solid tw-border-black tw-border-opacity-30 tw-rounded-lg tw-px-2 tw-py-1 tw-mb-16" @click="handleClose">关闭</button>

@@ -15,25 +15,25 @@
         <el-table-column label="记录编号" :width="getAdjustWidth(120)" align="center">
           <template v-slot="{row}">
             <span v-if="row.transaction_id">{{ row.transaction_id }}</span>
-            <span v-else>-</span>
+            <span v-else class="opacity-30">-</span>
           </template>
         </el-table-column>
         <el-table-column label="金额 (USTD)" :width="getAdjustWidth(90)" align="center">
           <template v-slot="{row}">
             <span v-if="row.amount">{{ row.amount }}</span>
-            <span v-else>-</span>
+            <span v-else class="opacity-30">-</span>
           </template>
         </el-table-column>
         <el-table-column label="类型" :width="getAdjustWidth(64)" align="center">
           <template v-slot="{row}">
             <span v-if="row.transaction_type">{{ transactionTypeMap[row.transaction_type] }}</span>
-            <span v-else>-</span>
+            <span v-else class="opacity-30">-</span>
           </template>
         </el-table-column>
         <el-table-column label="余额 (USTD)" :width="getAdjustWidth(90)" align="center">
           <template v-slot="{row}">
             <span v-if="row.balance_after && row.balance_after > 0">{{ row.balance_after }}</span>
-            <span v-else>-</span>
+            <span v-else class="opacity-30">-</span>
           </template>
         </el-table-column>
     </el-table>
@@ -52,6 +52,7 @@ const appStore = store.app()
 
 const transactionTypeMap = {
   recharge: '充值',
+  withdraw: '提现',
 }
 
 const props = defineProps({
@@ -145,10 +146,10 @@ const handleRowClick = (row) => {
       targetPage = `/recharge/detail?reference_id=${row.reference_id}`
       break;
     case 'transfer':
-      targetPage = `/transfer/detail?transactionId=${row.transaction_id}`
+      targetPage = `/transfer/detail?reference_id=${row.reference_id}`
       break;
     case 'withdraw':
-      targetPage = `/withdraw/detail?transactionId=${row.transaction_id}`
+      targetPage = `/withdraw/detail?reference_id=${row.reference_id}`
       break;
     case 'order':
       const role = userStore.user?.value?.role

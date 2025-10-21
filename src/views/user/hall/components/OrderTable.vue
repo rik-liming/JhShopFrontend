@@ -15,25 +15,25 @@
         <el-table-column label="订单编号" width="'40%'" align="center">
           <template v-slot="{row}">
             <span v-if="row.status" :class="getStatusClass(row.status)">{{ formatOrderIdDisplay(row.id, row.created_at) }}</span>
-            <span v-else>-</span>
+            <span v-else class="opacity-30">-</span>
           </template>
         </el-table-column>
         <el-table-column label="金额 USDT" width="'20%'" align="center">
           <template v-slot="{row}">
             <span v-if="row.status" :class="getStatusClass(row.status)">{{ row.amount }}</span>
-            <span v-else>-</span>
+            <span v-else class="opacity-30">-</span>
           </template>
         </el-table-column>
         <el-table-column label="市场" width="'20%'" align="center">
           <template v-slot="{row}">
             <span v-if="row.status" :class="getStatusClass(row.status)">{{ formatPaymentMethod(row.payment_method) }}</span>
-            <span v-else>-</span>
+            <span v-else class="opacity-30">-</span>
           </template>
         </el-table-column>
         <el-table-column label="状态" width="'20%'" align="center">
           <template v-slot="{row}">
             <span v-if="row.status" :class="getStatusClass(row.status)">{{ payStatusMap[row.status] }}</span>
-            <span v-else>-</span>
+            <span v-else class="opacity-30">-</span>
           </template>
         </el-table-column>
     </el-table>

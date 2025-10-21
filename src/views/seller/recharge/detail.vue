@@ -7,8 +7,13 @@
           <img src="@/assets/logo.png" alt="logo" class="tw-w-[104px] tw-h-[100px] tw-mx-auto" />
         </div>
         <div class="tw-absolute tw-left-0 tw-flex tw-flex-col tw-items-end">
-          <hamburger id="hamburger-container" :is-active="appStore.sidebar.opened" class="hamburger-container"
-               @toggleClick="toggleSidebar" />
+          <hamburger 
+            id="hamburger-container" 
+            :is-active="appStore.sidebar.opened" 
+            class="hamburger-container"
+            :iconStyle="2"
+            @toggleClick="toggleSidebar" 
+          />
         </div>
         <div class="tw-absolute tw-right-0 tw-flex tw-flex-col tw-items-end">
           <button class="tw-text-[#D9001B] tw-font-pingfang tw-text-[17px] tw-border tw-border-solid tw-border-black tw-border-opacity-30 tw-rounded-lg tw-px-2 tw-py-1 tw-mb-16" @click="handleClose">关闭</button>
@@ -27,9 +32,9 @@
         </div>
 
         <!-- 总资产 -->
-        <div v-if="rechargeData?.status == 1" class="tw-flex tw-justify-between tw-space-x-4 tw-mb-2 tw-font-pingfangsb tw-font-semibold">
+        <div v-if="rechargeData?.status == 1 || rechargeData?.status == -1" class="tw-flex tw-justify-between tw-space-x-4 tw-mb-2 tw-font-pingfangsb tw-font-semibold">
           <p class="tw-text-left">总资产：</p>
-          <p class="tw-font-semibold tw-text-right">{{ rechargeData?.balance_after }} USDT</p>
+          <p class="tw-font-semibold tw-text-right">{{ rechargeData?.balance_before }} USDT</p>
         </div>
 
         <!-- 充值金额 -->
@@ -93,7 +98,11 @@
       </div>
 
       <!-- 底部版权 -->
-      <p class="tw-text-xs tw-text-gray-400 tw-mt-24">Copy@ JH嘉禾商城</p>
+      <p 
+        class="tw-text-xs tw-text-gray-400"
+        :class="(rechargeData?.status == 1 || rechargeData?.status == -1) ? `tw-mt-24` : `tw-mt-32`"
+      >
+        Copy@ JH嘉禾商城</p>
     </div>
   </div>
 </template>

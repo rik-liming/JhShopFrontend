@@ -11,10 +11,10 @@ export async function createWithdraw(loginToken, data) {
 }
 
 // request withdraw detail
-export async function getWithdrawDetail(loginToken, transactionId) {
+export async function getWithdrawDetail(loginToken, id) {
 
     // 构建请求的基础 URL
-    let requestUrl = `/api/withdraw/detail?transaction_id=${transactionId}`;
+    let requestUrl = `/api/withdraw/detail?id=${id}`;
 
     const response = await requestBase.get(requestUrl, {
         headers: {

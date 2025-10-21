@@ -51,12 +51,14 @@
           <!-- 输入金额 -->
           <input
             type="number"
-            placeholder="请输入出售金额"
+            placeholder="请输入出售数量"
             v-model="form.amount"
+            ref="amountInput"
             name="amount"
             required
             min="1"
             :max="userStore.account?.value?.availableBalance || 10000"
+            title="出售数量必须大于1并且小于可出售资产"
             class="tw-w-full tw-text-[#D9001B] tw-text-md tw-border tw-border-solid tw-border-black tw-border-opacity-40 tw-rounded-md tw-px-3 tw-py-2 tw-placeholder-gray-400 tw-mb-4"
           />
 
@@ -148,14 +150,22 @@ const form = ref({
   payment_method: 'alipay',
 });
 
+const amountInput = ref(null);
 const amountUnitStyle = computed(() => {
-  let offsetX = 100;
-  if (form.value.amount) {
-    const amountStr = String(form.value.amount);
-    const length = amountStr.length;
-    offsetX += 10 * length;
+  const element = amountInput.value;
+  if (element) {
+    const rect = element.getBoundingClientRect();
+    const x = rect.left;
+    let offsetX = rect.left + 20;
+
+    if (form.value.amount) {
+      const amountStr = String(form.value.amount);
+      const length = amountStr.length;
+      offsetX += 10 * length;
+    }
+    return `left: ${offsetX}px;`;
   }
-  return `left: ${offsetX}px;`;
+  return 'display: none;';
 });
 
 const minSaleAmountOptions = [

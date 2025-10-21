@@ -15,19 +15,19 @@
     <el-table-column label="商户" width="'30%'" align="center">
       <template v-slot="{ row }">
         <span v-if="row.user_id">{{ formatIdDisplay(row.user_id) }}</span>
-        <span v-else>-</span>
+        <span v-else class="opacity-30">-</span>
       </template>
     </el-table-column>
     <el-table-column label="售卖数量" width="'40%'" align="center">
       <template v-slot="{ row }">
         <span v-if="row.remain_amount">{{ row.remain_amount }}</span>
-        <span v-else>-</span>
+        <span v-else class="opacity-30">-</span>
       </template>
     </el-table-column>
     <el-table-column label="等值人民币" width="'30%'" align="center">
       <template v-slot="{ row }">
         <span v-if="row.amount">{{ getExchangeCNY(row.amount) }}</span>
-        <span v-else>-</span>
+        <span v-else class="opacity-30">-</span>
       </template>
     </el-table-column>
   </el-table>
