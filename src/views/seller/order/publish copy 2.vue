@@ -91,7 +91,7 @@ import store from '@/store';
 import axios from 'axios';
 import { formatIdDisplay } from '@/utils/tool';
 import { ElMessage } from 'element-plus';
-import * as OrderApi from '@/api/order';
+import * as OrderListingApi from '@/api/order_listing';
 
 // 支付方式选择项
 const paymentMethodOptions = [
@@ -162,7 +162,7 @@ const handlePublish = async () => {
     };
 
     // 发送请求到 /api/publish
-    const response = await OrderApi.createOrderListing(userStore.loginToken, payload)
+    const response = await OrderListingApi.createOrderListing(userStore.loginToken, payload)
 
     if (response.data.code === 10000) {
       ElMessage.success('交易发布成功');

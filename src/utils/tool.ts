@@ -47,3 +47,7 @@ export function formatOrderIdDisplay(id, created_at) {
     // 返回格式化后的订单 ID
     return `${year}${month}${day}_${orderId}`;
 }
+
+export function formatImageUrl(imagePath) {
+    return `${import.meta.env.VITE_CDN_ENDPOINT}${imagePath}`
+}

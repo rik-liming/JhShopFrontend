@@ -3,7 +3,7 @@ import { ElMessage } from 'element-plus'; // 引入 Element UI 的 ElMessage
 import router from '@/router'; // 假设你使用的是 Vue Router
 
 const axiosInstance = axios.create({
-  baseURL: 'http://be.jhshop.kuntai-tech.com',
+  baseURL: import.meta.env.VITE_API_ENDPOINT,
   timeout: 5000 // 请求超时
 });
 

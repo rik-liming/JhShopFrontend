@@ -137,7 +137,7 @@ import { ref, computed } from 'vue';
 import { useRouter } from 'vue-router';
 import store from '@/store'
 import { formatIdDisplay } from '@/utils/tool'
-import * as OrderApi from '@/api/order'
+import * as OrderListingApi from '@/api/order_listing'
 import Hamburger from '@/components/Hamburger';
 
 const configStore = store.config()
@@ -194,7 +194,7 @@ const handlePublish = async() => {
     }
 
     // 发送请求到 /api/publish
-    const response = await OrderApi.createOrderListing(userStore.loginToken, form.value)
+    const response = await OrderListingApi.createOrderListing(userStore.loginToken, form.value)
 
     if (response.data.code === 10000) {
       ElMessage.success('交易发布成功');

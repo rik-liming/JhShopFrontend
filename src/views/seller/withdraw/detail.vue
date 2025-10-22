@@ -152,6 +152,7 @@ const fetchWithdrawDetail = async () => {
     console.error('请求错误:', error);
   }
 };
+
 const handleClose = () => {
   router.push('/');
 };

@@ -44,6 +44,7 @@ export default defineStore({
             avatar: user.avatar,
             email: user.email,
             role: user.role,
+            invite_code: user.invite_code,
           }
         }
         return response

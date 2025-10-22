@@ -65,7 +65,7 @@
 <script setup>
 import { ref, onMounted, computed, reactive } from 'vue';
 import { useRoute, useRouter } from 'vue-router';
-import * as OrderApi from '@/api/order'
+import * as OrderListingApi from '@/api/order_listing'
 import { ElMessage } from 'element-plus';
 import store from '@/store'
 import { formatIdDisplay } from '@/utils/tool'
@@ -138,7 +138,7 @@ const formRules = {
 
 // 页面加载时获取订单列表信息
 onMounted(async () => {
-  const resp = await OrderApi.getOrderListing(userStore.loginToken, orderListingId.value)
+  const resp = await OrderListingApi.getOrderListing(userStore.loginToken, orderListingId.value)
   if (resp.data.code === 10000) {
     Object.assign(orderListing, resp.data.data.orderListing);
   }
@@ -156,7 +156,7 @@ const handleSubmit = async() => {
   formData.value.buy_user_id = userStore.user?.value?.id
   formData.value.payment_method = orderListing.payment_method
 
-  const resp = await OrderApi.createOrder(userStore.loginToken, formData.value)
+  const resp = await OrderListingApi.createOrder(userStore.loginToken, formData.value)
   if (resp.data.code === 10000) {
     ElMessage.success('订单创建成功');
     setTimeout(() => {

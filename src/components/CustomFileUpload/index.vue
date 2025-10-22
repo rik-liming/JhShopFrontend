@@ -48,14 +48,19 @@
 </template>
 
 <script setup>
-import { ref, defineEmits } from 'vue'
+import { ref, defineEmits, onMounted, watch } from 'vue'
 
-const emit = defineEmits(['update:file'])
+const emit = defineEmits(['update:file', 'update:hasChanged'])
+
+const props = defineProps({
+  imageUrl: String,
+});
 
 const imageUrl = ref('') // 用于保存图片预览的 URL
 const selectedFile = ref(null) // 用于保存选择的文件
 const fileInput = ref(null)
 const isPreviewOpen = ref(false);
+const hasChanged = ref(false) // 组件内数据有没有变动过
 
 const handleFileChange = (event) => {
   const file = event.target.files[0]
@@ -71,6 +76,9 @@ const handleFileChange = (event) => {
 
     // 触发事件将文件对象传递给父组件
     emit('update:file', file)
+
+    hasChanged.value = true
+    emit('update:hasChanged', hasChanged)
   }
 }
 
@@ -83,6 +91,9 @@ const removeImage = () => {
   selectedFile.value = null // 清空文件对象
   emit('update:file', null) // 清空父组件传递的文件
   fileInput.value.value = '' // 清空文件选择
+
+  hasChanged.value = true
+  emit('update:hasChanged', hasChanged)
 }
 
 const openPreview = () => {
@@ -93,6 +104,20 @@ const openPreview = () => {
 const closePreview = () => {
   isPreviewOpen.value = false;
 };
+
+// 组件加载时使用外部传入的 imageUrl 初始化内部的 imageUrl
+onMounted(() => {
+  if (props.imageUrl) {
+    imageUrl.value = props.imageUrl; // 初始化时使用外部传入的 imageUrl
+  }
+});
+
+watch(() => props.imageUrl, (newImageUrl) => {
+  if (newImageUrl) {
+    imageUrl.value = newImageUrl;
+  }
+});
+
 </script>
 
 <style scoped>

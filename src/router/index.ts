@@ -210,6 +210,32 @@ export const asyncRoutes:RouteRecordRaw[] = [
       }
     ]
   },
+  {
+    path: '/payment_method',
+    name: 'PaymentMethod',
+    component: Layout,
+    meta: { 
+      hidden: true,
+      roles: ['seller', 'agent']
+    },
+    children: [
+      {
+        path: 'alipay',
+        name: 'PaymentMethodAlipay',
+        component: () => import('@/views/seller/payment_method/alipay.vue')
+      },
+      {
+        path: 'wechat',
+        name: 'PaymentMethodWechat',
+        component: () => import('@/views/seller/payment_method/wechat.vue')
+      },
+      {
+        path: 'bank',
+        name: 'PaymentMethodBank',
+        component: () => import('@/views/seller/payment_method/bank.vue')
+      }
+    ]
+  },
 
   // 需要展示在侧边栏的
   {

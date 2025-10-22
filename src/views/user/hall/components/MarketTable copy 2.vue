@@ -46,7 +46,7 @@
 import { ref, onMounted, reactive, watch, defineEmits, nextTick } from 'vue';
 import { useRouter } from 'vue-router';
 import store from '@/store';
-import * as OrderApi from '@/api/order'
+import * as OrderListingApi from '@/api/order_listing'
 import { formatIdDisplay } from '@/utils/tool'
 import Decimal from 'decimal.js'
 
@@ -85,7 +85,7 @@ const getList = async () => {
       emit('table-update-end');  
     }, 100);
     
-    const response = await OrderApi.getOrderListingByPage(userStore.loginToken, {
+    const response = await OrderListingApi.getOrderListingByPage(userStore.loginToken, {
       page: listQuery.page,
       page_size: listQuery.limit,
       channel: listQuery.tableType
