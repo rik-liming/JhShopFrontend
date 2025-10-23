@@ -190,9 +190,8 @@ const toggleSidebar = () => {
 
 onMounted(() => {
   if (paymentMethodId) {
-
+    fetchPaymentMethodDetail();
   }
-  fetchPaymentMethodDetail();
 });
 
 // 获取详情数据

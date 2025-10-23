@@ -1,7 +1,7 @@
 <template>
-	<div class="tw-w-full tw-flex tw-justify-start">
+	<div class="tw-w-full tw-flex tw-flex-col tw-justify-center tw-items-center">
 		<!-- 卖场选择 -->
-		<div class="tw-w-full tw-mt-4 tw-text-left">
+		<div class="tw-w-[86%] tw-mt-4 tw-text-left">
 			<label class="tw-text-md tw-font-pingfang tw-font-normal">收款卡管理</label>
 			<div class="tw-w-full tw-flex tw-justify-between tw-items-center">
 				<div class="tw-w-2/3">
@@ -29,34 +29,49 @@
 					/>
 				</div>
 			</div>
+		</div>
 
-			<div id="previewContainer" class="tw-overflow-y-scroll tw-max-h-[200px] tw-flex tw-mt-4">
-				<div 
-					v-if="paymentData && paymentData[currentPaymentMethod]?.length > 0"
-					class="tw-w-full tw-flex tw-flex-col"
+		<div id="previewContainer" class="tw-overflow-y-scroll tw-w-full tw-max-h-[200px] tw-flex tw-mt-4">
+			<div 
+				v-if="paymentData && paymentData[currentPaymentMethod]?.length > 0"
+				class="tw-w-full tw-flex tw-flex-col"
+			>
+				<div v-for="(item, index) in paymentData[currentPaymentMethod]" 
+					:key="index"
+					class="tw-w-full tw-flex tw-items-center tw-justify-center"
 				>
-					<div v-for="(item, index) in paymentData[currentPaymentMethod]" 
-						:key="index"
-						class="tw-w-full tw-flex tw-items-center tw-justify-center"
-					>
+					<div v-if="currentPaymentMethod === 'bank'">
+						<div class="tw-relative">
+							<img
+								src="@/assets/bank_pay.png"
+								alt="支付信息"
+								class="tw-w-[264px] tw-h-[210px] tw-object-contain"
+							/>
+							<p class="tw-absolute tw-left-7 tw-top-7 tw-font-bold">{{ item.bank_name }}</p>
+							<p class="tw-absolute tw-right-7 tw-top-7 tw-font-bold">{{ item.issue_bank_name }}</p>
+							<p class="tw-absolute tw-left-7 tw-bottom-10 tw-font-bold">{{ item.account_name }}</p>
+							<p class="tw-absolute tw-left-7 tw-bottom-[70px] tw-font-bold">{{ item.account_number }}</p>
+						</div>
+					</div>
+					<div v-else>
 						<img
 							:src="formatImageUrl(item?.qr_code)"
 							alt="支付信息"
 							class="tw-w-[180px] tw-h-[200px] tw-object-contain"
 						/>
-						<img 
-							src="@/assets/edit_icon.png" 
-							alt="编辑"
-							class="tw-w-[30px] tw-h-[32px] tw-ml-4 cursor-pointer"
-							@click="editPaymentMethod(item.id)"
-						/>
-						<img 
-							src="@/assets/trash_icon.png" 
-							alt="删除"
-							class="tw-w-[30px] tw-h-[32px] tw-ml-4 cursor-pointer"
-							@click="deletePaymentMethod(item.id)"
-						/>
 					</div>
+					<img 
+						src="@/assets/edit_icon.png" 
+						alt="编辑"
+						class="tw-w-[30px] tw-h-[32px] tw-ml-4 cursor-pointer"
+						@click="editPaymentMethod(item.id)"
+					/>
+					<img 
+						src="@/assets/trash_icon.png" 
+						alt="删除"
+						class="tw-w-[30px] tw-h-[32px] tw-ml-1 cursor-pointer"
+						@click="deletePaymentMethod(item.id)"
+					/>
 				</div>
 			</div>
 		</div>

@@ -160,7 +160,7 @@
       <div 
         v-if="userStore?.user?.value?.role === 'agent' 
           || userStore?.user?.value?.role === 'seller'" 
-        class="tw-w-[86%] tw-text-[#333333]">
+        class="tw-w-full tw-text-[#333333]">
         <payment-method />
       </div>
 
