@@ -1,114 +1,178 @@
 <template>
-  <div class="tw-w-full tw-min-h-screen tw-flex tw-items-center tw-justify-center">
-    <div class="tw-w-[360px] tw-p-2 tw-text-center">
+  <div class="tw-w-full tw-min-h-screen tw-flex tw-flex tw-justify-center">
+    <div class="tw-w-[90%] tw-p-1 tw-text-center tw-flex tw-flex-col tw-justify-start tw-items-center">
       <!-- 顶部图标 -->
-      <div class="tw-flex tw-items-center tw-justify-between tw-mb-2 tw-relative">
+      <div class="tw-w-full tw-flex tw-items-center tw-justify-between tw-mt-14 tw-mb-2 tw-relative">
         <div class="tw-flex tw-items-center tw-w-full">
-          <img src="@/assets/logo.png" alt="logo" class="tw-w-32 tw-h-32 tw-mx-auto" />
+          <img src="@/assets/logo.png" alt="logo" class="tw-w-[104px] tw-h-[100px] tw-mx-auto" />
+        </div>
+        <div class="tw-absolute tw-left-0 tw-flex tw-flex-col tw-items-end">
+          <hamburger 
+            id="hamburger-container" 
+            :is-active="appStore.sidebar.opened" 
+            class="hamburger-container"
+            :iconStyle="2"
+            @toggleClick="toggleSidebar" 
+          />
         </div>
         <div class="tw-absolute tw-right-0 tw-flex tw-flex-col tw-items-end">
-          <button class="tw-text-red-500 tw-text-sm tw-border tw-border-solid tw-border-black tw-rounded tw-px-4 tw-py-2 tw-mb-4" @click="handleClose">关闭</button>
+          <button class="tw-text-[#D9001B] tw-font-pingfang tw-text-[17px] tw-border tw-border-solid tw-border-black tw-border-opacity-30 tw-rounded-lg tw-px-2 tw-py-1 tw-mb-16" @click="handleClose">关闭</button>
         </div>
       </div>
-      
-      <h2 class="tw-text-lg tw-font-semibold tw-mb-10">订单</h2>
 
-      <div class="tw-mb-20">
+      <div class="tw-w-[96%] tw-text-[#333333] tw-mt-8">
         <el-table
           :data="list"
           border
           fit
           highlight-current-row
           class="main-table"
-          key="notificationTable"
-          style="height: 600px; overflow: auto;"
+          key="orderTable"
+          style="height: 680px; overflow: auto;"
           @row-click="handleRowClick"
+          @touchstart="onTouchStart"
+          @touchmove="onTouchMove"
+          @touchend="onTouchEnd"
         >
-          <el-table-column label="订单编号" align="center">
-            <template v-slot="{ row }">
-              <span :class="getStatusClass(row.status)">{{ formatOrderIdDisplay(row.id, row.created_at) }}</span>
+          <el-table-column label="订单编号" :width="getAdjustWidth(120)" align="center">
+            <template v-slot="{row}">
+              <span v-if="userStore.user?.value?.role === 'buyer'" :class="getStatusClass(row?.status)">{{ row?.buy_transaction_id }}</span>
+              <span v-else :class="getStatusClass(row?.status)">{{ row?.sell_transaction_id }}</span>
+              <!-- <span v-else class="opacity-30">-</span> -->
             </template>
           </el-table-column>
-          <el-table-column label="金额" align="center">
-            <template v-slot="{ row }">
-              <span :class="getStatusClass(row.status)">{{ row.amount }} USTD</span>
+          <el-table-column label="金额 USDT" :width="getAdjustWidth(86)" align="center">
+            <template v-slot="{row}">
+              <span v-if="row.status !== null && row.status !== undefined" :class="getStatusClass(row.status)">{{ row.amount }}</span>
+              <span v-else class="opacity-30">-</span>
             </template>
           </el-table-column>
-          <el-table-column label="市场" align="center">
-            <template v-slot="{ row }">
-              <span :class="getStatusClass(row.status)">{{ formatPaymentMethod(row.payment_method) }}</span>
+          <el-table-column label="市场" :width="getAdjustWidth(66)" align="center">
+            <template v-slot="{row}">
+              <span v-if="row.status !== null && row.status !== undefined" :class="getStatusClass(row.status)">{{ formatPaymentMethod(row.payment_method) }}</span>
+              <span v-else class="opacity-30">-</span>
             </template>
           </el-table-column>
-          <el-table-column label="状态" align="center" min-width="90">
-            <template v-slot="{ row }">
-              <span :class="getStatusClass(row.status)">{{ payStatusMap[row.status] }}</span>
+          <el-table-column label="状态" :width="getAdjustWidth(92)" align="center">
+            <template v-slot="{row}">
+              <span v-if="row.status !== null && row.status !== undefined" :class="getStatusClass(row.status)">{{ payStatusMap[row.status] }}</span>
+              <span v-else class="opacity-30">-</span>
             </template>
           </el-table-column>
         </el-table>
       </div>
 
       <!-- 底部版权 -->
-      <p class="tw-text-xs tw-text-gray-400 tw-mt-4">Copy@ JH源禾商城</p>
+      <p 
+        class="tw-absolute tw-bottom-2 tw-text-xs tw-text-gray-400"
+      >
+        Copy@ JH嘉禾商城</p>
     </div>
   </div>
 </template>
 
 <script setup>
-
-import { useRouter } from 'vue-router';
 import { ref, onMounted, reactive, watch, defineEmits, nextTick } from 'vue';
+import { useRouter } from 'vue-router';
+import store from '@/store';
 import * as OrderApi from '@/api/order'
-import store from '@/store'
-import { formatIdDisplay, formatOrderIdDisplay, formatPaymentMethod } from '@/utils/tool'
+import { formatPaymentMethod, getAdjustWidth } from '@/utils/tool'
 
 const payStatusMap = {
   0: '待买家付款',
-  1: '待卖家确认',
-  2: '已确认',
-  3: '已完成',
-  '-1': '超时未支付',
+  1: '待商家确认',
+  2: '已完成',
+  3: '争议中',
+  4: '已完成',
 }
+
+const emit = defineEmits();
 
 const userStore = store.user()
-const router = useRouter()
+const appStore = store.app()
 
-const handleClose = () => {
-  router.push('/')
-}
+const props = defineProps({
+  currentShowTable: String,
+  tableType: String,
+});
 
 // 定义数据
 const list = ref([]);
 const listQuery = reactive({
   page: 1,
-  limit: 100,
+  limit: 20,
+  tableType: 'order',
 });
+const minTableRowCount = ref(15)
+const isRefreshing = ref(false)
+const touchStartY = ref(0) // 触摸开始位置
+const touchMoveY = ref(0) // 触摸移动位置
+const threshold = ref(200) // 下拉刷新阈值
+
+// 用于防止重复调用的标志位
+let isFirstCall = true;
 
 // 获取数据的逻辑
 const getList = async () => {
   try {
+    emit('table-update-start');
+
+    setTimeout(() => {
+      emit('table-update-end');  
+    }, 100);
+    
     let response = null
     if (userStore.user?.value?.role === 'buyer') {
       response = await OrderApi.getMyBuyerOrder(userStore.loginToken, {
         page: listQuery.page,
-        pagesize: listQuery.limit,
+        page_size: listQuery.limit,
       })
-      if (response.data.code === 10000) {
-        list.value = response.data.data.orders;
-      }
+      
     } else if (userStore.user?.value?.role === 'seller' 
     || userStore.user?.value?.role === 'agent' ) {
       response = await OrderApi.getMySellerOrder(userStore.loginToken, {
         page: listQuery.page,
         page_size: listQuery.limit,
       })
-      if (response.data.code === 10000) {
-        list.value = response.data.data.orders;
+    }
+
+    if (response.data.code === 10000) {
+      const orders = response.data.data.orders;
+
+      // 判断是否少于 15 条数据
+      if (orders.length < minTableRowCount.value) {
+        // 填充空数据到 15 条
+        list.value = [
+          ...orders, // 将接口返回的数据放在前面
+          ...Array.from({ length: minTableRowCount.value - orders.length }, () => ({ fakeId: Math.random() })) // 生成唯一的 fakeId
+        ];
+      } else {
+        list.value = Array.from({ length: minTableRowCount.value }, () => ({ fakeId: Math.random() })) // 生成唯一的 fakeId
       }
     }
   } catch (error) {
     console.error('获取数据失败', error);
+    list.value = Array.from({ length: minTableRowCount.value }, () => ({ fakeId: Math.random() })) // 生成唯一的 fakeId
   }
 };
+
+watch(
+  () => props.tableType,
+  (newTableType) => {
+    // 只有在 channel 变化时，才更新数据
+    listQuery.tableType = newTableType;
+
+    if (!isFirstCall 
+      && props.currentShowTable === 'my'
+      && props.tableType === 'order'
+    ) {
+      getList();
+    } else {
+      isFirstCall = false; // 第一次加载后设置为 false
+    }
+  },
+  { immediate: true } // immediate 保证在首次渲染时监听
+);
 
 // 生命周期钩子，组件加载时获取数据
 onMounted(() => {
@@ -117,6 +181,9 @@ onMounted(() => {
     getList();
   });
 });
+
+// 跳转到指定页面
+const router = useRouter();
 
 const handleRowClick = (row) => {
   const role = userStore.user?.value?.role
@@ -132,18 +199,57 @@ const handleRowClick = (row) => {
 };
 
 const getStatusClass = (status) => {
-  switch (status) {
-    case 0:
-      return 'waitBuyerPay';
-    case 1:
-      return 'buyerConfirm';
-    case 2:
-      return 'sellerConfirm';
-    case 3:
-      return 'complete';
-    default:
-      return '';
+  if (status) {
+    switch (status) {
+      case 0:
+        return 'waitBuyerPay';
+      case 1:
+        return 'buyerConfirm';
+      case 2:
+        return 'sellerConfirm';
+      case 3:
+        return 'argue';
+      case 4:
+        return 'argueComplete';
+      default:
+        return '';
+    }
   }
+  return '';
+}
+
+const onTouchStart = (event) => {
+  // 记录触摸开始的位置
+  touchStartY.value = event.changedTouches[0].clientY;
+}
+
+const onTouchMove = (event) => {
+  // 获取触摸移动的 Y 轴位置
+  touchMoveY.value = event.changedTouches[0].clientY;
+
+  // 如果下拉距离超过阈值，显示刷新提示
+  if (touchMoveY.value - touchStartY.value > threshold.value) {
+    isRefreshing.value = true;
+  }
+}
+
+const onTouchEnd = () => {
+  // 判断是否触发刷新
+  if (touchMoveY.value - touchStartY.value > threshold.value) {
+    triggerRefresh();
+  } else {
+    isRefreshing.value = false;
+  }
+}
+
+// 触发刷新
+const triggerRefresh = () => {
+  isRefreshing.value = true; // 显示刷新状态
+  getList()
+}
+
+const toggleSidebar = () => {
+  appStore.toggleSidebar();
 }
 
 </script>
@@ -153,15 +259,16 @@ const getStatusClass = (status) => {
 .main-table {
   width: 100%;
   background-color: transparent !important;
-  border: 1px solid black !important;
+  border: 1px solid rgba(0,0,0,0.4) !important;
 }
 
 :deep(.el-table__header th) {
-  border: 1px solid #7f7f7f !important;
+  border: 1px solid rgba(127,127,127,0.4) !important;
   background-color: transparent !important;
-  font-size: 16px;
-  font-weight: bold;
+  font-size: 14px;
+  font-weight: 600;
   color: black;
+  font-family: 'PingFangSC-Semibold', 'PingFang SC Semibold', 'PingFang SC';
 }
 
 :deep(.el-table__header tr) {
@@ -169,27 +276,36 @@ const getStatusClass = (status) => {
 }
 
 :deep(.el-table__body td) {
-  border: 1px solid #7f7f7f !important;
+  border: 1px solid rgba(127,127,127,0.2) !important;
+  font-size: 13px;
+  font-weight: normal;
+  color: #333333;
+  font-family: 'Arial Normal', 'Arial';
 }
 
 :deep(.el-table__body tr) {
   background-color: transparent !important;
-  border: 1px solid #7f7f7f !important;
+  border: 1px solid rgba(127,127,127,0.4) !important;
 }
 
 :deep(.el-table__body tr .waitBuyerPay) {
-  color: red;
+  color: #eab308;
 }
 
 :deep(.el-table__body tr .buyerConfirm) {
-  color: yellow;
+  color: #3b82f6;
 }
 
 :deep(.el-table__body tr .sellerConfirm) {
-  color: green;
+  color: #22c55e;
 }
 
-:deep(.el-table__body tr .complete) {
-  color: blue;
+:deep(.el-table__body tr .argue) {
+  color: #ef4444;
 }
+
+:deep(.el-table__body tr .argueComplete) {
+  color: #22c55e;
+}
+
 </style>

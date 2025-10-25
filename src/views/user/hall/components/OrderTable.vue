@@ -48,11 +48,11 @@ import * as OrderApi from '@/api/order'
 import { formatPaymentMethod, getAdjustWidth } from '@/utils/tool'
 
 const payStatusMap = {
-  0: '待付款',
-  1: '待卖家确认',
-  2: '已确认',
-  3: '已完成',
-  '-1': '超时未支付',
+  0: '待买家付款',
+  1: '待商家确认',
+  2: '已完成',
+  3: '争议中',
+  4: '已完成',
 }
 
 const emit = defineEmits();
@@ -184,23 +184,6 @@ const getStatusClass = (status) => {
     }
   }
   return '';
-}
-
-const getStatusStyle = (status) => {
-  switch (status) {
-    case 0:
-      return { style: 'tw-text-yellow-500', text: '等待买家付款' };
-    case 1:
-      return { style: 'tw-text-blue-500', text: '等待商家确认'};
-    case 2:
-      return { style: 'tw-text-green-500', text: '已完成'};
-    case 3:
-      return { style: 'tw-text-red-500', text: '争议'};
-    case 4:
-      return { style: 'tw-text-green-500', text: '已完成（争议结束）'};
-    default:
-      return { style: 'tw-text-gray-500', text: '-'};
-  }
 }
 
 const onTouchStart = (event) => {
