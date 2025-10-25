@@ -208,7 +208,7 @@ async function handleTableUpdateEnd() {
 
 function getExchangeRate() {
   if (!configStore || !configStore.config) {
-    return 0.00;
+    return '-';
   }
   let exchangeRate = 0.00;
   switch (listQuery.marketTableType) {
@@ -222,7 +222,10 @@ function getExchangeRate() {
       exchangeRate = configStore.config.value.exchange_rate_bank;
       break;
   }
-  return exchangeRate;
+  if (exchangeRate == 0) {
+    return '-'
+  }
+  return String(exchangeRate);
 }
 
 let countdown = ref(10)

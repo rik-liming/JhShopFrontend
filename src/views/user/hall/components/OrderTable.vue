@@ -12,27 +12,28 @@
         @touchmove="onTouchMove"
         @touchend="onTouchEnd"
     >
-        <el-table-column label="订单编号" width="'40%'" align="center">
+        <el-table-column label="订单编号" :width="getAdjustWidth(120)" align="center">
           <template v-slot="{row}">
-            <span v-if="row.status" :class="getStatusClass(row.status)">{{ formatOrderIdDisplay(row.id, row.created_at) }}</span>
+            <span v-if="userStore.user?.value?.role === 'buyer'" :class="getStatusClass(row?.status)">{{ row?.buy_transaction_id }}</span>
+            <span v-else :class="getStatusClass(row?.status)">{{ row?.sell_transaction_id }}</span>
+            <!-- <span v-else class="opacity-30">-</span> -->
+          </template>
+        </el-table-column>
+        <el-table-column label="金额 USDT" :width="getAdjustWidth(86)" align="center">
+          <template v-slot="{row}">
+            <span v-if="row.status !== null && row.status !== undefined" :class="getStatusClass(row.status)">{{ row.amount }}</span>
             <span v-else class="opacity-30">-</span>
           </template>
         </el-table-column>
-        <el-table-column label="金额 USDT" width="'20%'" align="center">
+        <el-table-column label="市场" :width="getAdjustWidth(66)" align="center">
           <template v-slot="{row}">
-            <span v-if="row.status" :class="getStatusClass(row.status)">{{ row.amount }}</span>
+            <span v-if="row.status !== null && row.status !== undefined" :class="getStatusClass(row.status)">{{ formatPaymentMethod(row.payment_method) }}</span>
             <span v-else class="opacity-30">-</span>
           </template>
         </el-table-column>
-        <el-table-column label="市场" width="'20%'" align="center">
+        <el-table-column label="状态" :width="getAdjustWidth(92)" align="center">
           <template v-slot="{row}">
-            <span v-if="row.status" :class="getStatusClass(row.status)">{{ formatPaymentMethod(row.payment_method) }}</span>
-            <span v-else class="opacity-30">-</span>
-          </template>
-        </el-table-column>
-        <el-table-column label="状态" width="'20%'" align="center">
-          <template v-slot="{row}">
-            <span v-if="row.status" :class="getStatusClass(row.status)">{{ payStatusMap[row.status] }}</span>
+            <span v-if="row.status !== null && row.status !== undefined" :class="getStatusClass(row.status)">{{ payStatusMap[row.status] }}</span>
             <span v-else class="opacity-30">-</span>
           </template>
         </el-table-column>
@@ -44,7 +45,7 @@ import { ref, onMounted, reactive, watch, defineEmits, nextTick } from 'vue';
 import { useRouter } from 'vue-router';
 import store from '@/store';
 import * as OrderApi from '@/api/order'
-import { formatIdDisplay, formatOrderIdDisplay, formatPaymentMethod } from '@/utils/tool'
+import { formatPaymentMethod, getAdjustWidth } from '@/utils/tool'
 
 const payStatusMap = {
   0: '待付款',
@@ -92,16 +93,14 @@ const getList = async () => {
     if (userStore.user?.value?.role === 'buyer') {
       response = await OrderApi.getMyBuyerOrder(userStore.loginToken, {
         page: listQuery.page,
-        pagesize: listQuery.limit,
-        channel: listQuery.channel
+        page_size: listQuery.limit,
       })
       
     } else if (userStore.user?.value?.role === 'seller' 
     || userStore.user?.value?.role === 'agent' ) {
       response = await OrderApi.getMySellerOrder(userStore.loginToken, {
         page: listQuery.page,
-        pagesize: listQuery.limit,
-        channel: listQuery.channel
+        page_size: listQuery.limit,
       })
     }
 
@@ -168,17 +167,39 @@ const handleRowClick = (row) => {
 };
 
 const getStatusClass = (status) => {
+  if (status) {
+    switch (status) {
+      case 0:
+        return 'waitBuyerPay';
+      case 1:
+        return 'buyerConfirm';
+      case 2:
+        return 'sellerConfirm';
+      case 3:
+        return 'argue';
+      case 4:
+        return 'argueComplete';
+      default:
+        return '';
+    }
+  }
+  return '';
+}
+
+const getStatusStyle = (status) => {
   switch (status) {
     case 0:
-      return 'waitBuyerPay';
+      return { style: 'tw-text-yellow-500', text: '等待买家付款' };
     case 1:
-      return 'buyerConfirm';
+      return { style: 'tw-text-blue-500', text: '等待商家确认'};
     case 2:
-      return 'sellerConfirm';
+      return { style: 'tw-text-green-500', text: '已完成'};
     case 3:
-      return 'complete';
+      return { style: 'tw-text-red-500', text: '争议'};
+    case 4:
+      return { style: 'tw-text-green-500', text: '已完成（争议结束）'};
     default:
-      return '';
+      return { style: 'tw-text-gray-500', text: '-'};
   }
 }
 
@@ -249,19 +270,23 @@ const triggerRefresh = () => {
 }
 
 :deep(.el-table__body tr .waitBuyerPay) {
-  color: red;
+  color: #eab308;
 }
 
 :deep(.el-table__body tr .buyerConfirm) {
-  color: yellow;
+  color: #3b82f6;
 }
 
 :deep(.el-table__body tr .sellerConfirm) {
-  color: green;
+  color: #22c55e;
 }
 
-:deep(.el-table__body tr .complete) {
-  color: blue;
+:deep(.el-table__body tr .argue) {
+  color: #ef4444;
+}
+
+:deep(.el-table__body tr .argueComplete) {
+  color: #22c55e;
 }
 
 </style>

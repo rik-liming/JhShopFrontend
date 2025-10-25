@@ -174,7 +174,9 @@ const paymentHandle = async() => {
 
     if (resp.data.code === 10000) {
       ElMessage.success('操作成功');
-      router.push(`/profile`);
+      setTimeout(() => {
+        router.push(`/profile`);  
+      }, 2000);
     } else {
       ElMessage.error(resp.data.msg);
     }

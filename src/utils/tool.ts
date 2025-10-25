@@ -51,3 +51,10 @@ export function formatOrderIdDisplay(id, created_at) {
 export function formatImageUrl(imagePath) {
     return `${import.meta.env.VITE_CDN_ENDPOINT}${imagePath}`
 }
+
+export function getAdjustWidth(baseWidth) {
+  const { body } = document;
+  const rect = body.getBoundingClientRect();
+  
+  return baseWidth / 430 * rect.width;
+}

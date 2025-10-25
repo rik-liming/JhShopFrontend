@@ -99,7 +99,7 @@ const getList = async () => {
     || userStore.user?.value?.role === 'agent' ) {
       response = await OrderApi.getMySellerOrder(userStore.loginToken, {
         page: listQuery.page,
-        pagesize: listQuery.limit,
+        page_size: listQuery.limit,
       })
       if (response.data.code === 10000) {
         list.value = response.data.data.orders;

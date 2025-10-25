@@ -1,117 +1,139 @@
 <template>
-  <div class="tw-w-full tw-min-h-screen tw-flex tw-items-center tw-justify-center">
-    <div class="tw-w-[360px] tw-p-2 tw-text-center" v-if="!loading">
-      <!-- 顶部图标 -->
-      <div class="tw-flex tw-items-center tw-justify-between tw-mb-10 tw-relative">
-        <h1 class="tw-text-left tw-text-2xl">订单详情</h1>
-        <div class="tw-absolute tw-right-0 tw-flex tw-flex-col tw-items-end">
-          <button class="tw-text-red-500 tw-text-sm tw-border tw-border-solid tw-border-black tw-rounded tw-px-4 tw-py-2 tw-mb-4" @click="handleClose">关闭</button>
-        </div>
-      </div>
+  <div class="tw-w-full tw-min-h-screen tw-flex tw-flex tw-justify-center">
+    <div class="tw-w-[90%] tw-p-1 tw-text-center tw-flex tw-flex-col tw-justify-start tw-items-center">
 
-      <!-- 用户信息 -->
-      <div class="tw-my-4">
-        <div class="tw-flex tw-justify-between tw-space-x-4">
+      <div class="tw-w-[86%] tw-text-[#333333]">
+        <div class="tw-relative tw-w-full tw-flex tw-flex-col tw-justify-start">
+          <h1 class="tw-text-left tw-text-[23px] tw-font-pingfangsb tw-mt-16 tw-mb-4">订单详情</h1>
+
+          <div class="tw-absolute tw-right-0 tw-top-16 tw-flex tw-flex-col tw-items-end">
+            <button class="tw-text-[#D9001B] tw-font-pingfang tw-text-[17px] tw-border tw-border-solid tw-border-black tw-border-opacity-30 tw-rounded-lg tw-px-2 tw-py-1 tw-mb-16" @click="handleClose">关闭</button>
+          </div>
+        </div>
+
+        <div class="tw-flex tw-justify-between tw-space-x-4 tw-mt-2 tw-mb-2 tw-font-pingfangsb tw-font-semibold">
           <p class="tw-text-left">商家姓名：</p>
-          <p class="tw-font-semibold tw-text-right">{{ order.sell_account_name }}</p>
+          <p class="tw-font-semibold tw-text-right">{{ order?.sell_account_name }}</p>
         </div>
-        <div class="tw-flex tw-justify-between tw-space-x-4">
+
+        <div class="tw-flex tw-justify-between tw-space-x-4 tw-mb-2 tw-font-pingfangsb tw-font-semibold">
           <p class="tw-text-left">收款方式：</p>
-          <p class="tw-font-semibold tw-text-right">{{ formatPaymentMethod(order.payment_method) }}</p>
+          <p class="tw-font-semibold tw-text-right">{{ formatPaymentMethod(order?.payment_method) }}</p>
         </div>
-        <div class="tw-flex tw-justify-between tw-space-x-4">
+
+        <div class="tw-flex tw-justify-between tw-space-x-4 tw-mb-2 tw-font-pingfangsb tw-font-semibold">
           <p class="tw-text-left">收款账号：</p>
-          <p class="tw-font-semibold tw-text-right">{{ order.sell_account_number }}</p>
+          <p class="tw-font-semibold tw-text-right">{{ order?.sell_account_number }}</p>
         </div>
+
       </div>
 
-      <hr class="tw-my-3 tw-border-gray-300" />
+      <hr class="tw-w-full tw-my-1 tw-border-black tw-border-opacity-30" />
 
-      <!-- 用户信息 -->
-      <div class="tw-my-4">
-        <div class="tw-flex tw-justify-between tw-space-x-4 tw-items-center">
+      <div class="tw-w-[86%] tw-text-[#333333]">
+        <div class="tw-flex tw-justify-between tw-space-x-4 tw-items-center tw-font-pingfangsb tw-font-semibold">
           <p class="tw-text-left">收款码：</p>
-          <!-- <img :src="order.payment_code" alt="payment" class="tw-w-32 tw-h-40 tw-mx-auto" /> -->
-          <img src="@/assets/sample_payment.png" alt="payment" class="tw-w-32 tw-h-40 tw-mx-auto" />
+          <img 
+            :src="order?.sell_qr_code ? formatImageUrl(order.sell_qr_code) : ''"
+            alt="payment" 
+            class="tw-w-32 tw-h-40 tw-mx-auto" 
+          />
         </div>
       </div>
 
-      <hr class="tw-my-3 tw-border-gray-300" />
+      <hr class="tw-w-full tw-my-1 tw-border-black tw-border-opacity-30" />
 
-      <!-- 用户信息 -->
-      <div class="tw-my-4">
-        <div class="tw-flex tw-justify-between tw-space-x-4">
+      <div class="tw-w-[86%] tw-text-[#333333]">
+        <div class="tw-flex tw-justify-between tw-space-x-4 tw-mt-4 tw-mb-2 tw-font-pingfangsb tw-font-semibold">
           <p class="tw-text-left">买家姓名：</p>
-          <p class="tw-font-semibold tw-text-right">{{ order.buy_account_name }}</p>
+          <p class="tw-font-semibold tw-text-right">{{ order?.buy_account_name }}</p>
         </div>
-        <div class="tw-flex tw-justify-between tw-space-x-4">
-          <p class="tw-text-left">付款方式</p>
-          <p class="tw-font-semibold tw-text-right">{{ formatPaymentMethod(order.payment_method) }}</p>
+
+        <div class="tw-flex tw-justify-between tw-space-x-4 tw-mb-2 tw-font-pingfangsb tw-font-semibold">
+          <p class="tw-text-left">付款方式：</p>
+          <p class="tw-font-semibold tw-text-right">{{ formatPaymentMethod(order?.payment_method) }}</p>
         </div>
-        <div class="tw-flex tw-justify-between tw-space-x-4">
-          <p class="tw-text-left">付款账户：</p>
-          <p class="tw-font-semibold tw-text-right">{{ order.buy_account_number }}</p>
+
+        <div class="tw-flex tw-justify-between tw-space-x-4 tw-mb-2 tw-font-pingfangsb tw-font-semibold">
+          <p class="tw-text-left">付款账号：</p>
+          <p class="tw-font-semibold tw-text-right">{{ order?.buy_account_number }}</p>
         </div>
       </div>
 
-      <hr class="tw-my-3 tw-border-gray-300" />
+      <hr class="tw-w-full tw-my-1 tw-border-black tw-border-opacity-30" />
 
-      <!-- 用户信息 -->
-      <div class="tw-my-4">
-        <div class="tw-flex tw-justify-between tw-space-x-4">
+      <div class="tw-w-[86%] tw-text-[#333333]">
+        <div class="tw-flex tw-justify-between tw-space-x-4 tw-mt-4 tw-mb-2 tw-font-pingfangsb tw-font-semibold">
           <p class="tw-text-left">USDT币价：</p>
-          <p class="tw-font-semibold tw-text-right">{{ order.exchange_rate }}</p>
+          <p class="tw-font-semibold tw-text-right">{{ order?.exchange_rate }} 元</p>
         </div>
-        <div class="tw-flex tw-justify-between tw-space-x-4">
+
+        <div class="tw-flex tw-justify-between tw-space-x-4 tw-mb-2 tw-font-pingfangsb tw-font-semibold">
           <p class="tw-text-left">USDT金额：</p>
-          <p class="tw-font-semibold tw-text-right">$ {{ order.total_price }}</p>
+          <p class="tw-font-semibold tw-text-right">$ {{ order?.total_price }}</p>
         </div>
-        <div class="tw-flex tw-justify-between tw-space-x-4">
+
+        <div class="tw-flex tw-justify-between tw-space-x-4 tw-mb-2 tw-font-pingfangsb tw-font-semibold">
           <p class="tw-text-left">CNY金额：</p>
-          <p class="tw-font-semibold tw-text-right">{{ order.total_cny_price }} 元</p>
+          <p class="tw-font-semibold tw-text-right">{{ order?.total_cny_price }} 元</p>
         </div>
       </div>
 
-      <hr class="tw-my-3 tw-border-gray-300" />
+      <hr class="tw-w-full tw-my-1 tw-border-black tw-border-opacity-30" />
 
-      <!-- 用户信息 -->
-      <div class="tw-my-4">
-        <div class="tw-flex tw-justify-between tw-space-x-4">
-          <p class="tw-text-left">充值时间：</p>
-          <p class="tw-font-semibold tw-text-right">{{ order.created_at }}</p>
+      <div class="tw-w-[86%] tw-text-[#333333]">
+        <!-- 商户号 -->
+        <div class="tw-flex tw-justify-between tw-space-x-4 tw-mt-4 tw-mb-2 tw-font-pingfangsb tw-font-semibold">
+          <p class="tw-text-left">创建时间：</p>
+          <p class="tw-font-semibold tw-text-right">{{ order?.created_at }}</p>
         </div>
-        <div class="tw-flex tw-justify-between tw-space-x-4">
+
+        <!-- 总资产 -->
+        <div class="tw-flex tw-justify-between tw-space-x-4 tw-mb-2 tw-font-pingfangsb tw-font-semibold">
           <p class="tw-text-left">订单编号：</p>
-          <p class="tw-font-semibold tw-text-right">{{ formatOrderIdDisplay(order.id, order.created_at) }}</p>
+          <p class="tw-font-semibold tw-text-right">{{ order?.display_order_id }}</p>
         </div>
-        <div class="tw-flex tw-justify-between tw-space-x-4">
+
+        <!-- 可用资产 -->
+        <div class="tw-flex tw-justify-between tw-space-x-4 tw-mb-10 tw-font-pingfangsb tw-font-semibold">
           <p class="tw-text-left">订单状态：</p>
-          <p class="tw-font-semibold tw-text-right" :class="{'tw-text-red-600': order.status === 0, 'tw-text-green-600': order.status === 1 || order.status === 2}">
-            {{ payStatusMap[order.status] }}
-          </p>
+          <p class="tw-font-semibold tw-text-right" :class="getStatusStyle(order?.status).style">{{ getStatusStyle(order?.status).text }}</p>
         </div>
+
+        <button
+          v-if="order?.status == 0"
+          type="button"
+          class="tw-w-[80%] !tw-bg-[rgba(217,0,27,0.67843137254902)] !tw-text-[#f2f2f2] tw-font-normal tw-font-pingfang tw-text-[20px] tw-rounded-3xl tw-py-3 hover:tw-bg-rose-600"
+          style="letter-spacing: 4px;"
+          @click="handleConfirm"
+        >
+          我已付款
+        </button>
+
+        <button
+          v-else
+          type="button"
+          class="tw-w-[80%] !tw-bg-[rgba(217,0,27,0.67843137254902)] !tw-text-[#f2f2f2] tw-font-normal tw-font-pingfang tw-text-[20px] tw-rounded-3xl tw-py-3 hover:tw-bg-rose-600"
+          style="letter-spacing: 4px;"
+          @click="handleClose"
+        >
+          我已知晓
+        </button>
+
+        <button 
+          type="button"
+          class="tw-w-full !tw-text-[#D82D15] tw-font-medium tw-font-pingfang tw-py-2 tw-mt-2"
+          @click="handleClose"
+        >
+          取消
+        </button>
       </div>
-
-      <hr class="tw-my-3 tw-border-gray-300" />
-
-      <!-- 按钮 -->
-      <button
-        v-if="order.status == 0"
-        class="tw-w-full tw-bg-rose-500 tw-text-white tw-font-semibold tw-rounded-full tw-py-2 tw-mt-6 hover:tw-bg-rose-600"
-        @click="handleConfirm"
-      >
-        我已付款
-      </button>
-      <button 
-        v-if="order.status == 0"
-        class="tw-w-full tw-text-red-500 tw-font-medium tw-py-2 tw-mt-2"
-        @click="handleClose"
-      >
-        取消
-      </button>
 
       <!-- 底部版权 -->
-      <p class="tw-text-xs tw-text-gray-400 tw-mt-4">Copy@ JH嘉禾商城</p>
+      <p 
+        class="tw-absolute tw-bottom-2 tw-text-xs tw-text-gray-400"
+      >
+        Copy@ JH嘉禾商城</p>
     </div>
   </div>
 </template>
@@ -121,32 +143,27 @@ import { ref, onMounted } from 'vue';
 import { useRouter } from 'vue-router';
 import * as OrderApi from '@/api/order'
 import store from '@/store'
-import { formatPaymentMethod, formatOrderIdDisplay } from '@/utils/tool'
+import { formatPaymentMethod, formatImageUrl } from '@/utils/tool'
 
 const userStore = store.user()
 const router = useRouter();
-const order = ref({
-  id: 0,
-  sell_account_name: '',
-  payment_method: '',
-  sell_account_number: '',
-  sell_qr_code: '',
-  buy_account_name: '',
-  buy_account_number: '',
-  created_at: null,
-  status: 0,
-  exchange_rate: 0,
-  total_price: 0,
-  total_cny_price: 0
-});
-const loading = ref(true)
+const order = ref(null);
 
-const payStatusMap = {
-  0: '等待买家付款',
-  1: '待卖家确认',
-  2: '已确认',
-  3: '已完成',
-  '-1': '超时未支付',
+const getStatusStyle = (status) => {
+  switch (status) {
+    case 0:
+      return { style: 'tw-text-yellow-500', text: '等待买家付款' };
+    case 1:
+      return { style: 'tw-text-blue-500', text: '等待商家确认'};
+    case 2:
+      return { style: 'tw-text-green-500', text: '已完成'};
+    case 3:
+      return { style: 'tw-text-red-500', text: '争议'};
+    case 4:
+      return { style: 'tw-text-green-500', text: '已完成（争议结束）'};
+    default:
+      return { style: 'tw-text-gray-500', text: '-'};
+  }
 }
 
 // 获取订单详情
@@ -155,7 +172,6 @@ const fetchOrderDetails = async (orderId) => {
     const response = await OrderApi.getOrderDetail(userStore.loginToken, orderId)
     if (response.data.code === 10000) {
       order.value = response.data.data.order;
-      loading.value = false
     }
   } catch (error) {
     console.error('Error fetching order details:', error);
@@ -171,9 +187,8 @@ const handleConfirm = async () => {
     })
 
     if (response.data.code === 10000) {
+      ElMessage.success('确认付款成功');
       order.value.status = 1;  // 更新状态
-
-      ElMessage.success('已确认付款成功');
       setTimeout(() => {
         router.push(`/`);
       }, 3000);
@@ -196,4 +211,5 @@ onMounted(() => {
 </script>
 
 <style scoped lang="scss">
+/* 保持样式不变 */
 </style>

@@ -44,6 +44,7 @@ import { ref, onMounted, reactive, watch, defineEmits, nextTick } from 'vue';
 import { useRouter } from 'vue-router';
 import store from '@/store';
 import * as FinanceApi from '@/api/finance'
+import { getAdjustWidth } from '@/utils/tool'
 
 const emit = defineEmits();
 
@@ -53,6 +54,8 @@ const appStore = store.app()
 const transactionTypeMap = {
   recharge: '充值',
   withdraw: '提现',
+  order_sell: '出售',
+  order_buy: '买入',
 }
 
 const props = defineProps({
@@ -194,14 +197,6 @@ const onTouchEnd = () => {
 const triggerRefresh = () => {
   isRefreshing.value = true; // 显示刷新状态
   getList()
-}
-
-// 以430为基准，调整width
-const getAdjustWidth = (baseWidth) => {
-  const { body } = document;
-  const rect = body.getBoundingClientRect();
-  
-  return baseWidth / 430 * rect.width;
 }
 
 </script>

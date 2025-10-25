@@ -137,7 +137,7 @@ const handleRowClick = (row) => {
   if (role === 'buyer') {
     // 根据点击的行的数据，构造目标路由地址
     const targetPage = `/order/buyer/buy?orderListingId=${row.id}`; // 假设根据 row.id 构造跳转路径
-    router.push(targetPage); // 跳转到 /buy 页面，带上 tradeId 参数
+    router.push(targetPage);
   }
 };
 

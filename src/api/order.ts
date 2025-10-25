@@ -12,12 +12,12 @@ export async function createOrder(loginToken, data) {
 
 // request buyer order
 export async function getMyBuyerOrder(loginToken, queryParams) {
-    const { channel, page, pagesize } = queryParams;
+    const { payment_method, page, page_size } = queryParams;
 
     // 构建请求的基础 URL
-    let requestUrl = `/api/order/buyer/my?page=${page}&pagesize=${pagesize}`;
-    if (channel) {
-        requestUrl += `&channel=${channel}`
+    let requestUrl = `/api/order/buyer/my?page=${page}&page_size=${page_size}`;
+    if (payment_method) {
+        requestUrl += `&payment_method=${payment_method}`
     }
 
     const response = await requestBase.get(requestUrl, {
@@ -30,12 +30,12 @@ export async function getMyBuyerOrder(loginToken, queryParams) {
 
 // request seller order
 export async function getMySellerOrder(loginToken, queryParams) {
-    const { channel, page, pagesize } = queryParams;
+    const { payment_method, page, page_size } = queryParams;
 
     // 构建请求的基础 URL
-    let requestUrl = `/api/order/seller/my?page=${page}&pagesize=${pagesize}`;
-    if (channel) {
-        requestUrl += `&channel=${channel}`
+    let requestUrl = `/api/order/seller/my?page=${page}&page_size=${page_size}`;
+    if (payment_method) {
+        requestUrl += `&payment_method=${payment_method}`
     }
 
     const response = await requestBase.get(requestUrl, {

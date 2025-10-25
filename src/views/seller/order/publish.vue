@@ -204,6 +204,11 @@ const handlePublish = async() => {
       }, 3000);
     } else {
       ElMessage.error(response.data.msg || '发布失败');
+      if (response.data.code === 20011) {
+        setTimeout(() => {
+          router.push('/profile'); // 未设置收款信息，需要先设置
+        }, 3000);
+      }
     }
   } catch (error) {
     console.log(error)

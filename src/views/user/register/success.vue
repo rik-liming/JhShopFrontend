@@ -16,7 +16,6 @@
       <el-button
         type="primary"
         class="login-btn"
-        :loading="loading"
         @click="handleLogin"
       >
         立即登录
