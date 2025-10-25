@@ -1,96 +1,168 @@
 <template>
-  <div class="tw-w-full tw-min-h-screen tw-flex tw-items-center tw-justify-center">
-    <div class="tw-w-[360px] tw-p-2 tw-text-center">
+  <div class="tw-w-full tw-min-h-screen tw-flex tw-flex tw-justify-center">
+    <div class="tw-w-[90%] tw-p-1 tw-text-center tw-flex tw-flex-col tw-justify-start tw-items-center">
       <!-- 顶部图标 -->
-      <div class="tw-flex tw-items-center tw-justify-between tw-mb-2 tw-relative">
+      <div class="tw-w-full tw-flex tw-items-center tw-justify-between tw-mt-14 tw-mb-2 tw-relative">
         <div class="tw-flex tw-items-center tw-w-full">
-          <img src="@/assets/logo.png" alt="logo" class="tw-w-32 tw-h-32 tw-mx-auto" />
+          <img src="@/assets/logo.png" alt="logo" class="tw-w-[104px] tw-h-[100px] tw-mx-auto" />
+        </div>
+        <div class="tw-absolute tw-left-0 tw-flex tw-flex-col tw-items-end">
+          <hamburger 
+            id="hamburger-container" 
+            :is-active="appStore.sidebar.opened" 
+            class="hamburger-container"
+            :iconStyle="2"
+            @toggleClick="toggleSidebar" 
+          />
         </div>
         <div class="tw-absolute tw-right-0 tw-flex tw-flex-col tw-items-end">
-          <button class="tw-text-red-500 tw-text-sm tw-border tw-border-solid tw-border-black tw-rounded tw-px-4 tw-py-2 tw-mb-4" @click="handleClose">关闭</button>
+          <button class="tw-text-[#D9001B] tw-font-pingfang tw-text-[17px] tw-border tw-border-solid tw-border-black tw-border-opacity-30 tw-rounded-lg tw-px-2 tw-py-1 tw-mb-16" @click="handleClose">关闭</button>
         </div>
       </div>
-      
 
-      <!-- 标题 & 汇率 -->
-      <h2 class="tw-text-lg tw-font-semibold tw-mb-10">财务变动</h2>
-
-      <div class="tw-mb-20">
+      <div class="tw-w-[96%] tw-text-[#333333] tw-mt-8">
         <el-table
           :data="list"
           border
           fit
           highlight-current-row
           class="main-table"
-          key="notificationTable"
+          key="financeTable"
           style="height: 600px; overflow: auto;"
           @row-click="handleRowClick"
+          @touchstart="onTouchStart"
+          @touchmove="onTouchMove"
+          @touchend="onTouchEnd"
         >
-          <el-table-column label="记录编号" width="'40%'" align="center">
-              <template v-slot="{row}">
-              <span>{{ row.transaction_id }}</span>
-              </template>
+          <el-table-column label="记录编号" :width="getAdjustWidth(120)" align="center">
+            <template v-slot="{row}">
+              <span v-if="row.transaction_id">{{ row.transaction_id }}</span>
+              <span v-else class="opacity-30">-</span>
+            </template>
           </el-table-column>
-          <el-table-column label="金额" width="'20%'" align="center">
-              <template v-slot="{row}">
-              <span>{{ row.amount }}</span>
-              </template>
+          <el-table-column label="金额 (USTD)" :width="getAdjustWidth(90)" align="center">
+            <template v-slot="{row}">
+              <span v-if="row.amount">{{ row.amount }}</span>
+              <span v-else class="opacity-30">-</span>
+            </template>
           </el-table-column>
-          <el-table-column label="类型" width="'20%'" align="center">
-              <template v-slot="{row}">
-              <span>{{ row.transaction_type }}</span>
-              </template>
+          <el-table-column label="类型" :width="getAdjustWidth(64)" align="center">
+            <template v-slot="{row}">
+              <span v-if="row.transaction_type">{{ transactionTypeMap[row.transaction_type] }}</span>
+              <span v-else class="opacity-30">-</span>
+            </template>
           </el-table-column>
-          <el-table-column label="余额" width="'20%'" align="center">
-              <template v-slot="{row}">
-              <span>{{ row.balance_after }}</span>
-              </template>
+          <el-table-column label="余额 (USTD)" :width="getAdjustWidth(90)" align="center">
+            <template v-slot="{row}">
+              <span v-if="row.balance_after && row.balance_after > 0">{{ row.balance_after }}</span>
+              <span v-else class="opacity-30">-</span>
+            </template>
           </el-table-column>
         </el-table>
       </div>
 
       <!-- 底部版权 -->
-      <p class="tw-text-xs tw-text-gray-400 tw-mt-4">Copy@ JH源禾商城</p>
+      <p 
+        class="tw-absolute tw-bottom-2 tw-text-xs tw-text-gray-400"
+      >
+        Copy@ JH嘉禾商城</p>
     </div>
   </div>
 </template>
 
 <script setup>
-
-import { useRouter } from 'vue-router';
 import { ref, onMounted, reactive, watch, defineEmits, nextTick } from 'vue';
-import * as FinanceApi from '@/api/finance'
+import { useRouter } from 'vue-router';
 import store from '@/store';
+import * as FinanceApi from '@/api/finance'
+import { getAdjustWidth } from '@/utils/tool'
 
-const router = useRouter()
+const emit = defineEmits();
+
 const userStore = store.user()
+const appStore = store.app()
 
-const handleClose = () => {
-  router.push('/')
+const transactionTypeMap = {
+  recharge: '充值',
+  withdraw: '提现',
+  order_sell: '出售',
+  order_buy: '买入',
 }
+
+const props = defineProps({
+  currentShowTable: String,
+  tableType: String,
+});
 
 // 定义数据
 const list = ref([]);
 const listQuery = reactive({
   page: 1,
   limit: 100,
+  tableType: props.tableType,
 });
+
+const minTableRowCount = ref(15)
+const isRefreshing = ref(false)
+const touchStartY = ref(0) // 触摸开始位置
+const touchMoveY = ref(0) // 触摸移动位置
+const threshold = ref(50) // 下拉刷新阈值
+
+// 用于防止重复调用的标志位
+let isFirstCall = true;
 
 // 获取数据的逻辑
 const getList = async () => {
   try {
+    emit('table-update-start');
+
+    setTimeout(() => {
+      emit('table-update-end');
+    }, 100);
+    
     const response = await FinanceApi.getMyFinanceRecord(userStore.loginToken, {
       page: listQuery.page,
       pagesize: listQuery.limit,
-      channel: listQuery.channel
     })
     if (response.data.code === 10000) {
-      list.value = response.data.data.records;
+      const records = response.data.data.records;
+
+      // 判断是否少于 15 条数据
+      if (records.length < minTableRowCount.value) {
+        // 填充空数据到 15 条
+        list.value = [
+          ...records, // 将接口返回的数据放在前面
+          // ...Array(minTableRowCount.value - records.length).fill({}) // 填充空数据
+          ...Array.from({ length: minTableRowCount.value - records.length }, () => ({ fakeId: Math.random() })) // 生成唯一的 fakeId
+        ];
+      } else {
+        list.value = Array.from({ length: minTableRowCount.value }, () => ({ fakeId: Math.random() })) // 生成唯一的 fakeId
+      }
     }
   } catch (error) {
     console.error('获取数据失败', error);
+    list.value = Array.from({ length: minTableRowCount.value }, () => ({ fakeId: Math.random() })) // 生成唯一的 fakeId
   }
 };
+
+watch(
+  () => props.tableType,
+  (newTableType) => {
+    // 只有在 tableType 变化时，才更新数据
+    listQuery.tableType = newTableType;
+    
+    // 确保只有在 tableType 改变时才调用 getList
+    if (!isFirstCall 
+      && props.currentShowTable === 'my'
+      && props.tableType === 'finance'
+    ) {
+      getList();
+    } else {
+      isFirstCall = false; // 第一次加载后设置为 false
+    }
+  },
+  { immediate: true } // immediate 保证在首次渲染时监听
+);
 
 // 生命周期钩子，组件加载时获取数据
 onMounted(() => {
@@ -100,25 +172,24 @@ onMounted(() => {
   });
 });
 
+const router = useRouter();
 const handleRowClick = (row) => {
   let targetPage = ''
   switch(row.transaction_type) {
     case 'recharge':
-      targetPage = `/charge/detail?transactionId=${row.transaction_id}`
+      targetPage = `/recharge/detail?reference_id=${row.reference_id}`
       break;
     case 'transfer':
-      targetPage = `/transfer/detail?transactionId=${row.transaction_id}`
+      targetPage = `/transfer/detail?reference_id=${row.reference_id}`
       break;
     case 'withdraw':
-      targetPage = `/withdraw/detail?transactionId=${row.transaction_id}`
+      targetPage = `/withdraw/detail?reference_id=${row.reference_id}`
       break;
-    case 'order':
-      const role = userStore.user?.value?.role
-      if (role === 'buyer') {
-        targetPage = `/order/buyer/detail?orderId=${row.order_id}`;
-      } else if (role === 'seller' || role === 'agent') {
-        targetPage = `/order/seller/detail?orderId=${row.order_id}`;
-      }
+    case 'order_sell':
+      targetPage = `/order/seller/detail?orderId=${row.reference_id}`;
+      break;
+    case 'order_buy':
+      targetPage = `/order/buyer/detail?orderId=${row.reference_id}`;
       break;
   }
 
@@ -126,27 +197,62 @@ const handleRowClick = (row) => {
     router.push(targetPage);
   }
 };
+
+const onTouchStart = (event) => {
+  // 记录触摸开始的位置
+  touchStartY.value = event.changedTouches[0].clientY;
+}
+
+const onTouchMove = (event) => {
+  // 获取触摸移动的 Y 轴位置
+  touchMoveY.value = event.changedTouches[0].clientY;
+
+  // 如果下拉距离超过阈值，显示刷新提示
+  if (touchMoveY.value - touchStartY.value > threshold.value) {
+    isRefreshing.value = true;
+  }
+}
+
+const onTouchEnd = () => {
+  // 判断是否触发刷新
+  if (touchMoveY.value - touchStartY.value > threshold.value) {
+    triggerRefresh();
+  } else {
+    isRefreshing.value = false;
+  }
+}
+
+// 触发刷新
+const triggerRefresh = () => {
+  isRefreshing.value = true; // 显示刷新状态
+  getList()
+}
+
+const toggleSidebar = () => {
+  appStore.toggleSidebar();
+}
+
+const handleClose = () => {
+  router.push('/');
+};
+
 </script>
 
 <style scoped lang="scss">
-.transfer-text {
-    text-decoration: underline rgb(215, 215, 215);
-    text-decoration-thickness: 3px; /* 增加下划线的粗细 */
-    text-underline-offset: 5px; /* 增加下划线与文字的距离 */
-}
 
 .main-table {
   width: 100%;
   background-color: transparent !important;
-  border: 1px solid black !important;
+  border: 1px solid rgba(0,0,0,0.4) !important;
 }
 
 :deep(.el-table__header th) {
-  border: 1px solid #7f7f7f !important;
+  border: 1px solid rgba(127,127,127,0.4) !important;
   background-color: transparent !important;
-  font-size: 16px;
-  font-weight: bold;
+  font-size: 14px;
+  font-weight: 600;
   color: black;
+  font-family: 'PingFangSC-Semibold', 'PingFang SC Semibold', 'PingFang SC';
 }
 
 :deep(.el-table__header tr) {
@@ -154,11 +260,16 @@ const handleRowClick = (row) => {
 }
 
 :deep(.el-table__body td) {
-  border: 1px solid #7f7f7f !important;
+  border: 1px solid rgba(127,127,127,0.2) !important;
+  font-size: 13px;
+  font-weight: normal;
+  color: #333333;
+  font-family: 'Arial Normal', 'Arial';
 }
 
 :deep(.el-table__body tr) {
   background-color: transparent !important;
-  border: 1px solid #7f7f7f !important;
+  border: 1px solid rgba(127,127,127,0.4) !important;
 }
+
 </style>

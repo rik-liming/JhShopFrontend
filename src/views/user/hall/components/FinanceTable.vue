@@ -71,7 +71,7 @@ const listQuery = reactive({
   tableType: props.tableType,
 });
 
-const minTableRowCount = ref(200)
+const minTableRowCount = ref(15)
 const isRefreshing = ref(false)
 const touchStartY = ref(0) // 触摸开始位置
 const touchMoveY = ref(0) // 触摸移动位置
@@ -154,13 +154,11 @@ const handleRowClick = (row) => {
     case 'withdraw':
       targetPage = `/withdraw/detail?reference_id=${row.reference_id}`
       break;
-    case 'order':
-      const role = userStore.user?.value?.role
-      if (role === 'buyer') {
-        targetPage = `/order/buyer/detail?orderId=${row.order_id}`;
-      } else if (role === 'seller' || role === 'agent') {
-        targetPage = `/order/seller/detail?orderId=${row.order_id}`;
-      }
+    case 'order_sell':
+      targetPage = `/order/seller/detail?orderId=${row.reference_id}`;
+      break;
+    case 'order_buy':
+      targetPage = `/order/buyer/detail?orderId=${row.reference_id}`;
       break;
   }
 

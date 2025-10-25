@@ -1,35 +1,41 @@
 <template>
   <div>
     <el-table
-      :data="list"
-      border
-      fit
-      highlight-current-row
-      class="main-table"
-      key="personTable"
-      style="height: 500px; overflow: auto;"
-      @row-click="handleRowClick"
+        :data="list"
+        border
+        fit
+        highlight-current-row
+        class="main-table"
+        key="personTable"
+        style="height: 500px; overflow: auto;"
+        @touchstart="onTouchStart"
+        @touchmove="onTouchMove"
+        @touchend="onTouchEnd"
     >
-      <el-table-column label="订单号" align="center">
-        <template v-slot="{ row }">
-          <span>{{ row.id }}</span>
-        </template>
-      </el-table-column>
-      <el-table-column label="商户" align="center">
-        <template v-slot="{ row }">
-          <span>{{ formatIdDisplay(row.sell_user_id) }}</span>
-        </template>
-      </el-table-column>
-      <el-table-column label="订单状态" align="center" min-width="90">
-        <template v-slot="{ row }">
-          <span>{{ row.author }}</span>
-        </template>
-      </el-table-column>
-      <el-table-column label="金额" align="center">
-        <template v-slot="{ row }">
-          <span>{{ row.author }}</span>
-        </template>
-      </el-table-column>
+        <el-table-column label="订单编号" :width="getAdjustWidth(120)" align="center">
+          <template v-slot="{row}">
+            <span v-if="row.sell_transaction_id">{{ row.sell_transaction_id }}</span>
+            <span v-else class="opacity-30">-</span>
+          </template>
+        </el-table-column>
+        <el-table-column label="商户" :width="getAdjustWidth(70)" align="center">
+          <template v-slot="{row}">
+            <span v-if="row.sell_user_id">{{ formatIdDisplay(row.sell_user_id) }}</span>
+            <span v-else class="opacity-30">-</span>
+          </template>
+        </el-table-column>
+        <el-table-column label="状态" :width="getAdjustWidth(60)" align="center">
+          <template v-slot="{row}">
+            <span v-if="row.status">{{ `成功` }}</span>
+            <span v-else class="opacity-30">-</span>
+          </template>
+        </el-table-column>
+        <el-table-column label="金额 (USTD)" :width="getAdjustWidth(90)" align="center">
+          <template v-slot="{row}">
+            <span v-if="row.total_price">{{ row.total_price }}</span>
+            <span v-else class="opacity-30">-</span>
+          </template>
+        </el-table-column>
     </el-table>
 
     <!-- 固定的底部行 -->
@@ -44,13 +50,14 @@ import { ref, onMounted, reactive, watch, defineEmits, nextTick } from 'vue';
 import { useRouter } from 'vue-router';
 import store from '@/store';
 import * as OrderApi from '@/api/order'
-import { formatIdDisplay } from '@/utils/tool'
+import { formatIdDisplay, getAdjustWidth } from '@/utils/tool'
 
 const emit = defineEmits();
 
 const props = defineProps({
   startTime: String,
   endTime: String,
+  tableType: String,
 });
 
 const userStore = store.user()
@@ -58,6 +65,12 @@ const userStore = store.user()
 // 定义数据
 const list = ref([]);
 const totalAmount = ref(0.00);
+
+const minTableRowCount = ref(15)
+const isRefreshing = ref(false)
+const touchStartY = ref(0) // 触摸开始位置
+const touchMoveY = ref(0) // 触摸移动位置
+const threshold = ref(50) // 下拉刷新阈值
 
 // 用于防止重复调用的标志位
 let isFirstCall = true;
@@ -71,8 +84,22 @@ const getList = async () => {
       startTime: props.startTime,
       endTime: props.endTime,
     })
+
     if (response.data.code === 10000) {
-      list.value = response.data.data.orders;
+      const orders = response.data.data.orders;
+      totalAmount.value = response.data.data.totalAmount
+
+      // 判断是否少于 15 条数据
+      if (orders.length < minTableRowCount.value) {
+        // 填充空数据到 15 条
+        list.value = [
+          ...orders, // 将接口返回的数据放在前面
+          // ...Array(minTableRowCount.value - orders.length).fill({}) // 填充空数据
+          ...Array.from({ length: minTableRowCount.value - orders.length }, () => ({ fakeId: Math.random() })) // 生成唯一的 fakeId
+        ];
+      } else {
+        list.value = Array.from({ length: minTableRowCount.value }, () => ({ fakeId: Math.random() })) // 生成唯一的 fakeId
+      }
     }
 
     emit('table-update-end');
@@ -86,6 +113,7 @@ onMounted(() => {
   nextTick(() => {
     // 确保 getList 在 DOM 更新后调用
     getList();
+    isFirstCall = false;
   });
 });
 
@@ -93,7 +121,9 @@ onMounted(() => {
 watch(
   () => props.startTime,
   () => {
-    getList();
+    if (!isFirstCall && props.tableType == 'person') {
+      getList();
+    }
   },
   { immediate: true } // immediate 保证在首次渲染时监听
 );
@@ -102,7 +132,9 @@ watch(
 watch(
   () => props.endTime,
   () => {
-    getList();
+    if (!isFirstCall && props.tableType == 'person') {
+      getList();
+    }
   },
   { immediate: true } // immediate 保证在首次渲染时监听
 );
@@ -110,29 +142,51 @@ watch(
 // 跳转到指定页面
 const router = useRouter();
 
-const handleRowClick = (row) => {
-  const role = userStore.user?.value?.role
-  if (role === 'buyer') {
-    // 根据点击的行的数据，构造目标路由地址
-    const targetPage = `/order/buyer/buy?tradeId=${row.id}`; // 假设根据 row.id 构造跳转路径
-    router.push(targetPage); // 跳转到 /buy 页面，带上 tradeId 参数
+const onTouchStart = (event) => {
+  // 记录触摸开始的位置
+  touchStartY.value = event.changedTouches[0].clientY;
+}
+
+const onTouchMove = (event) => {
+  // 获取触摸移动的 Y 轴位置
+  touchMoveY.value = event.changedTouches[0].clientY;
+
+  // 如果下拉距离超过阈值，显示刷新提示
+  if (touchMoveY.value - touchStartY.value > threshold.value) {
+    isRefreshing.value = true;
   }
-};
+}
+
+const onTouchEnd = () => {
+  // 判断是否触发刷新
+  if (touchMoveY.value - touchStartY.value > threshold.value) {
+    triggerRefresh();
+  } else {
+    isRefreshing.value = false;
+  }
+}
+
+// 触发刷新
+const triggerRefresh = () => {
+  isRefreshing.value = true; // 显示刷新状态
+  getList()
+}
 </script>
 
 <style scoped lang="scss">
 .main-table {
   width: 100%;
   background-color: transparent !important;
-  border: 1px solid black !important;
+  border: 1px solid rgba(0,0,0,0.4) !important;
 }
 
 :deep(.el-table__header th) {
-  border: 1px solid #7f7f7f !important;
+  border: 1px solid rgba(127,127,127,0.4) !important;
   background-color: transparent !important;
-  font-size: 16px;
-  font-weight: bold;
+  font-size: 14px;
+  font-weight: 600;
   color: black;
+  font-family: 'PingFangSC-Semibold', 'PingFang SC Semibold', 'PingFang SC';
 }
 
 :deep(.el-table__header tr) {
@@ -140,21 +194,29 @@ const handleRowClick = (row) => {
 }
 
 :deep(.el-table__body td) {
-  border: 1px solid #7f7f7f !important;
+  border: 1px solid rgba(127,127,127,0.2) !important;
+  font-size: 13px;
+  font-weight: normal;
+  color: #333333;
+  font-family: 'Arial Normal', 'Arial';
 }
 
 :deep(.el-table__body tr) {
   background-color: transparent !important;
-  border: 1px solid #7f7f7f !important;
+  border: 1px solid rgba(127,127,127,0.4) !important;
 }
 
 .sticky-bottom {
   position: sticky;
   bottom: 0;
-  border: 1px solid black;
   z-index: 10;
   padding: 10px;
-  color: black;
   text-align: right;
+
+  border: 1px solid rgba(127,127,127,0.4) !important;
+  font-size: 13px;
+  font-weight: normal;
+  color: #333333;
+  font-family: 'Arial Normal', 'Arial';
 }
 </style>

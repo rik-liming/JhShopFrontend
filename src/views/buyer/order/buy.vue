@@ -47,8 +47,26 @@
           </div>
 
           <input
+            v-if="orderListingData?.payment_method == 'bank'"
             type="text"
-            placeholder="请输入支付宝号"
+            placeholder="请输入付款银行名称"
+            v-model="form.bank_name"
+            required
+            class="tw-w-full tw-border tw-border-solid tw-border-black tw-border-opacity-40 tw-rounded-lg tw-px-3 tw-py-2 tw-text-md tw-placeholder-black tw-placeholder-opacity-35 tw-mt-4 tw-mb-2"
+          />
+
+          <input
+            v-if="orderListingData?.payment_method == 'bank'"
+            type="text"
+            placeholder="请输入付款银行开户行"
+            v-model="form.issue_bank_name"
+            required
+            class="tw-w-full tw-border tw-border-solid tw-border-black tw-border-opacity-40 tw-rounded-lg tw-px-3 tw-py-2 tw-text-md tw-placeholder-black tw-placeholder-opacity-35 tw-mt-4 tw-mb-2"
+          />
+
+          <input
+            type="text"
+            :placeholder="accountPlaceHolder"
             v-model="form.account_number"
             required
             class="tw-w-full tw-border tw-border-solid tw-border-black tw-border-opacity-40 tw-rounded-lg tw-px-3 tw-py-2 tw-text-md tw-placeholder-black tw-placeholder-opacity-35 tw-mt-4 tw-mb-2"
@@ -105,7 +123,7 @@
       </div>
 
       <!-- 底部版权 -->
-      <p class="tw-absolute tw-bottom-4 tw-text-xs tw-text-gray-400 tw-mt-16">Copy@ JH嘉禾商城</p>
+      <p class="tw-text-xs tw-text-gray-400 tw-mt-12 tw-mb-2">Copy@ JH嘉禾商城</p>
     </div>
   </div>
 </template>
@@ -153,6 +171,28 @@ const minBuyCnyAmount = computed(() => {
   const minSaleAmount = orderListingData?.value?.min_sale_amount || 0.00
   return getExchangeCNY(minSaleAmount);
 });
+
+const accountPlaceHolder = computed(() => {
+  let placeHolder = ''
+
+  if (!orderListingData?.value?.payment_method) {
+    return placeHolder
+  }
+
+  switch (orderListingData.value.payment_method) {
+    case 'alipay':
+      placeHolder = '请输入支付宝号'
+      break;
+    case 'wechat':
+      placeHolder = '请输入微信号'
+      break;
+    case 'bank':
+      placeHolder = '请输入银行卡号'
+      break;
+  }
+
+  return placeHolder
+})
 
 // 页面加载时获取订单列表信息
 onMounted(async () => {

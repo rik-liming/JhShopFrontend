@@ -327,7 +327,7 @@ export const asyncRoutes:RouteRecordRaw[] = [
     component: Layout,
     redirect: '/finance/index',
     meta: { 
-      roles: ['seller', 'agent']
+      roles: ['buyer', 'seller', 'agent']
     },
     children: [
       {

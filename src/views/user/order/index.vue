@@ -199,7 +199,7 @@ const handleRowClick = (row) => {
 };
 
 const getStatusClass = (status) => {
-  if (status) {
+  if (status !== null && status !== undefined) {
     switch (status) {
       case 0:
         return 'waitBuyerPay';
@@ -251,6 +251,10 @@ const triggerRefresh = () => {
 const toggleSidebar = () => {
   appStore.toggleSidebar();
 }
+
+const handleClose = () => {
+  router.push('/');
+};
 
 </script>
 

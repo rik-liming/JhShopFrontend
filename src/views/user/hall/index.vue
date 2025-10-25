@@ -28,7 +28,7 @@
       </div>
     </div>
 
-    <div class="transaction-container" v-if="userStore.user?.value?.role === 'agent' || userStore?.value?.role === 'seller'">
+    <div class="transaction-container" v-if="userStore.user?.value?.role === 'agent' || userStore?.user?.value?.role === 'seller'">
       <div class="transaction-menu">
         <div class="left-menu" @click="onRecharge">
           <img src="@/assets/buy_icon.svg" class="buy-icon">
