@@ -14,6 +14,10 @@
     </div>
 
     <el-dialog title="系统消息" v-model="isDialogVisible" width="80%">
+      <!-- <template #header>
+        <div class="tw-text-center tw-text-lg tw-font-bold tw-z-10">系统消息</div>
+      </template> -->
+
       <notification-table />
     </el-dialog>
   </div>
@@ -123,4 +127,16 @@ export default defineComponent({
   background-position: center; /* 背景图片居中 */
   background-repeat: no-repeat; /* 背景图片不重复 */
 }
+
+// :deep(.el-dialog__header) {
+//   display: flex;
+//   justify-content: center;
+//   align-items: center;
+//   position: relative;
+// }
+// :deep(.el-dialog__headerbtn) {
+//   position: absolute;
+//   right: 15px;
+// }
+
 </style>

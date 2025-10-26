@@ -7,7 +7,7 @@ import getPageTitle from '@/utils/get-page-title';
 
 NProgress.configure({ showSpinner: false }); // NProgress Configuration
 
-const whiteList = ['/login', '/register', '/register/success', '/auth-redirect']; // no redirect whitelist
+const whiteList = ['/login', '/register', '/register/success', '/remote/buy', '/auth-redirect']; // no redirect whitelist
 
 // 在应用初始化时就进行动态路由的处理
 export async function initDynamicRoutes() {

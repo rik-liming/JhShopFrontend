@@ -73,6 +73,12 @@ export const constantRoutes:RouteRecordRaw[] = [
     meta: { hidden: true }
   },
   {
+    path: '/remote/buy',
+    name: 'RemoteBuy',
+    component: () => import('@/views/user/remote/buy.vue'),
+    meta: { hidden: true }
+  },
+  {
     path: '/auth-redirect',
     name: 'AuthRedirect',
     component: () => import('@/views/user/login/auth-redirect.vue'),
@@ -90,6 +96,7 @@ export const constantRoutes:RouteRecordRaw[] = [
     component: () => import('@/views/error-page/401.vue'),
     meta: { hidden: true }
   },
+
   // 需要展示在侧边栏的
   {
     path: '/',
@@ -179,8 +186,8 @@ export const asyncRoutes:RouteRecordRaw[] = [
     ]
   },
   {
-    path: '/transfer/detail',
-    name: 'TransferDetail',
+    path: '/transfer/sender/detail',
+    name: 'TransferSenderDetail',
     component: Layout,
     meta: { 
       hidden: true,
@@ -189,8 +196,24 @@ export const asyncRoutes:RouteRecordRaw[] = [
     children: [
       {
         path: '',
-        name: 'TransferDetailIndex',
-        component: () => import('@/views/seller/transfer/detail.vue')
+        name: 'TransferSenderDetailIndex',
+        component: () => import('@/views/seller/transfer/sender_detail.vue')
+      }
+    ]
+  },
+  {
+    path: '/transfer/receiver/detail',
+    name: 'TransferReceiverDetail',
+    component: Layout,
+    meta: { 
+      hidden: true,
+      roles: ['seller', 'agent']
+    },
+    children: [
+      {
+        path: '',
+        name: 'TransferReceiverDetailIndex',
+        component: () => import('@/views/seller/transfer/receiver_detail.vue')
       }
     ]
   },

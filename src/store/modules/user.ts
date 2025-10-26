@@ -1,7 +1,6 @@
 import { defineStore } from 'pinia';
-import router, { resetRouter } from '@/router';
+import { resetRouter } from '@/router';
 import tagsViewStore from './tagsView';
-import permissionStore from './permission';
 import * as AuthApi from '@/api/auth'
 import * as UserApi from '@/api/user'
 import { useStorage } from '@vueuse/core'
@@ -75,7 +74,7 @@ export default defineStore({
     async logout() {
       try {
         // 登出是前端登出即可，后端处理失败也同样退出
-        const response = await AuthApi.logout(this.loginToken)
+        await AuthApi.logout(this.loginToken)
         this.loginToken = '';
         this.user = null;
         resetRouter();

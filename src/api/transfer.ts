@@ -11,10 +11,10 @@ export async function createTransfer(loginToken, data) {
 }
 
 // request transfer detail
-export async function getTransferDetail(loginToken, transactionId) {
+export async function getTransferDetail(loginToken, id) {
 
     // 构建请求的基础 URL
-    let requestUrl = `/api/transfer/detail?transaction_id=${transactionId}`;
+    let requestUrl = `/api/transfer/detail?id=${id}`;
 
     const response = await requestBase.get(requestUrl, {
         headers: {

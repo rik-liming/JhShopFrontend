@@ -28,7 +28,7 @@
         <!-- 商户号 -->
         <div class="tw-flex tw-justify-between tw-space-x-4 tw-mt-6 tw-mb-2 tw-font-pingfangsb tw-font-semibold">
           <p class="tw-text-left">商户号：</p>
-          <p class="tw-font-semibold tw-text-right">{{ formatIdDisplay(userStore?.user?.value?.id) }}</p>
+          <p class="tw-font-semibold tw-text-right">{{ formatIdDisplay(withdrawData?.user_id) }}</p>
         </div>
 
         <!-- 总资产 -->

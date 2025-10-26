@@ -22,25 +22,25 @@
 
       <div class="tw-w-[86%] tw-text-[#333333]">
         <div class="tw-w-full tw-flex tw-flex-col tw-justify-start">
-          <h1 class="tw-text-left tw-text-[23px] tw-font-pingfangsb tw-mt-10 tw-mb-4">充值详情</h1>
+          <h1 class="tw-text-left tw-text-[23px] tw-font-pingfangsb tw-mt-10 tw-mb-4">提现详情</h1>
         </div>
 
         <!-- 商户号 -->
         <div class="tw-flex tw-justify-between tw-space-x-4 tw-mt-6 tw-mb-2 tw-font-pingfangsb tw-font-semibold">
           <p class="tw-text-left">商户号：</p>
-          <p class="tw-font-semibold tw-text-right">{{ formatIdDisplay(rechargeData?.user_id) }}</p>
+          <p class="tw-font-semibold tw-text-right">{{ formatIdDisplay(userStore?.user?.value?.id) }}</p>
         </div>
 
         <!-- 总资产 -->
-        <div v-if="rechargeData?.status == 1 || rechargeData?.status == -1" class="tw-flex tw-justify-between tw-space-x-4 tw-mb-2 tw-font-pingfangsb tw-font-semibold">
+        <div v-if="withdrawData?.status == 1" class="tw-flex tw-justify-between tw-space-x-4 tw-mb-2 tw-font-pingfangsb tw-font-semibold">
           <p class="tw-text-left">总资产：</p>
-          <p class="tw-font-semibold tw-text-right">{{ rechargeData?.balance_before }} USDT</p>
+          <p class="tw-font-semibold tw-text-right">{{ withdrawData?.balance_before }} USDT</p>
         </div>
 
         <!-- 充值金额 -->
         <div class="tw-flex tw-justify-between tw-space-x-4 tw-mb-2 tw-font-pingfangsb tw-font-semibold">
-          <p class="tw-text-left">充值金额：</p>
-          <p class="tw-font-semibold tw-text-right tw-text-[#D9001B]">{{ rechargeData?.amount }} USDT</p>
+          <p class="tw-text-left">提现金额：</p>
+          <p class="tw-font-semibold tw-text-right tw-text-[#D9001B]">{{ withdrawData?.amount }} USDT</p>
         </div>
       </div>
 
@@ -50,19 +50,19 @@
         <!-- USDT币价 -->
         <div class="tw-flex tw-justify-between tw-space-x-4 tw-mt-6 tw-mb-2 tw-font-pingfangsb tw-font-semibold">
           <p class="tw-text-left">USDT币价：</p>
-          <p class="tw-font-semibold tw-text-right">{{ rechargeData?.exchange_rate }} 元</p>
+          <p class="tw-font-semibold tw-text-right">{{ withdrawData?.exchange_rate }} 元</p>
         </div>
 
         <!-- USDT金额 -->
         <div class="tw-flex tw-justify-between tw-space-x-4 tw-mb-2 tw-font-pingfangsb tw-font-semibold">
           <p class="tw-text-left">USDT金额：</p>
-          <p class="tw-font-semibold tw-text-right">$ {{ rechargeData?.amount }}</p>
+          <p class="tw-font-semibold tw-text-right">$ {{ withdrawData?.amount }}</p>
         </div>
 
         <!-- CNY金额 -->
         <div class="tw-flex tw-justify-between tw-space-x-4 tw-mb-2 tw-font-pingfangsb tw-font-semibold">
           <p class="tw-text-left">CNY金额：</p>
-          <p class="tw-font-semibold tw-text-right">{{ rechargeData?.cny_amount }} 元</p>
+          <p class="tw-font-semibold tw-text-right">{{ withdrawData?.cny_amount }} 元</p>
         </div>
       </div>
 
@@ -72,19 +72,19 @@
         <!-- 商户号 -->
         <div class="tw-flex tw-justify-between tw-space-x-4 tw-mt-6 tw-mb-2 tw-font-pingfangsb tw-font-semibold">
           <p class="tw-text-left">充值时间：</p>
-          <p class="tw-font-semibold tw-text-right">{{ rechargeData?.created_at }}</p>
+          <p class="tw-font-semibold tw-text-right">{{ withdrawData?.created_at }}</p>
         </div>
 
         <!-- 总资产 -->
         <div class="tw-flex tw-justify-between tw-space-x-4 tw-mb-2 tw-font-pingfangsb tw-font-semibold">
           <p class="tw-text-left">订单编号：</p>
-          <p class="tw-font-semibold tw-text-right">{{ rechargeData?.display_recharge_id }}</p>
+          <p class="tw-font-semibold tw-text-right">{{ withdrawData?.display_withdraw_id }}</p>
         </div>
 
         <!-- 可用资产 -->
         <div class="tw-flex tw-justify-between tw-space-x-4 tw-mb-2 tw-font-pingfangsb tw-font-semibold">
           <p class="tw-text-left">订单状态：</p>
-          <p class="tw-font-semibold tw-text-right" :class="getStatusStyle(rechargeData?.status).style">{{ getStatusStyle(rechargeData?.status).text }}</p>
+          <p class="tw-font-semibold tw-text-right" :class="getStatusStyle(withdrawData?.status).style">{{ getStatusStyle(withdrawData?.status).text }}</p>
         </div>
 
         <button
@@ -100,7 +100,7 @@
       <!-- 底部版权 -->
       <p 
         class="tw-text-xs tw-text-gray-400"
-        :class="(rechargeData?.status == 1 || rechargeData?.status == -1) ? `tw-mt-24` : `tw-mt-32`"
+        :class="(withdrawData?.status == 1 || withdrawData?.status == -1) ? `tw-mt-24` : `tw-mt-32`"
       >
         Copy@ JH嘉禾商城</p>
     </div>
@@ -110,7 +110,7 @@
 <script setup>
 import { ref, onMounted } from 'vue';
 import { useRouter, useRoute } from 'vue-router';
-import * as RechargeApi from '@/api/recharge'
+import * as WithdrawApi from '@/api/withdraw'
 import store from '@/store'
 import { formatIdDisplay } from '@/utils/tool'
 import Decimal from 'decimal.js'
@@ -121,7 +121,7 @@ const userStore = store.user()
 const configStore = store.config()
 const appStore = store.app()
 
-const recharge_id = route.query.reference_id
+const withdraw_id = route.query.reference_id
 
 const getStatusStyle = (status) => {
   switch (status) {
@@ -137,14 +137,14 @@ const getStatusStyle = (status) => {
 }
 
 // 声明数据变量
-const rechargeData = ref(null);
+const withdrawData = ref(null);
 
-// 获取充值详情数据
-const fetchRechargeDetail = async () => {
+// 获取详情数据
+const fetchWithdrawDetail = async () => {
   try {
-    const response = await RechargeApi.getRechargeDetail(userStore.loginToken, recharge_id)
+    const response = await WithdrawApi.getWithdrawDetail(userStore.loginToken, withdraw_id)
     if (response.data.code === 10000) {
-      rechargeData.value = response.data.data.recharge;
+      withdrawData.value = response.data.data.withdraw;
     } else {
       console.error('获取数据失败');
     }
@@ -152,6 +152,7 @@ const fetchRechargeDetail = async () => {
     console.error('请求错误:', error);
   }
 };
+
 const handleClose = () => {
   router.push('/');
 };
@@ -162,7 +163,7 @@ const handleConfirm = () => {
 
 // 页面加载时获取充值数据
 onMounted(() => {
-  fetchRechargeDetail();
+  fetchWithdrawDetail();
 });
 
 const toggleSidebar = () => {
