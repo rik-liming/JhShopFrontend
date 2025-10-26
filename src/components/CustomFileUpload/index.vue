@@ -36,11 +36,12 @@
     <el-dialog
       v-model="isPreviewOpen"
       align-center
+      style="width: 380px; height: 380px; "
     >
       <img
         :src="imageUrl"
         alt="Preview"
-        class="tw-max-w-full tw-max-h-full tw-object-contain"
+        class="tw-w-[350px] tw-max-h-[330px] tw-object-contain"
         @click.stop
       />
     </el-dialog>

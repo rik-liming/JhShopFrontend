@@ -4,7 +4,7 @@ import router from '@/router'; // 假设你使用的是 Vue Router
 
 const axiosInstance = axios.create({
   baseURL: import.meta.env.VITE_API_ENDPOINT,
-  timeout: 5000 // 请求超时
+  timeout: 60000 // 请求超时
 });
 
 axiosInstance.interceptors.response.use(

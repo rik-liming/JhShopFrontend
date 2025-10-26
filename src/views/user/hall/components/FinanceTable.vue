@@ -54,6 +54,8 @@ const appStore = store.app()
 const transactionTypeMap = {
   recharge: '充值',
   withdraw: '提现',
+  transfer_send: '转账',
+  transfer_receive: '入账',
   order_sell: '出售',
   order_buy: '买入',
 }
@@ -153,6 +155,12 @@ const handleRowClick = (row) => {
       break;
     case 'withdraw':
       targetPage = `/withdraw/detail?reference_id=${row.reference_id}`
+      break;
+    case 'transfer_send':
+      targetPage = `/transfer/sender/detail?reference_id=${row.reference_id}`;
+      break;
+    case 'transfer_receive':
+      targetPage = `/transfer/receiver/detail?reference_id=${row.reference_id}`;
       break;
     case 'order_sell':
       targetPage = `/order/seller/detail?orderId=${row.reference_id}`;

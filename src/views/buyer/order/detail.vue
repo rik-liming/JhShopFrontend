@@ -46,7 +46,8 @@
           <img 
             :src="order?.sell_qr_code ? formatImageUrl(order.sell_qr_code) : ''"
             alt="payment" 
-            class="tw-w-32 tw-h-40 tw-mx-auto" 
+            class="tw-w-32 tw-h-40 tw-mx-auto"
+            @click="openPreview(formatImageUrl(order?.sell_qr_code))"
           />
         </div>
       </div>
@@ -157,6 +158,19 @@
       >
         Copy@ JH嘉禾商城</p>
     </div>
+
+    <el-dialog
+      v-model="isPreviewOpen"
+      align-center
+	  style="width: 380px; height: 540px;"
+    >
+      <img
+        :src="currentImageUrl"
+        alt="Preview"
+        class="tw-w-full tw-object-contain"
+        @click.stop
+      />
+    </el-dialog>
   </div>
 </template>
 
@@ -170,6 +184,9 @@ import { formatPaymentMethod, formatImageUrl } from '@/utils/tool'
 const userStore = store.user()
 const router = useRouter();
 const order = ref(null);
+
+const isPreviewOpen = ref(false)
+const currentImageUrl = ref('');
 
 const getStatusStyle = (status) => {
   switch (status) {
@@ -230,6 +247,11 @@ onMounted(() => {
   const orderId = router.currentRoute.value.query.orderId;
   fetchOrderDetails(orderId);
 });
+
+const openPreview = (imageUrl) => {
+	currentImageUrl.value = imageUrl;
+	isPreviewOpen.value = true;
+}
 </script>
 
 <style scoped lang="scss">

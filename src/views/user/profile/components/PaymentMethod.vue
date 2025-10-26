@@ -58,7 +58,9 @@
 							:src="formatImageUrl(item?.qr_code)"
 							alt="支付信息"
 							class="tw-w-[180px] tw-h-[200px] tw-object-contain"
+							@click="openPreview(formatImageUrl(item?.qr_code))"
 						/>
+
 					</div>
 					<img 
 						src="@/assets/edit_icon.png" 
@@ -76,6 +78,19 @@
 			</div>
 		</div>
 	</div>
+
+	<el-dialog
+      v-model="isPreviewOpen"
+      align-center
+	  style="width: 380px; height: 540px; "
+    >
+      <img
+        :src="currentImageUrl"
+        alt="Preview"
+        class="tw-w-[350px] tw-max-h-[530px] tw-object-contain"
+        @click.stop
+      />
+    </el-dialog>
 </template>
 
 <script setup>
@@ -97,6 +112,9 @@ const router = useRouter()
 
 const currentPaymentMethod = ref('alipay')
 const paymentData = ref(null);
+
+const isPreviewOpen = ref(false)
+const currentImageUrl = ref('');
 
 // 页面加载时获取支付卡数据
 onMounted(() => {
@@ -137,6 +155,11 @@ const deletePaymentMethod = async(id) => {
 	} catch (error) {
 		console.error('请求错误:', error);
 	}
+}
+
+const openPreview = (imageUrl) => {
+	currentImageUrl.value = imageUrl;
+	isPreviewOpen.value = true;
 }
 
 </script>
