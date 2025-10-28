@@ -80,21 +80,61 @@
             class="tw-w-full tw-border tw-border-solid tw-border-black tw-border-opacity-40 tw-rounded-lg tw-px-3 tw-py-2 tw-text-md tw-placeholder-black tw-placeholder-opacity-35 tw-mt-4 tw-mb-2"
           />
 
+          <el-tooltip
+            placement="top"
+            trigger="focus"
+            v-if="orderListingData?.min_sale_amount > 0"
+          >
+            <template #content>
+              <div class="tw-max-w-[300px] tw-text-lg tw-text-white tw-bg-blue tw-rounded tw-px-3 tw-py-1">
+                {{ `根据商家设置，下单金额至少为人民币：${minBuyCnyAmount} 元` }}
+              </div>
+            </template>
+
+            <input
+              type="number"
+              placeholder="请输入人民币金额"
+              v-model="form.cny_amount"
+              ref="cnyAmountInput"
+              :min="minBuyCnyAmount"
+              required
+              class="tw-w-full tw-border tw-border-solid tw-border-black tw-border-opacity-40 tw-rounded-lg tw-px-3 tw-py-2 tw-text-md tw-placeholder-black tw-placeholder-opacity-35 tw-mt-4 tw-mb-2"
+            />
+          </el-tooltip>
           <input
+            v-else
             type="number"
             placeholder="请输入人民币金额"
             v-model="form.cny_amount"
+            ref="cnyAmountInput"
             :min="minBuyCnyAmount"
             required
             class="tw-w-full tw-border tw-border-solid tw-border-black tw-border-opacity-40 tw-rounded-lg tw-px-3 tw-py-2 tw-text-md tw-placeholder-black tw-placeholder-opacity-35 tw-mt-4 tw-mb-2"
           />
 
+          <span
+            v-show="form.cny_amount"
+            class="tw-absolute tw-text-[#333333] tw-text-md tw-mt-[25px]"
+            :style="cnyAmountUnitStyle"
+          >
+            元
+          </span>
+
           <input
             type="text"
             v-model="form.amount"
+            ref="amountInput"
             disabled
             class="tw-w-full tw-border tw-border-solid tw-border-black tw-border-opacity-40 tw-rounded-lg tw-px-3 tw-py-2 tw-text-md tw-placeholder-black tw-placeholder-opacity-35 tw-mt-4 tw-mb-2"
           />
+
+          <span
+            v-show="form.amount"
+            class="tw-absolute tw-text-[#333333] tw-text-opacity-70 tw-text-md tw-mt-[25px]"
+            :style="amountUnitStyle"
+          >
+            USDT
+          </span>
 
           <input
             type="text"
@@ -320,6 +360,42 @@ const getImageStyle = (paymentMethod) => {
       }
   }
 }
+
+const cnyAmountInput = ref(null);
+const cnyAmountUnitStyle = computed(() => {
+  const element = cnyAmountInput.value;
+  if (element) {
+    const rect = element.getBoundingClientRect();
+    const x = rect.left;
+    let offsetX = rect.left + 20;
+
+    if (form.value.cny_amount) {
+      const cnyAmountStr = String(form.value.cny_amount);
+      const length = cnyAmountStr.length;
+      offsetX += 10 * length;
+    }
+    return `left: ${offsetX}px;`;
+  }
+  return 'display: none;';
+});
+
+const amountInput = ref(null);
+const amountUnitStyle = computed(() => {
+  const element = amountInput.value;
+  if (element) {
+    const rect = element.getBoundingClientRect();
+    const x = rect.left;
+    let offsetX = rect.left + 20;
+
+    if (form.value.amount) {
+      const amountStr = String(form.value.amount);
+      const length = amountStr.length;
+      offsetX += 10 * length;
+    }
+    return `left: ${offsetX}px;`;
+  }
+  return 'display: none;';
+});
 
 </script>
 

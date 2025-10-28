@@ -1,7 +1,7 @@
 <template>
-  <div class="login-container">
+  <div class="page-container">
 
-    <div class="login-box">
+    <div class="main-box">
       <!-- 标题 -->
       <div class="title-container">
         <h2 class="welcome">欢迎来到</h2>
@@ -13,168 +13,173 @@
         <img src="@/assets/logo.png" alt="logo" class="logo" />
       </div>
 
-      <!-- Footer -->
-      <div class="footer">Copy@ JH嘉禾商城</div>
+	  <div class="tw-flex tw-flex-col tw-items-center tw-mt-6 tw-mb-2">
+		  <span class="tw-text-[#a30014] tw-text-[33px] tw-font-songti tw-font-bold">下 单</span>
+	  </div>
     </div>
+
+	<hr class="tw-w-full tw-mt-2 tw-mb-8 tw-bg-black tw-bg-opacity-30" />
+
+	<div class="main-box tw-flex tw-flex-col tw-items-center">
+		<div class="tw-flex tw-gap-8">
+			<div
+				v-for="amount in amountOptions"
+				:key="amount"
+				class="amountButton tw-cursor-pointer tw-border tw-rounded-lg tw-px-4 tw-py-2 tw-text-center tw-transition-all"
+				:class="form.cny_amount === amount 
+					? '!tw-bg-blue-500 !tw-text-white' 
+					: ''"
+				@click="radioSelectAmount(amount)"
+			>
+				{{ amount }}
+			</div>
+		</div>
+
+		<div class="tw-flex tw-mt-6">
+			<div class="amountInput tw-flex tw-justify-center">
+				<input 
+					v-model="form.cny_amount"
+					placeholder="请输入充值金额"
+					class="tw-w-[90%] tw-border-solid tw-border-0 tw-outline-none tw-placeholder-black"
+				/>
+			</div>
+		</div>
+
+		<div class="tw-flex tw-mt-10 tw-gap-10">
+			<img
+				v-for="paymentMethod in paymentMethodOptions"
+				:key="paymentMethod"
+				:src="getImageStyle(paymentMethod).src"
+				:class="[
+					getImageStyle(paymentMethod).class,
+					form.payment_method === paymentMethod && '!tw-opacity-100'
+				]"
+				@click="radioSelectPaymentMethod(paymentMethod)"
+			/>
+		</div>
+
+		<div class="tw-w-full tw-flex tw-flex-col tw-items-center tw-mt-20">
+			<button
+				type="button"
+				class="tw-w-[70%] !tw-bg-[#a30014] !tw-text-[#f2f2f2] tw-font-normal tw-font-pingfang tw-text-[23px] tw-rounded-3xl tw-py-3 hover:tw-bg-rose-600 tw-opacity-50"
+				:class="form.cny_amount && form.payment_method && `!tw-opacity-100`"
+				style="letter-spacing: 4px;"
+				:disabled="!form.cny_amount || !form.payment_method"
+				@click="handleCreateOrder"
+			>
+				立即下单
+			</button>
+		</div>
+	</div>
+
+	<!-- Footer -->
+	<div class="footer">Copy@ JH嘉禾商城</div>
   </div>
 </template>
 
-<script lang="ts">
-import { validEmail } from '@/utils/validate';
-import { defineComponent } from 'vue';
-import type { FormItemRule } from 'element-plus';
-import type { IForm } from '@/types/element-plus';
-import store from '@/store';
-import * as AuthApi from '@/api/auth';
-import QrcodeVue from 'qrcode.vue'
+<script setup>
 
-interface QueryType {
-  // 自定义key 任意字符串
-  [propname:string]:string
+import { ref, onMounted } from 'vue'
+import { useRoute, useRouter } from 'vue-router';
+import store from '@/store';
+import * as UserApi from '@/api/user'
+import * as OrderApi from '@/api/order'
+
+const router = useRouter();
+const route = useRoute();
+const configStore = store.config()
+
+const autoBuyerId = route.query.autoBuyerId
+
+// 金额选项
+const amountOptions = ref([])
+const paymentMethodOptions = ref([])
+
+const form = ref({
+  cny_amount: null,
+  payment_method: '',
+  auto_buyer_id: autoBuyerId,
+});
+
+const radioSelectAmount = (amount) => {
+	form.value.cny_amount = amount
 }
 
-export default defineComponent({
-  name: 'Login',
-  components: {
-    QrcodeVue,
-  },
-  data() {
-    const validateEmail: FormItemRule['validator'] = (_rule, value, callback) => {
-      if (!validEmail(value)) {
-        callback(new Error('请输入正确的邮箱'));
-      } else {
-        callback();
-      }
-    };
-    const validatePassword: FormItemRule['validator'] = (_rule, value, callback) => {
-      if (value.length < 6) {
-        callback(new Error('密码不能少于6位'));
-      } else {
-        callback();
-      }
-    };
-    return {
-      loginForm: {
-        email: '',
-        password: '',
-      },
-      loginRules: {
-        email: [{ required: true, trigger: 'blur', validator: validateEmail }],
-        password: [{ required: true, trigger: 'blur', validator: validatePassword }]
-      },
-      passwordType: 'password',
-      loading: false,
-      showDialog: false,
-      redirect: undefined,
-      otherQuery: {},
-      needBindOtp: false,
-      qrCodeUrl: '',
-      needVerifyOtp: false,
-      otp: '',
-    };
-  },
-  watch: {
-    $route: {
-      handler: function(route) {
-        const query = route.query;
-        if (query) {
-          this.redirect = query.redirect;
-          this.otherQuery = this.getOtherQuery(query);
-        }
-      },
-      immediate: true
-    }
-  },
-  created() {
-  },
-  mounted() {
-    this.$nextTick(() => {
-      if (this.loginForm.email === '') {
-        this.$refs.email?.focus();  // 这里使用 optional chaining (?.) 避免 undefined 错误
-      } else if (this.loginForm.password === '') {
-        this.$refs.password?.focus();  // 这里使用 optional chaining (?.) 避免 undefined 错误
-      }
-    });
-  },
-  methods: {
-    showPwd() {
-      if (this.passwordType === 'password') {
-        this.passwordType = '';
-      } else {
-        this.passwordType = 'password';
-      }
-      this.$nextTick(() => {
-        (this.$refs.password as HTMLElement).focus();
-      });
-    },
-    async handleLogin() {
-      const isValid = await (this.$refs.loginForm as IForm).validate();
+const radioSelectPaymentMethod = (paymentMethod) => {
+	form.value.payment_method = paymentMethod
+}
 
-      if (isValid) {
-        this.loading = true
-
-        try {
-          const loginResp = await AuthApi.login(this.loginForm)
-          if (loginResp.data.code == 10000) {
-            if (loginResp.data.data.qr_code_url) {
-              this.needBindOtp = true
-              this.qrCodeUrl = loginResp.data.data.qr_code_url
-            } else if (loginResp.data.data.need_otp) {
-              this.needVerifyOtp = true
-            }
-          } else {
-            ElMessage.error(loginResp.data.msg);
-          }
-        } catch (error) {
-          ElMessage.error("登录失败，请重试")
-        } finally {
-          this.loading = false
-        }
+const getImageStyle = (paymentMethod) => {
+  switch (paymentMethod) {
+    case 'alipay':
+      return {
+        src: new URL('@/assets/ali_pay.png', import.meta.url).href,
+        class: 'tw-w-[70px] tw-h-[60px] tw-opacity-30',
       }
-    },
-    async submitOtp() {
-      const userStore = store.user()
-      const configStore = store.config()
-      try {
-        const response = await userStore.verifyOtp(this.loginForm.email, this.otp)
-        if (response.data.code == 10000) {
-          this.$router.push({ path: this.redirect || '/', query: this.otherQuery })
-
-          // 登录成功后，同步个人账户信息
-          await userStore.getUserInfo()
-          // 同步全局配置
-          await configStore.getConfig(userStore.loginToken)
-        } else {
-          ElMessage.error(response.data.msg);
-        }
-      } catch (e) {
-        console.log(e)
-        ElMessage.error("登录失败，请重试")
+    case 'wechat':
+      return {
+        src: new URL('@/assets/wechat_pay.png', import.meta.url).href,
+        class: 'tw-w-[70px] tw-h-[58px] tw-opacity-30',
       }
-    },
-    getOtherQuery(query:QueryType) {
-      return Object.keys(query).reduce((acc:QueryType, cur) => {
-        if (cur !== 'redirect') {
-          acc[cur] = query[cur];
-        }
-        return acc;
-      }, {});
-    },
-
-    // 跳转注册页
-    goRegister() {
-      this.$router.push("/register");
-    }
+    case 'bank':
+      return {
+        src: new URL('@/assets/bank_pay.png', import.meta.url).href,
+        class: 'tw-w-[95px] tw-h-[60px] tw-opacity-30',
+      }
+    default:
+      return {
+        src: '',
+        class: '',
+      }
   }
+}
+
+const handleCreateOrder = async() => {
+	try {
+		if (!form.value.cny_amount
+			|| !form.value.payment_method
+		) {
+			ElMessage.error('请完整输入各项内容!');
+			return;
+		}
+
+		const resp = await OrderApi.createAutoBuyerOrder(form.value)
+		if (resp.data.code === 10000) {
+			ElMessage.success('下单成功');
+			const orderId = resp.data.data.order.id
+			setTimeout(() => {
+				router.push(`/remote/pay?autoBuyerId=${autoBuyerId}&orderId=${orderId}`);
+			}, 1000);
+		} else {
+			ElMessage.error(resp.data.msg);
+		}
+	} catch (error) {
+		console.log(error)
+		ElMessage.error('下单失败');
+	}
+}
+
+onMounted(async () => {
+  const verifyResp = await UserApi.autoBuyerVerify(autoBuyerId)
+  if (verifyResp.data.code !== 10000) {
+	  ElMessage.error('远程下单身份校验失败!');
+	  return;
+  }
+
+  await configStore.getConfig()
+  amountOptions.value = configStore?.config?.value?.remote_order_config?.amountOptions
+  paymentMethodOptions.value = configStore?.config?.value?.remote_order_config?.openMarkets
 });
+
 </script>
 
 <style scoped lang="scss">
-.login-container {
+
+.page-container {
   min-height: 100vh;
   display: flex;
-  justify-content: center;
-  // align-items: center;
+  flex-direction: column;
+  align-items: center;
   background-image: url('@/assets/login_background.jpg');
   background-size: cover; /* 图片铺满 */
   background-position: center; /* 居中 */
@@ -183,19 +188,15 @@ export default defineComponent({
   border-radius: min(11vw, 11vh); /* 取宽和高中较小的比例 */;
   overflow: hidden;
 
-  .login-box {
-    width: 70%;
-    // padding: 30px 20px;
-    // background: rgba(255, 255, 255, 0.2);
-    // border-radius: 20px;
-    // text-align: center;
+  .main-box {
+    width: 90%;
   }
 
   .title-container {
     display: flex;
     flex-direction: column;
     margin-top: 60px;
-    margin-left: 110px;
+    margin-left: 160px;
     gap: 0px;
 
     .welcome {
@@ -220,7 +221,6 @@ export default defineComponent({
     justify-content: center;
     align-items: center;
     margin-top: 10px;
-    margin-bottom: 50px;
 
     .logo {
       width: 180px;
@@ -228,137 +228,58 @@ export default defineComponent({
     }
   }
 
-  .form-box {
-    margin-top: 40px;
-  }
-
-  // :deep(.login-container .el-form-item) {
-  //   border: 0px !important;
-  //   background: transparent !important;
-  // }
-
-  .custom-form-item {
-    display: block;
-    margin-top: 2rem;
-    margin-bottom: 1.5rem; /* Add space between each item */
-    border: 0px !important;
-    background: transparent !important;
-  }
-
-  :deep(.custom-form-item .el-form-item__label) {
-    display: inline-flex; /* Ensure label is on a new line */
-    margin-bottom: 0.5rem; /* Space between label and input */
-    font-family: "'PingFangSC-Regular', 'PingFang SC'" !important;
-    font-weight: normal !important;
-    color: #333333 !important;
-  }
-
-  :deep(.el-form-item--label-right .el-form-item__label) {
-    font-size: 16px !important;
-    color: #333 !important;
-    font-weight: 400;
-  }
-
-  :deep(.el-input__wrapper) {
-    background-color: transparent !important;
-    box-shadow: none !important;
-    border: 2px solid rgb(215, 215, 215) !important;
-    border-left: 0px !important;
-    border-right: 0px !important;
-    border-top: 0px !important;
-    --el-input-text-color: #333333;
-    font-family: "'PingFangSC-Regular', 'PingFang SC'" !important;
-  }
-
-  :deep(.el-input input) {
-    color: black !important;
-    font-size: 16px !important;
-    --el-input-placeholder-color: #333333 !important;
-  }
-
-  .custom-form-item .el-input input {
-    color: black !important;
-    font-size: 16px !important;
-  }
-
-  :deep(.el-form-item__error) {
-    padding-top: 12px !important;
-    color: #ea5543 !important;
-  }
-
-  .custom-form-item .el-input {
-    width: 100%; /* Ensure input takes full width */
-  }
-
-  .login-btn {
-    width: 100%;
-    background: black;
-    opacity: 0.57;
-    border: none;
-    color: #F2F2F2;
-    letter-spacing: 4px;
-    font-size: 20px;
-    border-radius: 20px;
-    width: 300px;
-    height: 53px;
-    padding: 2px;
-    margin-top: 60px;
-  }
-
-  .register-link {
-    margin-left: 220px;
-    margin-top: -10px;;
-    font-size: 16px;
-    color: #4B7902;
-    cursor: pointer;
-    font-family: 'STSongti-SC-Regular', 'Songti SC';
-  }
-
   .footer {
-    // position: fixed;
-    // bottom: 6px;
-    // left: calc(50% - 54px);
     font-size: 11px;
     text-align: center;
     font-family: Arial Normal, Arial;
     color: #333333;
     opacity: 0.57;
-    margin: 180px 0 10px;
+	position: absolute;
+    bottom: 4px;
   }
 
-  :deep(div.el-dialog.custom-dialog) {
-    width: 80% !important;
-    --el-dialog-width: 80% !important;
-    display: flex !important;
-    flex-direction: column !important;
-    align-items: center !important;
-  }
+	.amountButton {
+		border-width:0px;
+		width:87px;
+		height:54px;
+		background:inherit;
+		background-color:rgba(255, 255, 255, 0);
+		box-sizing:border-box;
+		border-width:2px;
+		border-style:solid;
+		border-color:rgba(163, 0, 20, 1);
+		border-radius:10px;
+		-moz-box-shadow:0px -5px 5px 0px rgba(85, 85, 85, 0.537254901960784) inset;
+		-webkit-box-shadow:0px -5px 5px 0px rgba(85, 85, 85, 0.537254901960784) inset;
+		box-shadow:0px -5px 5px 0px rgba(85, 85, 85, 0.537254901960784) inset;
+		font-family:'PingFangSC-Regular', 'PingFang SC';
+		font-weight:400;
+		font-style:normal;
+		font-size:25px;
+		color:#D9001B;
+		text-align:center;
+	}
 
-  :deep(.el-dialog__header) {
-    /* Adjust the header if needed */
-    padding: 10px 20px !important;
-    margin-left: -180px !important;
-  }
-
-  :deep(.el-dialog__body) {
-    padding: 20px !important; /* Adjust body padding */
-    display: flex !important;
-    flex-direction: column !important;
-    align-items: center !important;
-  }
-
-  :deep(.el-dialog__footer) {
-    padding: 10px 20px !important; /* Adjust footer padding */
-  }
-
-  :deep(.qrcode) {
-    margin-top: 20px !important;
-  }
-
-  .verifyOtpHint{
-    margin: 20px;
-  }
+	.amountInput {
+		border-width:0px;
+		width:327px;
+		height:54px;
+		background:inherit;
+		background-color:rgba(255, 255, 255, 0);
+		box-sizing:border-box;
+		border-width:2px;
+		border-style:solid;
+		border-color:rgba(163, 0, 20, 1);
+		border-radius:10px;
+		-moz-box-shadow:0px -5px 5px 0px rgba(85, 85, 85, 0.537254901960784) inset;
+		-webkit-box-shadow:0px -5px 5px 0px rgba(85, 85, 85, 0.537254901960784) inset;
+		box-shadow:0px -5px 5px 0px rgba(85, 85, 85, 0.537254901960784) inset;
+		font-family:'PingFangSC-Ultralight', 'PingFang SC Ultralight', 'PingFang SC';
+		font-weight:100;
+		font-style:normal;
+		font-size:20px;
+		color:#333333;
+	}
 }
-
 
 </style>

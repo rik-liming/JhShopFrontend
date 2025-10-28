@@ -79,6 +79,18 @@ export const constantRoutes:RouteRecordRaw[] = [
     meta: { hidden: true }
   },
   {
+    path: '/remote/pay',
+    name: 'RemotePay',
+    component: () => import('@/views/user/remote/pay.vue'),
+    meta: { hidden: true }
+  },
+  {
+    path: '/remote/detail',
+    name: 'RemoteDetail',
+    component: () => import('@/views/user/remote/detail.vue'),
+    meta: { hidden: true }
+  },
+  {
     path: '/auth-redirect',
     name: 'AuthRedirect',
     component: () => import('@/views/user/login/auth-redirect.vue'),

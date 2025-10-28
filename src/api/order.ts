@@ -99,3 +99,25 @@ export async function getGroupOrderReport(loginToken) {
     })
     return response
 }
+
+// request order create
+export async function createAutoBuyerOrder(data) {
+    const response = await requestBase.post('/api/order/auto_buyer', data)
+    return response
+}
+
+// request order detail
+export async function getAutoBuyerOrderDetail(orderId) {
+
+    // 构建请求的基础 URL
+    let requestUrl = `/api/order/auto_buyer/detail?orderId=${orderId}`;
+
+    const response = await requestBase.get(requestUrl)
+    return response
+}
+
+// request order confirm
+export async function autoBuyerOrderConfirm(data) {
+    const response = await requestBase.post('/api/order/auto_buyer/confirm', data)
+    return response
+}

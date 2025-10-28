@@ -1,91 +1,90 @@
 import { defineStore } from 'pinia';
 import { resetRouter } from '@/router';
 import tagsViewStore from './tagsView';
-import * as AuthApi from '@/api/auth'
-import * as UserApi from '@/api/user'
-import { useStorage } from '@vueuse/core'
+import * as AuthApi from '@/api/auth';
+import * as UserApi from '@/api/user';
+import { useStorage } from '@vueuse/core';
+
+// 每个浏览器 tab 都有独立的 ID
+const tabId = sessionStorage.getItem('tabId') || crypto.randomUUID();
+sessionStorage.setItem('tabId', tabId);
 
 export interface IUser {
-  id: string
-  userName: string
-  realName: string
-  avatar: string
-  email: string
-  role: string
+  id: string;
+  userName: string;
+  realName: string;
+  avatar: string;
+  email: string;
+  role: string;
+  inviteCode: string;
 }
 
 export interface IUserAccount {
-  totalBalance: number
-  availableBalance: number
+  totalBalance: number;
+  availableBalance: number;
 }
 
 export default defineStore({
   id: 'user',
   state: () => ({
-    // 分开存储
-    loginToken: useStorage('loginToken', ''),
-    user: useStorage<IUser>('user', {} as IUser),
-    account: useStorage<IUserAccount>('account', {} as IUserAccount),
+    loginToken: useStorage(`loginToken_${tabId}`, ''),
+    user: useStorage<IUser>(`user_${tabId}`, {} as IUser),
+    account: useStorage<IUserAccount>(`account_${tabId}`, {} as IUserAccount),
   }),
   actions: {
-    // user verify otp and login
     async verifyOtp(email: string, otp: string) {
-      try {
-        const response = await AuthApi.verifyOtp({email, otp})
-        if (response.data.code == 10000) {
-          const { token, user } = response.data.data;
-
-          this.loginToken = token
-          this.user.value = {
-            id: user.id,
-            userName: user.user_name,
-            realName: user.real_name,
-            avatar: user.avatar,
-            email: user.email,
-            role: user.role,
-            invite_code: user.invite_code,
-          }
-        }
-        return response
-      } catch (error) {
-        throw error;
+      const response = await AuthApi.verifyOtp({ email, otp });
+      if (response.data.code === 10000) {
+        const { token, user } = response.data.data;
+        this.loginToken = token;
+        this.user.value = {
+          id: user.id,
+          userName: user.user_name,
+          realName: user.real_name,
+          avatar: user.avatar,
+          email: user.email,
+          role: user.role,
+          inviteCode: user.invite_code,
+        };
       }
+      return response;
     },
 
-    // get user info
     async getUserInfo() {
-      try {
-        const response = await UserApi.getUserInfo(this.loginToken)
-        if (response.data.code == 10000) {
-          const { account } = response.data.data;
-
-          this.account.value = {
-            totalBalance: account.total_balance,
-            availableBalance: account.available_balance,
-          }
-        }
-        return response
-      } catch (error) {
-        throw error;
+      const response = await UserApi.getUserInfo(this.loginToken);
+      if (response.data.code === 10000) {
+        const { account } = response.data.data;
+        this.account.value = {
+          totalBalance: account.total_balance,
+          availableBalance: account.available_balance,
+        };
       }
+      return response;
     },
 
-    // user logout
+    async getAccountInfo() {
+      const response = await UserApi.getAccountInfo(this.loginToken);
+      if (response.data.code === 10000) {
+        const { account } = response.data.data;
+        this.account.value = {
+          totalBalance: account.total_balance,
+          availableBalance: account.available_balance,
+        };
+        console.log("update account... ", this.account.value)
+      }
+      return response;
+    },
+
     async logout() {
       try {
-        // 登出是前端登出即可，后端处理失败也同样退出
-        await AuthApi.logout(this.loginToken)
+        await AuthApi.logout(this.loginToken);
+      } finally {
         this.loginToken = '';
-        this.user = null;
+        this.user.value = {} as IUser;
+        this.account.value = {} as IUserAccount;
         resetRouter();
         tagsViewStore().delAllViews();
-
-        // if (response.data.code == 10000) {
-          
-        // }
-      } catch (error) {
-        throw error;
       }
     },
-  }
+  },
 });

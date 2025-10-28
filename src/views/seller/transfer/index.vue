@@ -108,7 +108,7 @@
 </template>
 
 <script setup>
-import { ref, computed } from 'vue';
+import { ref, computed, onMounted } from 'vue';
 import { useRouter } from 'vue-router';
 import CustomFileUpload from '@/components/CustomFileUpload';
 import store from '@/store'
@@ -177,6 +177,10 @@ const handleTransfer = async() => {
 const toggleSidebar = () => {
   appStore.toggleSidebar();
 }
+
+onMounted(async () => {
+  await userStore.getAccountInfo()
+});
 
 </script>
 

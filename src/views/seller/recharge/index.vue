@@ -103,7 +103,7 @@
 </template>
 
 <script setup>
-import { ref } from 'vue';
+import { ref, onMounted } from 'vue';
 import { useRouter } from 'vue-router';
 import CustomFileUpload from '@/components/CustomFileUpload';
 import store from '@/store'
@@ -160,6 +160,10 @@ const handleRecharge = async() => {
 const toggleSidebar = () => {
   appStore.toggleSidebar();
 }
+
+onMounted(async () => {
+  await userStore.getAccountInfo()
+});
 
 </script>
 

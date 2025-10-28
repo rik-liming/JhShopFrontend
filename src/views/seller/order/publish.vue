@@ -133,7 +133,7 @@
 </template>
 
 <script setup>
-import { ref, computed } from 'vue';
+import { ref, computed, onMounted } from 'vue';
 import { useRouter } from 'vue-router';
 import store from '@/store'
 import { formatIdDisplay } from '@/utils/tool'
@@ -219,6 +219,10 @@ const handlePublish = async() => {
 const toggleSidebar = () => {
   appStore.toggleSidebar();
 }
+
+onMounted(async () => {
+  await userStore.getAccountInfo()
+});
 
 </script>
 

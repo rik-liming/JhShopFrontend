@@ -162,7 +162,7 @@
     <el-dialog
       v-model="isPreviewOpen"
       align-center
-	  style="width: 380px; height: 540px;"
+	    style="width: 380px; height: 540px;"
     >
       <img
         :src="currentImageUrl"

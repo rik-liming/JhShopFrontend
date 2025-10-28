@@ -1,7 +1,7 @@
 <template>
-  <div class="login-container">
+  <div class="page-container">
 
-    <div class="login-box">
+    <div class="main-box">
       <!-- 标题 -->
       <div class="title-container">
         <h2 class="welcome">欢迎来到</h2>
@@ -13,86 +13,19 @@
         <img src="@/assets/logo.png" alt="logo" class="logo" />
       </div>
 
-      <!-- 表单 -->
-      <el-form :model="loginForm" :rules="loginRules" ref="loginForm" class="form-box">
-        <el-form-item prop="email" label="邮箱" class="custom-form-item">
-          <el-input v-model="loginForm.email" placeholder="Money@bitcon.com" clearable />
-        </el-form-item>
-
-        <el-form-item prop="password" label="密码" class="custom-form-item">
-          <el-input
-            v-model="loginForm.password"
-            type="password"
-            placeholder="Password"
-            show-password
-            clearable
-          />
-        </el-form-item>
-
-        <!-- 登录按钮 -->
-        <el-form-item class="custom-form-item">
-          <el-button
-            type="primary"
-            class="login-btn"
-            :loading="loading"
-            @click="handleLogin"
-          >
-            登录
-          </el-button>
-        </el-form-item>
-      </el-form>
-
-      <!-- 新注册 -->
-      <div class="register-link">
-        <span @click="goRegister">新注册</span>
-      </div>
-
-      <!-- Footer -->
-      <div class="footer">Copy@ JH嘉禾商城</div>
+	  <div class="tw-flex tw-flex-col tw-items-center">
+		  <span class="tw-text-[#a30014] tw-text-[33px] tw-font-songti tw-font-bold">下 单</span>
+	  </div>
     </div>
 
-    <el-dialog v-model="needBindOtp" title="验证码校验" class="custom-dialog">
-      <div>请使用谷歌验证器，扫描二维码绑定后，输入验证码</div>
-      <QrcodeVue :value="qrCodeUrl" :size="200" class="qrcode" />
+	<hr class="tw-w-full tw-my-3" />
 
-      <v-sheet color="surface">
-        <v-otp-input
-          v-model="otp"
-          variant="outlined"
-        ></v-otp-input>
-      </v-sheet>
+	<div class="main-box">
+		<div id="u6_div"></div>
+	</div>
 
-      <v-btn
-        class="my-4 mx-auto"
-        color="success"
-        height="40"
-        text="验证"
-        variant="flat"
-        width="70%"
-        @click="submitOtp"
-      ></v-btn>
-    </el-dialog>
-
-    <el-dialog v-model="needVerifyOtp" title="验证码校验" class="custom-dialog">
-      <div class="verifyOtpHint">请输入谷歌验证器生成的验证码</div>
-
-      <v-sheet color="surface">
-        <v-otp-input
-          v-model="otp"
-          variant="outlined"
-        ></v-otp-input>
-      </v-sheet>
-
-      <v-btn
-        class="my-4 mx-auto"
-        color="success"
-        height="40"
-        text="验证"
-        variant="flat"
-        width="70%"
-        @click="submitOtp"
-      ></v-btn>
-    </el-dialog>
+	<!-- Footer -->
+	<!-- <div class="footer">Copy@ JH嘉禾商城</div> -->
   </div>
 </template>
 
@@ -165,13 +98,6 @@ export default defineComponent({
   created() {
   },
   mounted() {
-    this.$nextTick(() => {
-      if (this.loginForm.email === '') {
-        this.$refs.email?.focus();  // 这里使用 optional chaining (?.) 避免 undefined 错误
-      } else if (this.loginForm.password === '') {
-        this.$refs.password?.focus();  // 这里使用 optional chaining (?.) 避免 undefined 错误
-      }
-    });
   },
   methods: {
     showPwd() {
@@ -247,11 +173,12 @@ export default defineComponent({
 </script>
 
 <style scoped lang="scss">
-.login-container {
+.page-container {
   min-height: 100vh;
   display: flex;
-  justify-content: center;
-  // align-items: center;
+  flex-direction: column;
+//   justify-content: center;
+  align-items: center;
   background-image: url('@/assets/login_background.jpg');
   background-size: cover; /* 图片铺满 */
   background-position: center; /* 居中 */
@@ -260,7 +187,7 @@ export default defineComponent({
   border-radius: min(11vw, 11vh); /* 取宽和高中较小的比例 */;
   overflow: hidden;
 
-  .login-box {
+  .main-box {
     width: 70%;
     // padding: 30px 20px;
     // background: rgba(255, 255, 255, 0.2);
@@ -308,11 +235,6 @@ export default defineComponent({
   .form-box {
     margin-top: 40px;
   }
-
-  // :deep(.login-container .el-form-item) {
-  //   border: 0px !important;
-  //   background: transparent !important;
-  // }
 
   .custom-form-item {
     display: block;
@@ -435,6 +357,28 @@ export default defineComponent({
   .verifyOtpHint{
     margin: 20px;
   }
+
+	#u6_div {
+		border-width:0px;
+		width:87px;
+		height:54px;
+		background:inherit;
+		background-color:rgba(255, 255, 255, 0);
+		box-sizing:border-box;
+		border-width:2px;
+		border-style:solid;
+		border-color:rgba(163, 0, 20, 1);
+		border-radius:10px;
+		-moz-box-shadow:0px -5px 5px 0px rgba(85, 85, 85, 0.537254901960784) inset;
+		-webkit-box-shadow:0px -5px 5px 0px rgba(85, 85, 85, 0.537254901960784) inset;
+		box-shadow:0px -5px 5px 0px rgba(85, 85, 85, 0.537254901960784) inset;
+		font-family:'PingFangSC-Regular', 'PingFang SC';
+		font-weight:400;
+		font-style:normal;
+		font-size:25px;
+		color:#D9001B;
+		text-align:center;
+	}
 }
 
 

@@ -46,7 +46,7 @@
 
         <div v-if="userStore?.user?.value?.role === 'agent'" class="tw-flex tw-justify-start tw-mb-2 tw-items-center">
           <p class="tw-w-2/5 tw-text-left tw-font-pingfang tw-font-normal">邀请码：</p>
-          <p class="tw-font-pingfangsb tw-font-bold">{{ userStore?.user?.value?.invite_code }}</p>
+          <p class="tw-font-pingfangsb tw-font-bold">{{ userStore?.user?.value?.inviteCode }}</p>
           <img 
             src="@/assets/copy_icon.png" 
             alt="复制邀请码"
@@ -173,7 +173,7 @@
 <script setup>
 
 import { useRouter } from 'vue-router';
-import { ref } from 'vue'
+import { ref, onMounted } from 'vue'
 import Hamburger from '@/components/Hamburger';
 import NotificationBell from '@/components/NotificationBell';
 import PaymentMethod from './components/PaymentMethod';
@@ -267,7 +267,7 @@ const cancelPaymentPassword = () => {
 
 // 复制邀请码函数
 const copyInviteCode = async () => {
-  const inviteCode = userStore?.user?.value?.invite_code;
+  const inviteCode = userStore?.user?.value?.inviteCode;
 
   if (inviteCode) {
     try {
@@ -279,6 +279,10 @@ const copyInviteCode = async () => {
     }
   }
 };
+
+onMounted(async () => {
+  await userStore.getAccountInfo()
+});
 
 </script>
 

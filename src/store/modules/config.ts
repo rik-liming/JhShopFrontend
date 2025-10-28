@@ -2,6 +2,11 @@ import { defineStore } from 'pinia';
 import * as ConfigApi from '@/api/config'
 import { useStorage } from '@vueuse/core'
 
+export interface IRemoteOrderConfig {
+  openMarkets: string[]
+  amountOptions: number[]
+}
+
 export interface IConfig {
   payment_address: string
   payment_qr_code: string
@@ -12,6 +17,7 @@ export interface IConfig {
   exchange_rate_wechat: number
   exchange_rate_bank: number
   advertisement_text: string
+  remote_order_config: IRemoteOrderConfig
 }
 
 export default defineStore({
@@ -21,9 +27,9 @@ export default defineStore({
   }),
   actions: {
     // get platform config
-    async getConfig(loginToken) {
+    async getConfig() {
       try {
-        const response = await ConfigApi.getConfigInfo(loginToken)
+        const response = await ConfigApi.getConfigInfo()
         if (response.data.code == 10000) {
           const { config } = response.data.data;
 
@@ -36,7 +42,8 @@ export default defineStore({
             exchange_rate_alipay: config.exchange_rate_alipay,
             exchange_rate_wechat: config.exchange_rate_wechat,
             exchange_rate_bank: config.exchange_rate_bank,
-            advertisement_text: config.advertisement_text
+            advertisement_text: config.advertisement_text,
+            remote_order_config: config.remote_order_config
           }
         }
         return response
