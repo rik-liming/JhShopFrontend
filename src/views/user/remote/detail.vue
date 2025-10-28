@@ -60,7 +60,8 @@
 			<img 
 				:src="orderData?.sell_qr_code ? formatImageUrl(orderData.sell_qr_code) : ''"
 				alt="payment" 
-				class="tw-w-32 tw-h-40 tw-mx-auto" 
+				class="tw-w-32 tw-h-40 tw-mx-auto"
+				@click="openPreview(formatImageUrl(orderData?.sell_qr_code))"
 			/>
 			</div>
 		</div>
@@ -128,6 +129,19 @@
         </button>
 	</div>
 
+	<el-dialog
+      v-model="isPreviewOpen"
+      align-center
+	    style="width: 380px; height: 540px;"
+    >
+      <img
+        :src="currentImageUrl"
+        alt="Preview"
+        class="tw-w-full tw-object-contain"
+        @click.stop
+      />
+    </el-dialog>
+
 	<!-- Footer -->
 	<div class="footer">Copy@ JH嘉禾商城</div>
   </div>
@@ -146,6 +160,9 @@ const route = useRoute();
 
 const autoBuyerId = route.query.autoBuyerId
 const orderId = route.query.orderId
+
+const isPreviewOpen = ref(false)
+const currentImageUrl = ref('');
 
 const orderData = ref(null)
 
@@ -189,6 +206,11 @@ const getStatusStyle = (status) => {
     default:
       return { style: 'tw-text-gray-500', text: '-'};
   }
+}
+
+const openPreview = (imageUrl) => {
+	currentImageUrl.value = imageUrl;
+	isPreviewOpen.value = true;
 }
 
 </script>
