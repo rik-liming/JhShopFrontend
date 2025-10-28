@@ -58,6 +58,8 @@ const transactionTypeMap = {
   transfer_receive: '入账',
   order_sell: '出售',
   order_buy: '买入',
+  order_auto_sell: '出售',
+  order_auto_buy: '买入',
 }
 
 const props = defineProps({
@@ -163,9 +165,11 @@ const handleRowClick = (row) => {
       targetPage = `/transfer/receiver/detail?reference_id=${row.reference_id}`;
       break;
     case 'order_sell':
+    case 'order_auto_sell':
       targetPage = `/order/seller/detail?orderId=${row.reference_id}`;
       break;
     case 'order_buy':
+    case 'order_auto_buy':
       targetPage = `/order/buyer/detail?orderId=${row.reference_id}`;
       break;
   }

@@ -14,19 +14,34 @@
     >
         <el-table-column label="记录编号" :width="getAdjustWidth(120)" align="center">
           <template v-slot="{row}">
-            <span v-if="row.transaction_id">{{ row.transaction_id }}</span>
+            <span 
+              v-if="row.transaction_id"
+              :class="messageStore?.isRead(row.transaction_id) ? 'tw-opacity-30' : ''"
+            >
+              {{ row.transaction_id }}
+            </span>
             <span v-else class="opacity-30">-</span>
           </template>
         </el-table-column>
         <el-table-column label="类型" :width="getAdjustWidth(90)" align="center">
           <template v-slot="{row}">
-            <span v-if="row.transaction_type">{{ transactionTypeMap[row.transaction_type] }}</span>
+            <span 
+              v-if="row.transaction_type"
+              :class="messageStore?.isRead(row.transaction_id) ? 'tw-opacity-30' : ''"
+            >
+              {{ transactionTypeMap[row.transaction_type] }}
+            </span>
             <span v-else class="opacity-30">-</span>
           </template>
         </el-table-column>
         <el-table-column label="状态" :width="getAdjustWidth(100)" align="center">
           <template v-slot="{row}">
-            <span>{{ row.status }}</span>
+            <span 
+              v-if="row.transaction_id"
+              :class="messageStore?.isRead(row.transaction_id) ? 'tw-opacity-30' : ''"
+            >
+              {{ messageStore?.isRead(row.transaction_id) ? '已读' : '未读' }}
+            </span>
             <!-- <span v-if="row.status">{{ statusMap[row.status] }}</span> -->
             <!-- <span v-else class="opacity-30">-</span> -->
           </template>
@@ -45,6 +60,7 @@ const emit = defineEmits();
 
 const userStore = store.user()
 const appStore = store.app()
+const messageStore = store.message()
 
 const transactionTypeMap = {
   recharge: '充值',
@@ -53,6 +69,8 @@ const transactionTypeMap = {
   transfer_receive: '入账',
   order_sell: '出售',
   order_buy: '买入',
+  order_auto_sell: '出售',
+  order_auto_buy: '买入',
 }
 
 const props = defineProps({
@@ -140,6 +158,9 @@ onMounted(() => {
 
 const router = useRouter();
 const handleRowClick = (row) => {
+
+  messageStore.addReadMessage(row.transaction_id)
+
   let targetPage = ''
   switch(row.transaction_type) {
     case 'recharge':
@@ -155,9 +176,11 @@ const handleRowClick = (row) => {
       targetPage = `/withdraw/detail?reference_id=${row.reference_id}`
       break;
     case 'order_sell':
+    case 'order_auto_sell':
       targetPage = `/order/seller/detail?orderId=${row.reference_id}`;
       break;
     case 'order_buy':
+    case 'order_auto_buy':
       targetPage = `/order/buyer/detail?orderId=${row.reference_id}`;
       break;
   }

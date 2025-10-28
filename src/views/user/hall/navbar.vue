@@ -13,11 +13,11 @@
         </div>
     </div>
 
-    <el-dialog title="系统消息" v-model="isDialogVisible" width="80%">
+    <el-dialog v-model="isDialogVisible" width="80%">
       <!-- <template #header>
         <div class="tw-text-center tw-text-lg tw-font-bold tw-z-10">系统消息</div>
       </template> -->
-
+      <div class="tw-text-[20px] tw-text-center tw-mb-4">系统消息</div>
       <notification-table />
     </el-dialog>
   </div>
