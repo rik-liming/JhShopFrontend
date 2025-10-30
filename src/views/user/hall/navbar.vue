@@ -13,12 +13,12 @@
         </div>
     </div>
 
-    <el-dialog v-model="isDialogVisible" width="80%">
+    <el-dialog v-model="isDialogVisible" width="80%" @open="refreshKey++">
       <!-- <template #header>
         <div class="tw-text-center tw-text-lg tw-font-bold tw-z-10">系统消息</div>
       </template> -->
       <div class="tw-text-[20px] tw-text-center tw-mb-4">系统消息</div>
-      <notification-table />
+      <notification-table :key="refreshKey" />
     </el-dialog>
   </div>
 </template>
@@ -48,7 +48,8 @@ export default defineComponent({
   },
   data() {
     return {
-      isDialogVisible: false
+      isDialogVisible: false,
+      refreshKey: 0
     }
   },
   methods: {

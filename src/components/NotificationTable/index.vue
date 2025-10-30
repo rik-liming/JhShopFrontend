@@ -5,7 +5,7 @@
         fit
         highlight-current-row
         class="main-table"
-        key="financeTable"
+        :key="props.key"
         style="height: 600px; overflow: auto;"
         @row-click="handleRowClick"
         @touchstart="onTouchStart"
@@ -76,6 +76,7 @@ const transactionTypeMap = {
 const props = defineProps({
   currentShowTable: String,
   tableType: String,
+  key: Number,
 });
 
 // 定义数据
