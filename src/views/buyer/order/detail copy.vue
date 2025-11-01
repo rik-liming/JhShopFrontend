@@ -12,7 +12,7 @@
       <!-- 用户信息 -->
       <div class="tw-my-4">
         <div class="tw-flex tw-justify-between tw-space-x-4">
-          <p class="tw-text-left">商家姓名：</p>
+          <p class="tw-text-left">商户姓名：</p>
           <p class="tw-font-semibold tw-text-right">曾智</p>
         </div>
         <div class="tw-flex tw-justify-between tw-space-x-4">

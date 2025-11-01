@@ -3,7 +3,12 @@
 
     <div class="register-box">
 
-      <span class="new-label">New</span>
+      <span 
+        class="new-label"
+        :style="newLabelStyle"
+      >
+        New
+      </span>
 
       <div class="tw-absolute tw-top-16 tw-right-4 tw-flex tw-flex-col tw-items-end tw-z-20">
         <button 
@@ -89,6 +94,7 @@ import { defineComponent } from 'vue';
 import type { FormItemRule } from 'element-plus';
 import type { IForm } from '@/types/element-plus';
 import * as AuthApi from '@/api/auth';
+const { body } = document;
 
 interface QueryType {
   // 自定义key 任意字符串
@@ -148,6 +154,17 @@ export default defineComponent({
       otherQuery: {},
     };
   },
+  computed: {
+    newLabelStyle() {
+      const body = document.body;
+      const rect = body.getBoundingClientRect();
+      const rightOffset = 110 / 430 * rect.width * 0.85;
+
+      return {
+        right: rightOffset + 'px',
+      };
+    },
+  },
   watch: {
     $route: {
       handler: function(route) {
@@ -171,6 +188,7 @@ export default defineComponent({
       }
     });
   },
+
   methods: {
     async handleRegister() {
       const isValid = await (this.$refs.registerForm as IForm).validate();
@@ -233,8 +251,9 @@ export default defineComponent({
     font-family: 'Rockwell-Bold', 'Rockwell Bold', 'Rockwell';
     font-size: 28px;
     font-weight: 700;
-    right: 110px;
+    right: 100px;
     top: 60px;
+    z-index: 10;
   }
 
   .logo-container {
@@ -296,7 +315,7 @@ export default defineComponent({
   :deep(.el-input input) {
     color: black !important;
     font-size: 16px !important;
-    --el-input-placeholder-color: #333333 !important;
+    --el-input-placeholder-color: rgba(51, 51, 51, 0.4) !important;
   }
 
   .custom-form-item .el-input input {

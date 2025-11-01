@@ -38,7 +38,7 @@
 			</div>
 
 			<div class="tw-flex tw-justify-between tw-space-x-4 tw-mt-2 tw-mb-2 tw-font-pingfangsb tw-font-semibold">
-				<p class="tw-text-left">商家姓名：</p>
+				<p class="tw-text-left">商户姓名：</p>
 				<p class="tw-font-semibold tw-text-right">{{ orderData?.sell_account_name }}</p>
 			</div>
 

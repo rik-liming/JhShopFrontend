@@ -19,7 +19,7 @@
             <!-- <span v-else class="opacity-30">-</span> -->
           </template>
         </el-table-column>
-        <el-table-column label="金额 USDT" :width="getAdjustWidth(86)" align="center">
+        <el-table-column label="金额 (USTD)" :width="getAdjustWidth(86)" align="center">
           <template v-slot="{row}">
             <span v-if="row.status !== null && row.status !== undefined" :class="getStatusClass(row.status)">{{ row.amount }}</span>
             <span v-else class="opacity-30">-</span>
@@ -49,7 +49,7 @@ import { formatPaymentMethod, getAdjustWidth } from '@/utils/tool'
 
 const payStatusMap = {
   0: '待买家付款',
-  1: '待商家确认',
+  1: '待商户确认',
   2: '已完成',
   3: '争议中',
   4: '已完成',

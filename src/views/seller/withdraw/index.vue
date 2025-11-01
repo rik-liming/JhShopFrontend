@@ -74,6 +74,7 @@
             placeholder="请输入提现金额"
             v-model="form.amount"
             min="1"
+            @input="onAmountInput"
             :max="maxWithdrawAmount"
             title="提现金额必须大于1并且小于可用资产"
             required
@@ -81,7 +82,7 @@
           />
 
           <input
-            type="text"
+            type="password"
             placeholder="请输入支付密码"
             v-model="form.payment_password"
             required
@@ -184,6 +185,13 @@ onMounted(async () => {
   await userStore.getAccountInfo()
 });
 
+const onAmountInput = (e) => {
+  if (e.target.value < 0) {
+    e.target.value = 0
+    form.amount = 0
+  }
+}
+
 </script>
 
 <style scoped lang="scss">
@@ -191,6 +199,16 @@ onMounted(async () => {
     text-decoration: underline rgb(215, 215, 215);
     text-decoration-thickness: 3px; /* 增加下划线的粗细 */
     text-underline-offset: 5px; /* 增加下划线与文字的距离 */
+}
+
+:deep(input[type=number])::-webkit-inner-spin-button,
+:deep(input[type=number])::-webkit-outer-spin-button {
+  -webkit-appearance: none;
+  margin: 0;
+}
+
+:deep(input[type=number]) {
+  -moz-appearance: textfield;
 }
 
 </style>

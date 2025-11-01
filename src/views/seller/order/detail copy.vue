@@ -12,7 +12,7 @@
       <!-- 用户信息 -->
       <div class="tw-my-4">
         <div class="tw-flex tw-justify-between tw-space-x-4">
-          <p class="tw-text-left">商家姓名：</p>
+          <p class="tw-text-left">商户姓名：</p>
           <p class="tw-font-semibold tw-text-right">{{ order.sell_account_name }}</p>
         </div>
         <div class="tw-flex tw-justify-between tw-space-x-4">
@@ -142,7 +142,7 @@ const order = ref({
 
 const payStatusMap = {
   0: '等待买家付款',
-  1: '等待商家确认',
+  1: '等待商户确认',
   2: '已确认',
   3: '已完成',
   '-1': '超时未支付',

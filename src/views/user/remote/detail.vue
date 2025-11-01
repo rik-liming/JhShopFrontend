@@ -26,7 +26,7 @@
 			</div>
 
 			<div class="tw-flex tw-justify-between tw-space-x-4 tw-mt-2 tw-mb-2 tw-font-pingfangsb tw-font-semibold">
-			<p class="tw-text-left">商家姓名：</p>
+			<p class="tw-text-left">商户姓名：</p>
 			<p class="tw-font-semibold tw-text-right">{{ orderData?.sell_account_name }}</p>
 			</div>
 
@@ -196,7 +196,7 @@ const getStatusStyle = (status) => {
     case 0:
       return { style: 'tw-text-yellow-500', text: '等待买家付款' };
     case 1:
-      return { style: 'tw-text-blue-500', text: '等待商家确认'};
+      return { style: 'tw-text-blue-500', text: '等待商户确认'};
     case 2:
       return { style: 'tw-text-green-500', text: '已完成'};
     case 3:

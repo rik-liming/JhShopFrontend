@@ -80,7 +80,7 @@ import { formatPaymentMethod, getAdjustWidth } from '@/utils/tool'
 
 const payStatusMap = {
   0: '待买家付款',
-  1: '待商家确认',
+  1: '待商户确认',
   2: '已完成',
   3: '争议中',
   4: '已完成',

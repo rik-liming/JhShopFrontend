@@ -367,7 +367,7 @@ export default defineComponent({
   :deep(.el-input input) {
     color: black !important;
     font-size: 16px !important;
-    --el-input-placeholder-color: #333333 !important;
+    --el-input-placeholder-color: rgba(51, 51, 51, 0.4) !important;
   }
 
   .custom-form-item .el-input input {

@@ -87,7 +87,7 @@
           >
             <template #content>
               <div class="tw-max-w-[300px] tw-text-lg tw-text-white tw-bg-blue tw-rounded tw-px-3 tw-py-1">
-                {{ `根据商家设置，下单金额至少为人民币：${minBuyCnyAmount} 元` }}
+                {{ `根据商户设置，下单金额至少为人民币：${minBuyCnyAmount} 元` }}
               </div>
             </template>
 
@@ -137,7 +137,7 @@
           </span>
 
           <input
-            type="text"
+            type="password"
             placeholder="请输入支付密码"
             v-model="form.payment_password"
             required

@@ -18,15 +18,15 @@
         <span v-else class="opacity-30">-</span>
       </template>
     </el-table-column>
-    <el-table-column label="售卖数量" width="'40%'" align="center">
+    <el-table-column label="售卖数量 (USTD)" width="'40%'" align="center">
       <template v-slot="{ row }">
         <span v-if="row.remain_amount">{{ row.remain_amount }}</span>
         <span v-else class="opacity-30">-</span>
       </template>
     </el-table-column>
-    <el-table-column label="等值人民币" width="'30%'" align="center">
+    <el-table-column label="等值人民币 (元)" width="'30%'" align="center">
       <template v-slot="{ row }">
-        <span v-if="row.amount">{{ getExchangeCNY(row.amount) }}</span>
+        <span v-if="row.amount">{{ getExchangeCNY(row.remain_amount) }}</span>
         <span v-else class="opacity-30">-</span>
       </template>
     </el-table-column>
@@ -46,6 +46,7 @@ const emit = defineEmits();
 const props = defineProps({
   currentShowTable: String,
   tableType: String,
+  countdown: Number,
 });
 
 const userStore = store.user()
@@ -112,6 +113,18 @@ watch(
     
     // 确保只有在 tableType 改变时才调用 getList
     if (!isFirstCall && props.currentShowTable === 'market') {
+      getList();
+    } else {
+      isFirstCall = false; // 第一次加载后设置为 false
+    }
+  },
+  { immediate: true } // immediate 保证在首次渲染时监听
+);
+
+watch(
+  () => props.countdown,
+  (newCountDown) => {
+    if (!isFirstCall && props.currentShowTable === 'market' && newCountDown === 0) {
       getList();
     } else {
       isFirstCall = false; // 第一次加载后设置为 false

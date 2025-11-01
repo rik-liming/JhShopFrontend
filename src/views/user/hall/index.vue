@@ -104,6 +104,7 @@
           <market-table
             :currentShowTable="listQuery.currentShowTable"
             :tableType="listQuery.marketTableType"
+            :countdown="listQuery.countdown"
             @table-update-start="handleTableUpdateStart"
             @table-update-end="handleTableUpdateEnd"
             v-show="listQuery.currentShowTable == 'market'"
@@ -173,6 +174,7 @@ const listQuery = reactive({
   currentShowTable: 'market',  // market/my
   myTableType: '我的',        // default/order/finance
   marketTableType: 'alipay',   // alipay/wechat/bank
+  countDown: 10,
 })
 
 const router = useRouter();
@@ -221,6 +223,9 @@ function getExchangeRate() {
     case 'bank':
       exchangeRate = configStore.config.value.exchange_rate_bank;
       break;
+    default: 
+      exchangeRate = configStore.config.value.exchange_rate_alipay;
+      break;
   }
   if (exchangeRate == 0) {
     return '-'
@@ -244,6 +249,7 @@ const startCountdown = () => {
       // 倒计时到0时重新开始
       countdown.value = 10
     }
+    listQuery.countdown = countdown.value
   }, 1000)
 }
 

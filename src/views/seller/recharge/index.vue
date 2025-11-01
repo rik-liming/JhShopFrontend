@@ -64,6 +64,8 @@
             placeholder="请输入充值金额"
             v-model="form.amount"
             required
+            min="0"
+            @input="onAmountInput"
             class="tw-w-full tw-border tw-border-solid tw-border-black tw-border-opacity-20 tw-rounded-md tw-px-3 tw-py-2 tw-text-sm tw-placeholder-gray-400 tw-mb-4"
           />
 
@@ -165,8 +167,25 @@ onMounted(async () => {
   await userStore.getAccountInfo()
 });
 
+const onAmountInput = (e) => {
+  if (e.target.value < 0) {
+    e.target.value = 0
+    form.amount = 0
+  }
+}
+
 </script>
 
 <style scoped lang="scss">
-/* 保持样式不变 */
+
+:deep(input[type=number])::-webkit-inner-spin-button,
+:deep(input[type=number])::-webkit-outer-spin-button {
+  -webkit-appearance: none;
+  margin: 0;
+}
+
+:deep(input[type=number]) {
+  -moz-appearance: textfield;
+}
+
 </style>
