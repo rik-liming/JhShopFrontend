@@ -198,11 +198,15 @@ const getStatusStyle = (status) => {
     case 1:
       return { style: 'tw-text-blue-500', text: '等待商户确认'};
     case 2:
-      return { style: 'tw-text-green-500', text: '已完成'};
-    case 3:
-      return { style: 'tw-text-red-500', text: '争议'};
+	  return { style: 'tw-text-green-500', text: '已完成'};
+	case 3:
+      return { style: 'tw-text-gray-500', text: '超时取消'};
     case 4:
-      return { style: 'tw-text-green-500', text: '已完成（争议结束）'};
+      return { style: 'tw-text-red-500', text: '争议'};
+    case 5:
+	  return { style: 'tw-text-green-500', text: '已完成（争议结束）'};
+	case 6:
+      return { style: 'tw-text-green-500', text: '已完成（争议撤单）'};
     default:
       return { style: 'tw-text-gray-500', text: '-'};
   }
@@ -253,8 +257,9 @@ const openPreview = (imageUrl) => {
     font-family: Arial Normal, Arial;
     color: #333333;
     opacity: 0.57;
-	position: absolute;
-    bottom: 4px;
+	// position: absolute;
+	// bottom: 4px;
+	margin-top: 30px;
   }
 }
 

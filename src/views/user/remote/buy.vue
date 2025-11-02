@@ -233,9 +233,10 @@ onMounted(async () => {
     text-align: center;
     font-family: Arial Normal, Arial;
     color: #333333;
-    opacity: 0.57;
-	position: absolute;
-    bottom: 4px;
+	opacity: 0.57;
+	margin-top: 100px;
+	// position: absolute;
+    // bottom: 4px;
   }
 
 	.amountButton {

@@ -359,8 +359,9 @@ const copySellAccountNumber = async () => {
     font-family: Arial Normal, Arial;
     color: #333333;
     opacity: 0.57;
-	position: absolute;
-    bottom: 4px;
+	// position: absolute;
+	// bottom: 4px;
+	margin-top: 10px;
   }
 }
 

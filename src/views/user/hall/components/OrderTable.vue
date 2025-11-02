@@ -14,8 +14,8 @@
     >
         <el-table-column label="订单编号" :width="getAdjustWidth(120)" align="center">
           <template v-slot="{row}">
-            <span v-if="userStore.user?.value?.role === 'buyer'" :class="getStatusClass(row?.status)">{{ row?.buy_transaction_id }}</span>
-            <span v-else :class="getStatusClass(row?.status)">{{ row?.sell_transaction_id }}</span>
+            <!-- 统一用buy_transaction_id来定位 -->
+            <span :class="getStatusClass(row?.status)">{{ row?.buy_transaction_id }}</span>
             <!-- <span v-else class="opacity-30">-</span> -->
           </template>
         </el-table-column>
@@ -51,8 +51,10 @@ const payStatusMap = {
   0: '待买家付款',
   1: '待商户确认',
   2: '已完成',
-  3: '争议中',
-  4: '已完成',
+  3: '超时取消',
+  4: '争议',
+  5: '争议（已通过）',
+  6: '争议（已撤单）',
 }
 
 const emit = defineEmits();
