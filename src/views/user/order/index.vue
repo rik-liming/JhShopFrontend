@@ -210,9 +210,13 @@ const getStatusClass = (status) => {
       case 2:
         return 'sellerConfirm';
       case 3:
-        return 'argue';
+        return 'expired';
       case 4:
+        return 'argue';
+      case 5:
         return 'argueComplete';
+      case 6:
+        return 'argueCancel';
       default:
         return '';
     }
@@ -306,12 +310,20 @@ const handleClose = () => {
   color: #22c55e;
 }
 
+:deep(.el-table__body tr .expired) {
+  color: #333333;
+}
+
 :deep(.el-table__body tr .argue) {
   color: #ef4444;
 }
 
 :deep(.el-table__body tr .argueComplete) {
   color: #22c55e;
+}
+
+:deep(.el-table__body tr .argueCancel) {
+  color: #333333;
 }
 
 </style>
