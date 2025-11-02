@@ -74,7 +74,7 @@
             @change="updateCurrentShowTable('my')"
           >
             <el-option 
-              v-for="item in myTableTypeOptions" 
+              v-for="item in myTableTypeOptions()" 
               :key="item.value" 
               :label="item.label" 
               :value="item.value"
@@ -123,6 +123,13 @@
             @table-update-end="handleTableUpdateEnd"
             v-show="listQuery.myTableType == 'finance' && listQuery.currentShowTable == 'my'"
           ></finance-table>
+          <order-listing-table
+            :currentShowTable="listQuery.currentShowTable"
+            :tableType="listQuery.myTableType"
+            @table-update-start="handleTableUpdateStart"
+            @table-update-end="handleTableUpdateEnd"
+            v-show="listQuery.myTableType == 'orderListing' && listQuery.currentShowTable == 'my'"
+          ></order-listing-table>
       </div>
     </div>
 
@@ -143,6 +150,7 @@ import { useRouter } from 'vue-router';
 import MarketTable from './components/MarketTable.vue'
 import OrderTable from './components/OrderTable.vue'
 import FinanceTable from './components/FinanceTable.vue'
+import OrderListingTable from './components/OrderListingTable.vue'
 
 // --- 广告轮播图片 ---
 const ad_imgs = [
@@ -165,10 +173,15 @@ const marketTableTypeOptions = [
   { label: '微信', value: 'wechat' },
 ]
 
-const myTableTypeOptions = [
-  { label: '订单', value: 'order' },
-  { label: '财务变动', value: 'finance' },
+const allMyTableTypeOptions = [
+  { label: '挂单', value: 'orderListing', role: 'seller|agent'},
+  { label: '订单', value: 'order', role: 'all'},
+  { label: '财务变动', value: 'finance', role: 'all' },
 ]
+
+const myTableTypeOptions = () => {
+  return allMyTableTypeOptions.filter(item => item.role === 'all' || item.role.includes(userStore?.user?.value?.role))
+}
 
 const listQuery = reactive({
   currentShowTable: 'market',  // market/my

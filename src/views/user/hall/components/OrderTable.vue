@@ -156,6 +156,10 @@ onMounted(() => {
 const router = useRouter();
 
 const handleRowClick = (row) => {
+  if (!row.id) {
+    return
+  }
+  
   const role = userStore.user?.value?.role
   let targetPage = ''
   if (role === 'buyer') {

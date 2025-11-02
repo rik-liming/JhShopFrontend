@@ -33,3 +33,23 @@ export async function getOrderListing(loginToken, listingId) {
     })
     return response
 }
+
+// request my orderlisting info
+export async function getMyOrderListing(loginToken) {
+    const response = await requestBase.get(`/api/order_listing/my`, {
+        headers: {
+            Authorization: `Bearer ${loginToken}`,
+        }
+    })
+    return response
+}
+
+// request cancel order listing
+export async function cancelOrderListing(loginToken, id) {
+    const response = await requestBase.post('/api/order_listing/cancel', { id }, {
+        headers: {
+            Authorization: `Bearer ${loginToken}`,
+        }
+    })
+    return response
+}

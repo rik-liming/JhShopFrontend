@@ -19,7 +19,6 @@ import * as directives from 'vuetify/directives'
 import '@mdi/font/css/materialdesignicons.css'
 import { aliases, mdi } from 'vuetify/iconsets/mdi-svg'
 
-
 // 创建 Vuetify 实例
 const vuetify = createVuetify({
   components,
