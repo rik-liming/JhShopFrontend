@@ -4,7 +4,12 @@
       <!-- 顶部图标 -->
       <div class="tw-w-full tw-flex tw-items-center tw-justify-between tw-mt-14 tw-mb-2 tw-relative">
         <div class="tw-flex tw-items-center tw-w-full">
-          <img src="@/assets/profile_icon.png" alt="logo" class="tw-w-[96px] tw-h-[105px] tw-mx-auto" />
+          <img 
+            src="@/assets/profile_icon.png" 
+            alt="avatar" 
+            class="tw-w-[96px] tw-h-[105px] tw-mx-auto" 
+            @click="handleClose"
+          />
         </div>
         <div class="tw-absolute tw-left-0 tw-flex tw-flex-col tw-items-end">
           <hamburger 

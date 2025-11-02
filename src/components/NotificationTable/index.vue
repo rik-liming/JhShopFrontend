@@ -16,7 +16,7 @@
           <template v-slot="{row}">
             <span 
               v-if="row.transaction_id"
-              :class="messageStore?.isRead(row.transaction_id) ? 'tw-opacity-30' : ''"
+              :class="row?.status === 'read' ? 'tw-opacity-30' : ''"
             >
               {{ row.transaction_id }}
             </span>
@@ -27,7 +27,7 @@
           <template v-slot="{row}">
             <span 
               v-if="row.transaction_type"
-              :class="messageStore?.isRead(row.transaction_id) ? 'tw-opacity-30' : ''"
+              :class="row?.status === 'read' ? 'tw-opacity-30' : ''"
             >
               {{ transactionTypeMap[row.transaction_type] }}
             </span>
@@ -38,9 +38,9 @@
           <template v-slot="{row}">
             <span 
               v-if="row.transaction_id"
-              :class="messageStore?.isRead(row.transaction_id) ? 'tw-opacity-30' : ''"
+              :class="row?.status === 'read' ? 'tw-opacity-30' : ''"
             >
-              {{ messageStore?.isRead(row.transaction_id) ? '已读' : '未读' }}
+              {{ statusMap[row?.status] }}
             </span>
             <!-- <span v-if="row.status">{{ statusMap[row.status] }}</span> -->
             <!-- <span v-else class="opacity-30">-</span> -->
@@ -53,14 +53,13 @@
 import { ref, onMounted, reactive, watch, defineEmits, nextTick } from 'vue';
 import { useRouter } from 'vue-router';
 import store from '@/store';
-import * as FinanceApi from '@/api/finance'
+import * as MessageApi from '@/api/message'
 import { getAdjustWidth } from '@/utils/tool'
 
 const emit = defineEmits();
 
 const userStore = store.user()
 const appStore = store.app()
-const messageStore = store.message()
 
 const transactionTypeMap = {
   recharge: '充值',
@@ -71,6 +70,12 @@ const transactionTypeMap = {
   order_buy: '买入',
   order_auto_sell: '出售',
   order_auto_buy: '买入',
+}
+
+const statusMap = {
+  read: '已读',
+  unread: '未读',
+  update: '未读（有状态更新）',
 }
 
 const props = defineProps({
@@ -105,20 +110,17 @@ const getList = async () => {
       emit('table-update-end');
     }, 100);
     
-    const response = await FinanceApi.getMyFinanceRecord(userStore.loginToken, {
-      page: listQuery.page,
-      pagesize: listQuery.limit,
-    })
+    const response = await MessageApi.getMessageList(userStore.loginToken)
     if (response.data.code === 10000) {
-      const records = response.data.data.records;
+      const messages = response.data.data.messages;
 
       // 判断是否少于 15 条数据
-      if (records.length < minTableRowCount.value) {
+      if (messages.length < minTableRowCount.value) {
         // 填充空数据到 15 条
         list.value = [
-          ...records, // 将接口返回的数据放在前面
-          // ...Array(minTableRowCount.value - records.length).fill({}) // 填充空数据
-          ...Array.from({ length: minTableRowCount.value - records.length }, () => ({ fakeId: Math.random() })) // 生成唯一的 fakeId
+          ...messages, // 将接口返回的数据放在前面
+          // ...Array(minTableRowCount.value - messages.length).fill({}) // 填充空数据
+          ...Array.from({ length: minTableRowCount.value - messages.length }, () => ({ fakeId: Math.random() })) // 生成唯一的 fakeId
         ];
       } else {
         list.value = Array.from({ length: minTableRowCount.value }, () => ({ fakeId: Math.random() })) // 生成唯一的 fakeId
@@ -158,9 +160,10 @@ onMounted(() => {
 });
 
 const router = useRouter();
-const handleRowClick = (row) => {
+const handleRowClick = async(row) => {
 
-  messageStore.addReadMessage(row.transaction_id)
+  // 标记已读
+  await MessageApi.markAsRead(userStore.loginToken, row.id)
 
   let targetPage = ''
   switch(row.transaction_type) {
