@@ -6,8 +6,14 @@
         <div class="tw-relative tw-w-full tw-flex tw-flex-col tw-justify-start">
           <h1 class="tw-text-left tw-text-[23px] tw-font-pingfangsb tw-mt-16 tw-mb-4">订单详情</h1>
 
-          <div class="tw-absolute tw-right-0 tw-top-16 tw-flex tw-flex-col tw-items-end">
-            <button class="tw-text-[#D9001B] tw-font-pingfang tw-text-[17px] tw-border tw-border-solid tw-border-black tw-border-opacity-30 tw-rounded-lg tw-px-2 tw-py-1 tw-mb-16" @click="handleClose">关闭</button>
+          <div class="tw-absolute tw-right-0 tw-top-14 tw-flex tw-flex-col tw-items-end">
+            <!-- <button class="tw-text-[#D9001B] tw-font-pingfang tw-text-[17px] tw-border tw-border-solid tw-border-black tw-border-opacity-30 tw-rounded-lg tw-px-2 tw-py-1 tw-mb-16" @click="handleClose">关闭</button> -->
+            <img 
+              src="@/assets/close_icon.png" 
+              alt="close" 
+              class="cursor-pointer tw-w-8 tw-h-8" 
+              @click="handleClose"
+            />
           </div>
         </div>
 

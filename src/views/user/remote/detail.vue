@@ -7,13 +7,19 @@
       <div class="logo-container tw-relative">
         <img src="@/assets/logo.png" alt="logo" class="logo" />
 		<span 
-			class="tw-absolute tw-left-4 tw-top-6 tw-text-[#d9001b] tw-text-[28px] tw-font-bold"
+			class="tw-absolute tw-right-10 tw-top-2 tw-text-[#d9001b] tw-text-[28px] tw-font-bold"
 			style="font-family: 'Rockwell-Bold', 'Rockwell Bold', 'Rockwell'"
 		>
 			Good!
 		</span>
-		<div class="tw-absolute tw-right-4 tw-top-6 tw-flex tw-flex-col tw-items-end">
-			<button class="tw-text-[#D9001B] tw-font-pingfang tw-text-[17px] tw-border tw-border-solid tw-border-black tw-border-opacity-30 tw-rounded-lg tw-px-2 tw-py-1 tw-mb-16" @click="handleClose">关闭</button>
+		<div class="tw-absolute tw-right-4 tw-top-12 tw-flex tw-flex-col tw-items-end">
+			<!-- <button class="tw-text-[#D9001B] tw-font-pingfang tw-text-[17px] tw-border tw-border-solid tw-border-black tw-border-opacity-30 tw-rounded-lg tw-px-2 tw-py-1 tw-mb-16" @click="handleClose">关闭</button> -->
+			<img 
+				src="@/assets/close_icon.png" 
+				alt="close" 
+				class="cursor-pointer tw-w-8 tw-h-8" 
+				@click="handleClose"
+			/>
 		</div>
       </div>
     </div>
@@ -121,7 +127,7 @@
 
 		<button
           type="button"
-          class="tw-w-[80%] !tw-bg-[rgba(217,0,27,0.67843137254902)] !tw-text-[#f2f2f2] tw-font-normal tw-font-pingfang tw-text-[20px] tw-rounded-3xl tw-py-3 hover:tw-bg-rose-600"
+          class="tw-w-[80%] !tw-bg-[#a30014] !tw-opacity-60 !tw-text-[#f2f2f2] tw-font-normal tw-font-pingfang tw-text-[20px] tw-rounded-3xl tw-py-3 hover:tw-bg-rose-600"
           style="letter-spacing: 4px;"
           @click="handleClose"
         >

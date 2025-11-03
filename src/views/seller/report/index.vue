@@ -2,7 +2,7 @@
   <div class="tw-w-full tw-min-h-screen tw-flex tw-flex tw-justify-center">
     <div class="tw-w-[90%] tw-p-1 tw-text-center tw-flex tw-flex-col tw-justify-start tw-items-center">
       <!-- 顶部图标 -->
-      <div class="tw-w-full tw-flex tw-items-center tw-justify-between tw-mt-14 tw-mb-2 tw-relative">
+      <div class="tw-w-full tw-flex tw-items-center tw-justify-between tw-mt-8 tw-mb-2 tw-relative">
         <div class="tw-flex tw-flex-col tw-items-center tw-w-full">
           <div class="">
             <h2 class="tw-text-[26px] tw-font-pingfangsb tw-text-[#333333]">{{ listQuery.tableType == 'person' ? '个人报表' : '团队报表' }}</h2>
@@ -13,16 +13,22 @@
           </div>
         </div>
         <div class="tw-absolute tw-left-0 tw-flex tw-flex-col tw-items-end">
-          <hamburger 
+          <!-- <hamburger 
             id="hamburger-container" 
             :is-active="appStore.sidebar.opened" 
             class="hamburger-container"
             :iconStyle="2"
             @toggleClick="toggleSidebar" 
-          />
+          /> -->
         </div>
-        <div class="tw-absolute tw-right-0 tw-flex tw-flex-col tw-items-end">
-          <button class="tw-text-[#D9001B] tw-font-pingfang tw-text-[17px] tw-border tw-border-solid tw-border-black tw-border-opacity-30 tw-rounded-lg tw-px-2 tw-py-1 tw-mb-16" @click="handleClose">关闭</button>
+        <div class="tw-absolute tw-top-4 tw-right-0 tw-flex tw-flex-col tw-items-end">
+          <!-- <button class="tw-text-[#D9001B] tw-font-pingfang tw-text-[17px] tw-border tw-border-solid tw-border-black tw-border-opacity-30 tw-rounded-lg tw-px-2 tw-py-1 tw-mb-16" @click="handleClose">关闭</button> -->
+          <img 
+            src="@/assets/close_icon.png" 
+            alt="close" 
+            class="cursor-pointer tw-w-8 tw-h-8" 
+            @click="handleClose"
+          />
         </div>
       </div>
 

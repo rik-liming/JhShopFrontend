@@ -7,18 +7,24 @@
           <img src="@/assets/logo.png" alt="logo" class="tw-w-[104px] tw-h-[100px] tw-mx-auto" />
         </div>
         <div class="tw-absolute tw-left-0 tw-flex tw-flex-col tw-items-end">
-          <hamburger 
+          <!-- <hamburger 
             id="hamburger-container" 
             :is-active="appStore.sidebar.opened" 
             class="hamburger-container"
             :iconStyle="2"
             @toggleClick="toggleSidebar" 
+          /> -->
+        </div>
+        <div class="tw-absolute tw-top-[-24px] tw-right-0 tw-flex tw-flex-col tw-items-end">
+          <!-- <button class="tw-text-[#D9001B] tw-font-pingfang tw-text-[17px] tw-border tw-border-solid tw-border-black tw-border-opacity-30 tw-rounded-lg tw-px-2 tw-py-1 tw-mb-16" @click="handleClose">关闭</button> -->
+          <img 
+            src="@/assets/close_icon.png" 
+            alt="close" 
+            class="cursor-pointer tw-w-8 tw-h-8" 
+            @click="handleClose"
           />
         </div>
-        <div class="tw-absolute tw-right-0 tw-flex tw-flex-col tw-items-end">
-          <button class="tw-text-[#D9001B] tw-font-pingfang tw-text-[17px] tw-border tw-border-solid tw-border-black tw-border-opacity-30 tw-rounded-lg tw-px-2 tw-py-1 tw-mb-16" @click="handleClose">关闭</button>
-        </div>
-        <div class="tw-absolute tw-right-0 tw-flex tw-flex-col tw-items-end tw-mt-36">
+        <div class="tw-absolute tw-top-[-24px] tw-right-0 tw-flex tw-flex-col tw-items-end tw-mt-36">
           <p class="tw-text-sm tw-mb-2 tw-mr-4 tw-font-songti tw-font-bold tw-text-[#333333]">市场汇率：<span class="tw-text-red-500 tw-font-pingfang tw-font-normal" style="color: rgba(rgba(217, 0, 27, 0.854901960784314))">{{ configStore.config?.value?.exchange_rate_platform }}</span></p>
         </div>
       </div>
@@ -66,7 +72,7 @@
             placeholder="请输入提现地址"
             v-model="form.withdraw_address"
             required
-            class="tw-w-full tw-border tw-border-solid tw-border-black tw-border-opacity-40 tw-rounded-lg tw-px-3 tw-py-2 tw-text-md tw-placeholder-black tw-placeholder-opacity-35 tw-mb-4"
+            class="tw-w-full tw-border tw-border-solid tw-border-black tw-border-opacity-40 tw-rounded-lg tw-px-3 tw-py-2 tw-text-md tw-placeholder-black tw-placeholder-opacity-35 tw-mb-6"
           />
 
           <input
@@ -78,7 +84,7 @@
             :max="maxWithdrawAmount"
             title="提现金额必须大于1并且小于可用资产"
             required
-            class="tw-w-full tw-border tw-border-solid tw-border-black tw-border-opacity-40 tw-rounded-lg tw-px-3 tw-py-2 tw-text-md tw-placeholder-black tw-placeholder-opacity-35 tw-mb-4"
+            class="tw-w-full tw-border tw-border-solid tw-border-black tw-border-opacity-40 tw-rounded-lg tw-px-3 tw-py-2 tw-text-md tw-placeholder-black tw-placeholder-opacity-35 tw-mb-6"
           />
 
           <input
@@ -108,7 +114,7 @@
       </div>
 
       <!-- 底部版权 -->
-      <p class="tw-text-xs tw-text-gray-400 tw-mt-16">Copy@ JH嘉禾商城</p>
+      <p class="tw-text-xs tw-text-gray-400 tw-mt-12">Copy@ JH嘉禾商城</p>
     </div>
   </div>
 </template>

@@ -10,13 +10,19 @@
         New
       </span>
 
-      <div class="tw-absolute tw-top-16 tw-right-4 tw-flex tw-flex-col tw-items-end tw-z-20">
-        <button 
+      <div class="tw-absolute tw-top-12 tw-right-8 tw-flex tw-flex-col tw-items-end tw-z-20">
+        <!-- <button 
           class="tw-text-[#d9001b] tw-text-[17px] tw-border tw-border-solid tw-border-black tw-border-opacity-40 tw-rounded tw-px-2 tw-py-1 tw-mb-4" 
           @click="handleClose"
         >
           关闭
-        </button>
+        </button> -->
+        <img 
+          src="@/assets/close_icon.png" 
+          alt="close" 
+          class="cursor-pointer tw-w-8 tw-h-8" 
+          @click="handleClose"
+        />
       </div>
 
       <!-- Logo -->

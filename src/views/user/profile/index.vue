@@ -11,7 +11,7 @@
             @click="handleClose"
           />
         </div>
-        <div class="tw-absolute tw-left-0 tw-flex tw-flex-col tw-items-end">
+        <div class="tw-absolute tw-left-0 tw-top-0 tw-flex tw-flex-col tw-items-end">
           <hamburger 
             id="hamburger-container" 
             :is-active="appStore.sidebar.opened" 
@@ -20,7 +20,7 @@
             @toggleClick="toggleSidebar" 
           />
         </div>
-        <div class="tw-absolute tw-right-0 tw-flex tw-flex-col tw-items-end">
+        <div class="tw-absolute tw-top-[-12px] tw-right-0 tw-flex tw-flex-col tw-items-end">
           <notification-bell @toggleClick="showMessageBox" />
         </div>
       </div>

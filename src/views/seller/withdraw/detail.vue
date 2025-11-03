@@ -7,22 +7,32 @@
           <img src="@/assets/logo.png" alt="logo" class="tw-w-[104px] tw-h-[100px] tw-mx-auto" />
         </div>
         <div class="tw-absolute tw-left-0 tw-flex tw-flex-col tw-items-end">
-          <hamburger 
+          <!-- <hamburger 
             id="hamburger-container" 
             :is-active="appStore.sidebar.opened" 
             class="hamburger-container"
             :iconStyle="2"
             @toggleClick="toggleSidebar" 
+          /> -->
+        </div>
+        <div class="tw-absolute tw-top-[-12px] tw-right-2 tw-flex tw-flex-col tw-items-end">
+          <!-- <button class="tw-text-[#D9001B] tw-font-pingfang tw-text-[17px] tw-border tw-border-solid tw-border-black tw-border-opacity-30 tw-rounded-lg tw-px-2 tw-py-1 tw-mb-16" @click="handleClose">关闭</button> -->
+          <img 
+            src="@/assets/close_icon.png" 
+            alt="close" 
+            class="cursor-pointer tw-w-8 tw-h-8" 
+            @click="handleClose"
           />
         </div>
-        <div class="tw-absolute tw-right-0 tw-flex tw-flex-col tw-items-end">
-          <button class="tw-text-[#D9001B] tw-font-pingfang tw-text-[17px] tw-border tw-border-solid tw-border-black tw-border-opacity-30 tw-rounded-lg tw-px-2 tw-py-1 tw-mb-16" @click="handleClose">关闭</button>
+        <div class="tw-absolute tw-top-[-44px] tw-right-0 tw-flex tw-flex-col tw-items-end tw-mt-36">
+          <p class="tw-text-sm tw-mb-2 tw-mr-4 tw-font-songti tw-font-bold tw-text-[#333333]">市场汇率：<span class="tw-text-red-500 tw-font-pingfang tw-font-normal" style="color: rgba(rgba(217, 0, 27, 0.854901960784314))">{{ configStore.config?.value?.exchange_rate_platform }}</span></p>
         </div>
       </div>
 
+      <hr class="tw-w-[90%] tw-mt-4 tw-border-black tw-border-opacity-30" />
       <div class="tw-w-[86%] tw-text-[#333333]">
         <div class="tw-w-full tw-flex tw-flex-col tw-justify-start">
-          <h1 class="tw-text-left tw-text-[23px] tw-font-pingfangsb tw-mt-10 tw-mb-4">提现详情</h1>
+          <h1 class="tw-text-left tw-text-[23px] tw-font-pingfangsb tw-mt-8 tw-mb-4">提现详情</h1>
         </div>
 
         <!-- 商户号 -->
@@ -71,7 +81,12 @@
       <div class="tw-w-[86%] tw-text-[#333333]">
         <!-- 商户号 -->
         <div class="tw-flex tw-justify-between tw-space-x-4 tw-mt-6 tw-mb-2 tw-font-pingfangsb tw-font-semibold">
-          <p class="tw-text-left">充值时间：</p>
+          <p class="tw-text-left">提现地址：</p>
+          <p class="tw-font-semibold tw-text-right">{{ withdrawData?.withdraw_address }}</p>
+        </div>
+
+        <div class="tw-flex tw-justify-between tw-space-x-4 tw-mb-2 tw-font-pingfangsb tw-font-semibold">
+          <p class="tw-text-left">提现时间：</p>
           <p class="tw-font-semibold tw-text-right">{{ withdrawData?.created_at }}</p>
         </div>
 
@@ -100,7 +115,7 @@
       <!-- 底部版权 -->
       <p 
         class="tw-text-xs tw-text-gray-400"
-        :class="(withdrawData?.status == 1 || withdrawData?.status == -1) ? `tw-mt-24` : `tw-mt-32`"
+        :class="(withdrawData?.status == 1 || withdrawData?.status == -1) ? `tw-mt-16` : `tw-mt-24`"
       >
         Copy@ JH嘉禾商城</p>
     </div>

@@ -7,14 +7,20 @@
           <img src="@/assets/sale_icon.png" alt="logo" class="tw-w-[98px] tw-h-[94px] tw-mx-auto" />
         </div>
         <div class="tw-absolute tw-left-0 tw-flex tw-flex-col tw-items-end">
-          <hamburger id="hamburger-container" :is-active="appStore.sidebar.opened" class="hamburger-container"
-               @toggleClick="toggleSidebar" />
+          <!-- <hamburger id="hamburger-container" :is-active="appStore.sidebar.opened" class="hamburger-container"
+               @toggleClick="toggleSidebar" /> -->
         </div>
-        <div class="tw-absolute tw-right-0 tw-flex tw-flex-col tw-items-end">
-          <button class="tw-text-[#D9001B] tw-font-pingfang tw-text-[17px] tw-border tw-border-solid tw-border-black tw-border-opacity-30 tw-rounded-lg tw-px-2 tw-py-1 tw-mb-16" @click="handleClose">关闭</button>
+        <div class="tw-absolute tw-right-2 tw-top-2 tw-flex tw-flex-col tw-items-end">
+          <!-- <button class="tw-text-[#D9001B] tw-font-pingfang tw-text-[17px] tw-border tw-border-solid tw-border-black tw-border-opacity-30 tw-rounded-lg tw-px-2 tw-py-1 tw-mb-16" @click="handleClose">关闭</button> -->
+          <img 
+            src="@/assets/close_icon.png" 
+            alt="close" 
+            class="cursor-pointer tw-w-8 tw-h-8" 
+            @click="handleClose"
+          />
         </div>
-        <div class="tw-absolute tw-right-0 tw-flex tw-flex-col tw-items-end tw-mt-36">
-          <!-- <p class="tw-text-sm tw-mb-2 tw-mr-4 tw-font-songti tw-font-bold tw-text-[#333333]">市场汇率：<span class="tw-text-red-500 tw-font-pingfang tw-font-normal" style="color: rgba(rgba(217, 0, 27, 0.854901960784314))">{{ configStore.config?.value?.exchange_rate_platform }}</span></p> -->
+        <div class="tw-absolute tw-top-[-20px] tw-right-[-12px] tw-flex tw-flex-col tw-items-end tw-mt-36">
+          <p class="tw-text-sm tw-mb-2 tw-mr-4 tw-font-songti tw-font-bold tw-text-[#333333]">市场汇率：<span class="tw-text-red-500 tw-font-pingfang tw-font-normal" style="color: rgba(rgba(217, 0, 27, 0.854901960784314))">{{ configStore.config?.value?.exchange_rate_platform }}</span></p>
         </div>
       </div>
       
