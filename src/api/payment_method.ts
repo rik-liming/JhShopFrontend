@@ -58,3 +58,13 @@ export async function getPaymentMethodInfo(loginToken, id) {
     })
     return response
 }
+
+// request update payment method
+export async function setDefault(loginToken, data) {
+    const response = await requestBase.post('/api/payment_method/default', data, {
+        headers: {
+            Authorization: `Bearer ${loginToken}`,
+        }
+    })
+    return response
+}
