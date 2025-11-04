@@ -8,7 +8,7 @@
     "tw:build": "tailwindcss -i ./src/input.css -o ./dist/output.css",
     "tw:watch": "tailwindcss -i ./src/input.css -o ./dist/output.css --watch",
     "dev:test": "vite --mode dev_test --host 0.0.0.0",
-    "dev:stage": "vite --mode dev_prod",
+    "dev:stage": "vite --mode dev_stage",
     "dev:prod": "vite --mode dev_prod",
     "build:test": "vite build --mode build_test",
     "build:stage": "vite build --mode build_stage",

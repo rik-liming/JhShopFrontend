@@ -12,14 +12,6 @@
           <avatar-with-id @toggleClick="openProfile" />
         </div>
     </div>
-
-    <el-dialog v-model="isDialogVisible" width="80%" @open="refreshKey++">
-      <!-- <template #header>
-        <div class="tw-text-center tw-text-lg tw-font-bold tw-z-10">系统消息</div>
-      </template> -->
-      <div class="tw-text-[20px] tw-text-center tw-mb-4">系统消息</div>
-      <notification-table :key="refreshKey" />
-    </el-dialog>
   </div>
 </template>
 
@@ -31,6 +23,7 @@ import NotificationBell from '@/components/NotificationBell';
 import AvatarWithId from '@/components/AvatarWithId';
 import NotificationTable from '@/components/NotificationTable';
 import { defineComponent } from 'vue';
+import emitter from '@/event/eventBus';
 
 export default defineComponent({
   name: 'Navbar',
@@ -48,8 +41,6 @@ export default defineComponent({
   },
   data() {
     return {
-      isDialogVisible: false,
-      refreshKey: 0
     }
   },
   methods: {
@@ -61,7 +52,7 @@ export default defineComponent({
       this.$router.push(`/login?redirect=${this.$route.fullPath}`);
     },
     showMessageBox() {
-      this.isDialogVisible = true
+      emitter.emit('transaction:updated', {'user_id': store.user().user?.value?.id });
     },
     openProfile() {
       this.$router.push(`/profile`);

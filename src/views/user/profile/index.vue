@@ -172,14 +172,6 @@
       <!-- 底部版权 -->
       <p class="tw-absolute tw-bottom-4 tw-text-xs tw-text-gray-400 tw-mt-4">Copy@ JH嘉禾商城</p>
     </div>
-
-    <el-dialog v-model="isDialogVisible" width="80%" class="messageDialog">
-      <!-- <template #header>
-        <div class="tw-text-center tw-text-lg tw-font-bold tw-z-10">系统消息</div>
-      </template> -->
-      <div class="tw-text-[20px] tw-text-center tw-mb-4">系统消息</div>
-      <notification-table />
-    </el-dialog>
   </div>
 </template>
 
@@ -193,6 +185,7 @@ import PaymentMethod from './components/PaymentMethod';
 import store from '@/store';
 import { formatIdDisplay, formatRole } from '@/utils/tool'
 import * as UserApi from '@/api/user'
+import emitter from '@/event/eventBus';
 
 const appStore = store.app()
 const userStore = store.user()
@@ -203,8 +196,6 @@ const newPaymentPassword = ref('')
 
 const editingLoginPassword = ref(false)
 const editingPaymentPassword = ref(false)
-
-const isDialogVisible = ref(false)
 
 const handleClose = () => {
   router.push('/')
@@ -219,7 +210,7 @@ const profileIconClick = () => {
 }
 
 const showMessageBox = () => {
-  isDialogVisible.value = true
+  emitter.emit('transaction:updated', {'user_id': userStore.user?.value?.id });
 }
 
 const editLoginPassword = () => {
@@ -302,12 +293,5 @@ onMounted(async () => {
 </script>
 
 <style scoped lang="scss">
-
-:deep(.el-dialog.messageDialog) {
-  background-image: url('@/assets/main_background.jpg'); /* 设置背景图片 */
-  background-size: cover; /* 背景图片覆盖整个区域 */
-  background-position: center; /* 背景图片居中 */
-  background-repeat: no-repeat; /* 背景图片不重复 */
-}
 
 </style>

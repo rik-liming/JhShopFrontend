@@ -1,9 +1,9 @@
 import { initUserListener } from './userListener';
 import { initConfigListener } from './configListener';
-// import { initAssetListener } from './assetListener';
+import { initTransactionListener } from './transactionListener';
 
 export function initEventListeners() {
 	initUserListener();
   	initConfigListener();
-//   initAssetListener();
+  	initTransactionListener();
 }

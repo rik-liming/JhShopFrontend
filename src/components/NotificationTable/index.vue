@@ -5,7 +5,7 @@
         fit
         highlight-current-row
         class="main-table"
-        :key="props.key"
+        :key="props.tableKey"
         style="height: 600px; overflow: auto;"
         @row-click="handleRowClick"
         @touchstart="onTouchStart"
@@ -55,6 +55,7 @@ import { useRouter } from 'vue-router';
 import store from '@/store';
 import * as MessageApi from '@/api/message'
 import { getAdjustWidth } from '@/utils/tool'
+import emitter from '@/event/eventBus';
 
 const emit = defineEmits();
 
@@ -79,9 +80,7 @@ const statusMap = {
 }
 
 const props = defineProps({
-  currentShowTable: String,
-  tableType: String,
-  key: Number,
+  tableKey: Number,
 });
 
 // 定义数据
@@ -89,17 +88,13 @@ const list = ref([]);
 const listQuery = reactive({
   page: 1,
   limit: 100,
-  tableType: props.tableType,
 });
 
 const minTableRowCount = ref(15)
 const isRefreshing = ref(false)
 const touchStartY = ref(0) // 触摸开始位置
 const touchMoveY = ref(0) // 触摸移动位置
-const threshold = ref(50) // 下拉刷新阈值
-
-// 用于防止重复调用的标志位
-let isFirstCall = true;
+const threshold = ref(200) // 下拉刷新阈值
 
 // 获取数据的逻辑
 const getList = async () => {
@@ -132,25 +127,6 @@ const getList = async () => {
   }
 };
 
-watch(
-  () => props.tableType,
-  (newTableType) => {
-    // 只有在 tableType 变化时，才更新数据
-    listQuery.tableType = newTableType;
-    
-    // 确保只有在 tableType 改变时才调用 getList
-    if (!isFirstCall 
-      && props.currentShowTable === 'my'
-      && props.tableType === 'finance'
-    ) {
-      getList();
-    } else {
-      isFirstCall = false; // 第一次加载后设置为 false
-    }
-  },
-  { immediate: true } // immediate 保证在首次渲染时监听
-);
-
 // 生命周期钩子，组件加载时获取数据
 onMounted(() => {
   nextTick(() => {
@@ -164,6 +140,7 @@ const handleRowClick = async(row) => {
 
   // 标记已读
   await MessageApi.markAsRead(userStore.loginToken, row.id)
+  emitter.emit('message:read', {'user_id': userStore.user?.value?.id });
 
   let targetPage = ''
   switch(row.transaction_type) {
@@ -223,6 +200,14 @@ const triggerRefresh = () => {
   isRefreshing.value = true; // 显示刷新状态
   getList()
 }
+
+watch(
+  () => props.tableKey,
+  (newTableKey) => {
+    getList();
+  },
+  { immediate: true } // immediate 保证在首次渲染时监听
+);
 
 </script>
 

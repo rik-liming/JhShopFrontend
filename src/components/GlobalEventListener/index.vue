@@ -21,6 +21,11 @@
 			@click="logoutHandle"
 		></v-btn>
 	</el-dialog>
+
+	<el-dialog v-model="messageDialogVisible" class="messageDialog" @open="updateTableKey">
+      <div class="tw-text-[20px] tw-text-center tw-mb-4">{{ messageDialogTitle }}</div>
+      <notification-table :tableKey="messageDialogTableKey" />
+    </el-dialog>
   </div>
 </template>
 
@@ -39,6 +44,10 @@ const configStore = store.config()
 const forceLogoutVisible = ref(false);
 const forceLogoutTitle = ref('')
 const forceLogoutMsg = ref('')
+
+const messageDialogVisible = ref(false)
+const messageDialogTitle = ref('')
+const messageDialogTableKey = ref(Math.random())
 
 onMounted(() => {
 
@@ -59,6 +68,24 @@ onMounted(() => {
 	window.location.reload()
   });
 
+  // 监听交易状态变更事件
+  emitter.on('transaction:updated', async (data: any) => {
+	// 如果是自己
+	if (data.user_id === userStore?.user?.value?.id) {
+		messageDialogTitle.value = "系统消息"
+		messageDialogVisible.value = true;
+	}
+  });
+
+  // 监听消息弹框状态变更事件
+  emitter.on('message:read', async (data: any) => {
+	// 如果是自己
+	if (data.user_id === userStore?.user?.value?.id) {
+		messageDialogVisible.value = false;
+	}
+  });
+  
+
   // 可以在这里继续监听其他全局事件
   // emitter.on('user:assetChanged', ...)
 });
@@ -66,6 +93,10 @@ onMounted(() => {
 const logoutHandle = async() => {
 	forceLogoutVisible.value = false
 	router.replace('/forcelogout')
+}
+
+const updateTableKey = () => {
+	messageDialogTableKey.value = Math.random()
 }
 
 </script>
@@ -95,6 +126,16 @@ const logoutHandle = async() => {
 
 :deep(.el-dialog__footer) {
 	padding: 10px 20px !important; /* Adjust footer padding */
+}
+
+:deep(.el-dialog.messageDialog) {
+  background-image: url('@/assets/main_background.jpg'); /* 设置背景图片 */
+  background-size: cover; /* 背景图片覆盖整个区域 */
+  background-position: center; /* 背景图片居中 */
+  background-repeat: no-repeat; /* 背景图片不重复 */
+  width: 80% !important;
+  --el-dialog-width: 80% !important;
+  padding: 0 !important;
 }
 
 </style>

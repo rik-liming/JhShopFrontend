@@ -215,7 +215,7 @@ const fetchOrderDetails = async (orderId) => {
 const handleConfirm = async () => {
   try {
     const response = await OrderApi.orderConfirm(userStore.loginToken, {
-      role: 'seller',
+      role: userStore?.user?.value?.role,
       orderId: order.value.id
     })
 
