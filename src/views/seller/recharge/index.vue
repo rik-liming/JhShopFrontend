@@ -91,8 +91,9 @@
             type="submit"
             class="tw-w-[90%] !tw-bg-[rgba(217,0,27,0.67843137254902)] !tw-text-[#f2f2f2] tw-font-normal tw-font-pingfang tw-text-[20px] tw-rounded-3xl tw-py-3 tw-mt-10 hover:tw-bg-rose-600"
             style="letter-spacing: 4px;"
+            :disabled="isApiRequesting"
           >
-            立即充值
+            {{ isApiRequesting ? '处理中...' : '立即充值' }}
           </button>
           <button 
             type="button"
@@ -130,12 +131,19 @@ const form = ref({
 
 const router = useRouter();
 
+const isApiRequesting = ref(false)
+
 const handleClose = () => {
   router.push('/');
 };
 
 const handleRecharge = async() => {
   try {
+    if (isApiRequesting.value) {
+      ElMessage.error('处理中');
+      return;
+    }
+
     if (!form.value.amount || !form.value.screenshot) {
       ElMessage.error('请填写充值金额并上传截图!');
       return;
@@ -150,6 +158,7 @@ const handleRecharge = async() => {
     formData.append('amount', form.value.amount);
     formData.append('screenshot', form.value.screenshot)
 
+    isApiRequesting.value = true
     const resp = await RechargeApi.createRecharge(userStore.loginToken, formData)
 
     if (resp.data.code === 10000) {
@@ -162,6 +171,8 @@ const handleRecharge = async() => {
   } catch (error) {
     console.log(error)
     ElMessage.error('提交充值失败');
+  } finally {
+    isApiRequesting.value = false
   }
 };
 

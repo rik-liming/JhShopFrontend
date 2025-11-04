@@ -30,7 +30,7 @@
             <span v-else class="opacity-30">-</span>
           </template>
         </el-table-column>
-        <el-table-column label="余额 (USTD)" :width="getAdjustWidth(90)" align="center">
+        <el-table-column label="总资产 (USTD)" :width="getAdjustWidth(90)" align="center">
           <template v-slot="{row}">
             <span v-if="row.balance_after && row.balance_after > 0">{{ row.balance_after }}</span>
             <span v-else class="opacity-30">-</span>
@@ -109,7 +109,7 @@ const getList = async () => {
           ...Array.from({ length: minTableRowCount.value - records.length }, () => ({ fakeId: Math.random() })) // 生成唯一的 fakeId
         ];
       } else {
-        list.value = Array.from({ length: minTableRowCount.value }, () => ({ fakeId: Math.random() })) // 生成唯一的 fakeId
+        list.value = records
       }
     }
   } catch (error) {

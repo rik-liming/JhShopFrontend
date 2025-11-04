@@ -109,7 +109,7 @@ const minTableRowCount = ref(15)
 const isRefreshing = ref(false)
 const touchStartY = ref(0) // 触摸开始位置
 const touchMoveY = ref(0) // 触摸移动位置
-const threshold = ref(200) // 下拉刷新阈值
+const threshold = ref(50) // 下拉刷新阈值
 
 // 用于防止重复调用的标志位
 let isFirstCall = true;
@@ -149,7 +149,7 @@ const getList = async () => {
           ...Array.from({ length: minTableRowCount.value - orders.length }, () => ({ fakeId: Math.random() })) // 生成唯一的 fakeId
         ];
       } else {
-        list.value = Array.from({ length: minTableRowCount.value }, () => ({ fakeId: Math.random() })) // 生成唯一的 fakeId
+        list.value = orders
       }
     }
   } catch (error) {

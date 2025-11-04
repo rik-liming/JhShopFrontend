@@ -94,7 +94,7 @@ const minTableRowCount = ref(15)
 const isRefreshing = ref(false)
 const touchStartY = ref(0) // 触摸开始位置
 const touchMoveY = ref(0) // 触摸移动位置
-const threshold = ref(200) // 下拉刷新阈值
+const threshold = ref(50) // 下拉刷新阈值
 
 // 获取数据的逻辑
 const getList = async () => {
@@ -118,7 +118,7 @@ const getList = async () => {
           ...Array.from({ length: minTableRowCount.value - messages.length }, () => ({ fakeId: Math.random() })) // 生成唯一的 fakeId
         ];
       } else {
-        list.value = Array.from({ length: minTableRowCount.value }, () => ({ fakeId: Math.random() })) // 生成唯一的 fakeId
+        list.value = messages
       }
     }
   } catch (error) {
@@ -137,7 +137,7 @@ onMounted(() => {
 
 const router = useRouter();
 const handleRowClick = async(row) => {
-
+  
   // 标记已读
   await MessageApi.markAsRead(userStore.loginToken, row.id)
   emitter.emit('message:read', {'user_id': userStore.user?.value?.id });
@@ -167,7 +167,8 @@ const handleRowClick = async(row) => {
   }
 
   if (targetPage.length > 0) {
-    router.push(targetPage);
+    const randomParam = Math.random()
+    router.push(`${targetPage}&_t=${randomParam}`);
   }
 };
 

@@ -87,10 +87,12 @@ export async function getMyOrderReport(loginToken, queryParams) {
 }
 
 // request group order report
-export async function getGroupOrderReport(loginToken) {
+export async function getGroupOrderReport(loginToken, queryParams) {
+
+    const { startTime, endTime } = queryParams;
 
     // 构建请求的基础 URL
-    let requestUrl = `/api/order/report/group`;
+    let requestUrl = `/api/order/report/group?startTime=${startTime}&endTime=${endTime}`;
 
     const response = await requestBase.get(requestUrl, {
         headers: {

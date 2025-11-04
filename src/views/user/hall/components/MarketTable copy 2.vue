@@ -102,7 +102,7 @@ const getList = async () => {
           ...Array(minTableRowCount.value - orderListings.length).fill({}) // 填充空数据
         ];
       } else {
-        list.value = Array(minTableRowCount.value).fill({});
+        list.value = orderListings
       }
     }
   } catch (error) {

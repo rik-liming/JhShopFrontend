@@ -140,7 +140,7 @@ const getList = async () => {
           ...Array.from({ length: minTableRowCount.value - records.length }, () => ({ fakeId: Math.random() })) // 生成唯一的 fakeId
         ];
       } else {
-        list.value = Array.from({ length: minTableRowCount.value }, () => ({ fakeId: Math.random() })) // 生成唯一的 fakeId
+        list.value = records
       }
     }
   } catch (error) {

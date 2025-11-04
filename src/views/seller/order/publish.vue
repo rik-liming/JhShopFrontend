@@ -20,7 +20,7 @@
           />
         </div>
         <div class="tw-absolute tw-top-[-20px] tw-right-[-12px] tw-flex tw-flex-col tw-items-end tw-mt-36">
-          <p class="tw-text-sm tw-mb-2 tw-mr-4 tw-font-songti tw-font-bold tw-text-[#333333]">市场汇率：<span class="tw-text-red-500 tw-font-pingfang tw-font-normal" style="color: rgba(rgba(217, 0, 27, 0.854901960784314))">{{ configStore.config?.value?.exchange_rate_platform }}</span></p>
+          <p class="tw-text-sm tw-mb-2 tw-mr-4 tw-font-songti tw-font-bold tw-text-[#333333]">市场汇率：<span class="tw-text-red-500 tw-font-pingfang tw-font-normal" style="color: rgba(rgba(217, 0, 27, 0.854901960784314))">{{ getExchangeRate() }}</span></p>
         </div>
       </div>
       
@@ -229,6 +229,22 @@ const toggleSidebar = () => {
 onMounted(async () => {
   await userStore.getAccountInfo()
 });
+
+function getExchangeRate() {
+  let exchangeRate = configStore.config.value.exchange_rate_alipay
+  switch (form.value.payment_method) {
+    case 'alipay':
+      exchangeRate = configStore.config.value.exchange_rate_alipay;
+      break;
+    case 'wechat':
+      exchangeRate = configStore.config.value.exchange_rate_wechat;
+      break;
+    case 'bank':
+      exchangeRate = configStore.config.value.exchange_rate_bank;
+      break;
+  }
+  return exchangeRate;
+}
 
 </script>
 
