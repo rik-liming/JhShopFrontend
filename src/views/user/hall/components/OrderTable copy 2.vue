@@ -7,17 +7,15 @@
         class="main-table"
         key="orderTable"
         style="height: 600px; overflow: auto;"
-        virtualized
         @row-click="handleRowClick"
         @touchstart="onTouchStart"
         @touchmove="onTouchMove"
         @touchend="onTouchEnd"
+        @scroll="handleScroll"
     >
         <el-table-column label="订单编号" :width="getAdjustWidth(120)" align="center">
           <template v-slot="{row}">
-            <!-- 统一用buy_transaction_id来定位 -->
             <span :class="getStatusClass(row?.status)">{{ row?.buy_transaction_id }}</span>
-            <!-- <span v-else class="opacity-30">-</span> -->
           </template>
         </el-table-column>
         <el-table-column label="金额 (USTD)" :width="getAdjustWidth(86)" align="center">
@@ -76,32 +74,27 @@ const listQuery = reactive({
 });
 const minTableRowCount = ref(15)
 const isRefreshing = ref(false)
-const touchStartY = ref(0) // 触摸开始位置
-const touchMoveY = ref(0) // 触摸移动位置
-const threshold = ref(200) // 下拉刷新阈值
+const touchStartY = ref(0)
+const touchMoveY = ref(0)
+const threshold = ref(200)
+const hasMore = ref(true)             
+const loadingMore = ref(false)        
 
-// 用于防止重复调用的标志位
 let isFirstCall = true;
 
 // 获取数据的逻辑
-const getList = async () => {
+const getList = async (append = false) => {  
   try {
     emit('table-update-start');
+    setTimeout(() => emit('table-update-end'), 100);
 
-    setTimeout(() => {
-      emit('table-update-end');  
-    }, 100);
-    
     let response = null
-    if (userStore.user?.value?.role === 'buyer'
-    || userStore.user?.value?.role === 'autoBuyer') {
+    if (userStore.user?.value?.role === 'buyer') {
       response = await OrderApi.getMyBuyerOrder(userStore.loginToken, {
         page: listQuery.page,
         page_size: listQuery.limit,
       })
-      
-    } else if (userStore.user?.value?.role === 'seller' 
-    || userStore.user?.value?.role === 'agent' ) {
+    } else if (userStore.user?.value?.role === 'seller' || userStore.user?.value?.role === 'agent') {
       response = await OrderApi.getMySellerOrder(userStore.loginToken, {
         page: listQuery.page,
         page_size: listQuery.limit,
@@ -111,112 +104,108 @@ const getList = async () => {
     if (response.data.code === 10000) {
       const orders = response.data.data.orders;
 
-      // 判断是否少于 15 条数据
-      if (orders.length < minTableRowCount.value) {
-        // 填充空数据到 15 条
-        list.value = [
-          ...orders, // 将接口返回的数据放在前面
-          ...Array.from({ length: minTableRowCount.value - orders.length }, () => ({ fakeId: Math.random() })) // 生成唯一的 fakeId
-        ];
+      if (append) {
+        list.value = [...list.value, ...orders]
       } else {
-        // 冻结数据提升性能，仅第一次请求时拉取少量数据渲染定位，后续请求使用900
-        list.value = Object.freeze(orders)
-        listQuery.limit = 900
+        if (orders.length < minTableRowCount.value) {
+          list.value = [
+            ...orders,
+            ...Array.from({ length: minTableRowCount.value - orders.length }, () => ({ fakeId: Math.random() }))
+          ];
+        } else {
+          list.value = orders
+        }
       }
+
+      hasMore.value = orders.length === listQuery.limit
     }
   } catch (error) {
     console.error('获取数据失败', error);
-    list.value = Array.from({ length: minTableRowCount.value }, () => ({ fakeId: Math.random() })) // 生成唯一的 fakeId
+    list.value = Array.from({ length: minTableRowCount.value }, () => ({ fakeId: Math.random() }))
+  } finally {
+    loadingMore.value = false;
+  }
+};
+
+const handleScroll = (e) => {
+  const el = e.target;
+  const distanceToBottom = el.scrollHeight - el.scrollTop - el.clientHeight;
+  if (distanceToBottom < 50 && hasMore.value && !loadingMore.value) {
+    loadingMore.value = true;
+    listQuery.page += 1;
+    getList(true);
   }
 };
 
 watch(
   () => props.tableType,
   (newTableType) => {
-    // 只有在 channel 变化时，才更新数据
     listQuery.tableType = newTableType;
 
     if (!isFirstCall 
       && props.currentShowTable === 'my'
       && props.tableType === 'order'
     ) {
+      listQuery.page = 1;
       getList();
     } else {
-      isFirstCall = false; // 第一次加载后设置为 false
+      isFirstCall = false;
     }
   },
-  { immediate: true } // immediate 保证在首次渲染时监听
+  { immediate: true }
 );
 
-// 生命周期钩子，组件加载时获取数据
 onMounted(() => {
   nextTick(() => {
-    // 确保 getList 在 DOM 更新后调用
     getList();
   });
 });
 
-// 跳转到指定页面
 const router = useRouter();
 
 const handleRowClick = (row) => {
   if (!row.id) {
     return
   }
-  
   const role = userStore.user?.value?.role
   let targetPage = ''
-  if (role === 'buyer' || role === 'autoBuyer') {
-    // 根据点击的行的数据，构造目标路由地址
-    targetPage = `/order/buyer/detail?orderId=${row.id}`; // 假设根据 row.id 构造跳转路径
-    router.push(targetPage); // 跳转到 /buy 页面，带上 tradeId 参数
+  if (role === 'buyer') {
+    targetPage = `/order/buyer/detail?orderId=${row.id}`;
+    router.push(targetPage);
   } else if (role === 'seller' || role === 'agent') {
-    targetPage = `/order/seller/detail?orderId=${row.id}`; // 假设根据 row.id 构造跳转路径
-    router.push(targetPage); // 跳转到 /buy 页面，带上 tradeId 参数
+    targetPage = `/order/seller/detail?orderId=${row.id}`;
+    router.push(targetPage);
   }
 };
 
 const getStatusClass = (status) => {
   if (status !== null && status !== undefined) {
     switch (status) {
-      case 0:
-        return 'waitBuyerPay';
-      case 1:
-        return 'buyerConfirm';
-      case 2:
-        return 'sellerConfirm';
-      case 3:
-        return 'expired';
-      case 4:
-        return 'argue';
-      case 5:
-        return 'argueComplete';
-      case 6:
-        return 'argueCancel';
-      default:
-        return '';
+      case 0: return 'waitBuyerPay';
+      case 1: return 'buyerConfirm';
+      case 2: return 'sellerConfirm';
+      case 3: return 'expired';
+      case 4: return 'argue';
+      case 5: return 'argueComplete';
+      case 6: return 'argueCancel';
+      default: return '';
     }
   }
   return '';
 }
 
 const onTouchStart = (event) => {
-  // 记录触摸开始的位置
   touchStartY.value = event.changedTouches[0].clientY;
 }
 
 const onTouchMove = (event) => {
-  // 获取触摸移动的 Y 轴位置
   touchMoveY.value = event.changedTouches[0].clientY;
-
-  // 如果下拉距离超过阈值，显示刷新提示
   if (touchMoveY.value - touchStartY.value > threshold.value) {
     isRefreshing.value = true;
   }
 }
 
 const onTouchEnd = () => {
-  // 判断是否触发刷新
   if (touchMoveY.value - touchStartY.value > threshold.value) {
     triggerRefresh();
   } else {
@@ -224,13 +213,15 @@ const onTouchEnd = () => {
   }
 }
 
-// 触发刷新
 const triggerRefresh = () => {
-  isRefreshing.value = true; // 显示刷新状态
-  getList()
+  isRefreshing.value = true;
+  listQuery.page = 1;   
+  getList();
 }
 
 </script>
+
+
 
 <style scoped lang="scss">
 

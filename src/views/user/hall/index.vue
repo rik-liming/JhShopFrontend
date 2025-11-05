@@ -187,7 +187,7 @@ const listQuery = reactive({
   currentShowTable: 'market',  // market/my
   myTableType: '我的',        // default/order/finance
   marketTableType: 'alipay',   // alipay/wechat/bank
-  countDown: 10,
+  countDown: 20,
 })
 
 const router = useRouter();
@@ -246,7 +246,7 @@ function getExchangeRate() {
   return String(exchangeRate);
 }
 
-let countdown = ref(10)
+let countdown = ref(20)
 let timer = null
 
 // 启动倒计时
@@ -254,13 +254,13 @@ const startCountdown = () => {
   if (timer) {
     clearInterval(timer)
   }
-  countdown.value = 10
+  countdown.value = 20
   timer = setInterval(() => {
     if (countdown.value > 0) {
       countdown.value -= 1
     } else {
       // 倒计时到0时重新开始
-      countdown.value = 10
+      countdown.value = 20
     }
     listQuery.countdown = countdown.value
   }, 1000)

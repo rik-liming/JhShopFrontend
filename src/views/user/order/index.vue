@@ -7,59 +7,67 @@
           <img src="@/assets/logo.png" alt="logo" class="tw-w-[104px] tw-h-[100px] tw-mx-auto" />
         </div>
         <div class="tw-absolute tw-left-0 tw-flex tw-flex-col tw-items-end">
-          <hamburger 
+          <!-- <hamburger 
             id="hamburger-container" 
             :is-active="appStore.sidebar.opened" 
             class="hamburger-container"
             :iconStyle="2"
             @toggleClick="toggleSidebar" 
-          />
+          /> -->
         </div>
-        <div class="tw-absolute tw-right-0 tw-flex tw-flex-col tw-items-end">
-          <button class="tw-text-[#D9001B] tw-font-pingfang tw-text-[17px] tw-border tw-border-solid tw-border-black tw-border-opacity-30 tw-rounded-lg tw-px-2 tw-py-1 tw-mb-16" @click="handleClose">关闭</button>
+        <div class="tw-absolute tw-top-[-10px] tw-right-0 tw-flex tw-flex-col tw-items-end">
+          <!-- <button class="tw-text-[#D9001B] tw-font-pingfang tw-text-[17px] tw-border tw-border-solid tw-border-black tw-border-opacity-30 tw-rounded-lg tw-px-2 tw-py-1 tw-mb-16" @click="handleClose">关闭</button> -->
+          <img 
+            src="@/assets/close_icon.png" 
+            alt="close" 
+            class="cursor-pointer tw-w-8 tw-h-8" 
+            @click="handleClose"
+          />
         </div>
       </div>
 
       <div class="tw-w-[96%] tw-text-[#333333] tw-mt-8">
-        <el-table
-          :data="list"
-          border
-          fit
-          highlight-current-row
-          class="main-table"
-          key="orderTable"
-          style="height: 680px; overflow: auto;"
-          @row-click="handleRowClick"
-          @touchstart="onTouchStart"
-          @touchmove="onTouchMove"
-          @touchend="onTouchEnd"
-        >
-          <el-table-column label="订单编号" :width="getAdjustWidth(120)" align="center">
-            <template v-slot="{row}">
-              <!-- 统一用buy_transaction_id来定位 -->
-            <span :class="getStatusClass(row?.status)">{{ row?.buy_transaction_id }}</span>
-              <!-- <span v-else class="opacity-30">-</span> -->
-            </template>
-          </el-table-column>
-          <el-table-column label="金额 USDT" :width="getAdjustWidth(86)" align="center">
-            <template v-slot="{row}">
-              <span v-if="row.status !== null && row.status !== undefined" :class="getStatusClass(row.status)">{{ row.amount }}</span>
-              <span v-else class="opacity-30">-</span>
-            </template>
-          </el-table-column>
-          <el-table-column label="市场" :width="getAdjustWidth(66)" align="center">
-            <template v-slot="{row}">
-              <span v-if="row.status !== null && row.status !== undefined" :class="getStatusClass(row.status)">{{ formatPaymentMethod(row.payment_method) }}</span>
-              <span v-else class="opacity-30">-</span>
-            </template>
-          </el-table-column>
-          <el-table-column label="状态" :width="getAdjustWidth(92)" align="center">
-            <template v-slot="{row}">
-              <span v-if="row.status !== null && row.status !== undefined" :class="getStatusClass(row.status)">{{ payStatusMap[row.status] }}</span>
-              <span v-else class="opacity-30">-</span>
-            </template>
-          </el-table-column>
-        </el-table>
+        <div class="table-wrapper" :class="{ 'animate': animate }">
+          <el-table
+            :data="list"
+            border
+            fit
+            highlight-current-row
+            class="main-table"
+            key="orderTable"
+            style="height: 680px; overflow: auto;"
+            @row-click="handleRowClick"
+            @touchstart="onTouchStart"
+            @touchmove="onTouchMove"
+            @touchend="onTouchEnd"
+          >
+            <el-table-column label="订单编号" :width="getAdjustWidth(120)" align="center">
+              <template v-slot="{row}">
+                <!-- 统一用buy_transaction_id来定位 -->
+              <span :class="getStatusClass(row?.status)">{{ row?.buy_transaction_id }}</span>
+                <!-- <span v-else class="opacity-30">-</span> -->
+              </template>
+            </el-table-column>
+            <el-table-column label="金额 USDT" :width="getAdjustWidth(86)" align="center">
+              <template v-slot="{row}">
+                <span v-if="row.status !== null && row.status !== undefined" :class="getStatusClass(row.status)">{{ row.amount }}</span>
+                <span v-else class="opacity-30">-</span>
+              </template>
+            </el-table-column>
+            <el-table-column label="市场" :width="getAdjustWidth(66)" align="center">
+              <template v-slot="{row}">
+                <span v-if="row.status !== null && row.status !== undefined" :class="getStatusClass(row.status)">{{ formatPaymentMethod(row.payment_method) }}</span>
+                <span v-else class="opacity-30">-</span>
+              </template>
+            </el-table-column>
+            <el-table-column label="状态" :width="getAdjustWidth(92)" align="center">
+              <template v-slot="{row}">
+                <span v-if="row.status !== null && row.status !== undefined" :class="getStatusClass(row.status)">{{ payStatusMap[row.status] }}</span>
+                <span v-else class="opacity-30">-</span>
+              </template>
+            </el-table-column>
+          </el-table>
+        </div>
       </div>
 
       <!-- 底部版权 -->
@@ -109,7 +117,13 @@ const minTableRowCount = ref(15)
 const isRefreshing = ref(false)
 const touchStartY = ref(0) // 触摸开始位置
 const touchMoveY = ref(0) // 触摸移动位置
-const threshold = ref(50) // 下拉刷新阈值
+const threshold = ref(200) // 下拉刷新阈值
+
+const animate = ref(false)
+
+// --- 表格数据 ---
+const tableWrapper = ref(null)
+let scrollTopCache = 0
 
 // 用于防止重复调用的标志位
 let isFirstCall = true;
@@ -117,14 +131,17 @@ let isFirstCall = true;
 // 获取数据的逻辑
 const getList = async () => {
   try {
-    emit('table-update-start');
+    // emit('table-update-start');
+    handleTableUpdateStart()
 
     setTimeout(() => {
-      emit('table-update-end');  
+      // emit('table-update-end');  
+      handleTableUpdateEnd()
     }, 100);
     
     let response = null
-    if (userStore.user?.value?.role === 'buyer') {
+    if (userStore.user?.value?.role === 'buyer'
+    || userStore.user?.value?.role === 'autoBuyer') {
       response = await OrderApi.getMyBuyerOrder(userStore.loginToken, {
         page: listQuery.page,
         page_size: listQuery.limit,
@@ -190,7 +207,7 @@ const router = useRouter();
 const handleRowClick = (row) => {
   const role = userStore.user?.value?.role
   let targetPage = ''
-  if (role === 'buyer') {
+  if (role === 'buyer' || role === 'autoBuyer') {
     // 根据点击的行的数据，构造目标路由地址
     targetPage = `/order/buyer/detail?orderId=${row.id}`; // 假设根据 row.id 构造跳转路径
     router.push(targetPage); // 跳转到 /buy 页面，带上 tradeId 参数
@@ -262,6 +279,25 @@ const handleClose = () => {
   router.push('/');
 };
 
+function handleTableUpdateStart() {
+  if (tableWrapper.value) {
+    scrollTopCache = tableWrapper.value.scrollTop
+  }
+  animate.value = false;
+}
+
+async function handleTableUpdateEnd() {
+  nextTick(() => {
+    if (tableWrapper.value) {
+      tableWrapper.value.scrollTop = scrollTopCache
+    }
+  })
+
+  // 增加一定延时，以便播放动画效果
+  await new Promise(resolve => setTimeout(resolve, 300));
+  animate.value = true;
+}
+
 </script>
 
 <style scoped lang="scss">
@@ -324,6 +360,23 @@ const handleClose = () => {
 
 :deep(.el-table__body tr .argueCancel) {
   color: #333333;
+}
+
+.table-wrapper {
+  position: relative;
+  left: -100%; /* 初始位置在屏幕外 */
+  transform: translateY(-50%); /* 垂直居中 */
+  color: white;
+  transition: left 1s ease-out;
+  // transition: left 1s cubic-bezier(0.1, 0, 0.5, 1); /* 自定义贝塞尔曲线 */
+  visibility: hidden;
+}
+
+.table-wrapper.animate {
+  left: 50%; /* 结束时 div 移动到屏幕中央 */
+  // transform: translateX(-50%) translateY(-50%); /* 确保居中 */
+  transform: translateX(-50%); /* 确保居中 */
+  visibility: visible;
 }
 
 </style>

@@ -88,7 +88,7 @@
         color="teal"
         label
       >
-        {{ `Jhshop [${loginForm.email}]` }}
+        {{ `JHShop [${loginForm.email}]` }}
       </v-chip>
 
       <v-sheet color="surface">

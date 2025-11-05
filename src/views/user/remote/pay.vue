@@ -8,12 +8,12 @@
         <img src="@/assets/logo.png" alt="logo" class="logo" />
 		<span class="tw-absolute tw-right-10 tw-top-0 tw-text-[#d9001b] tw-text-[28px] tw-font-songti tw-font-bold">下单中</span>
 		<div class="tw-absolute tw-right-2 tw-top-[-14px]">
-			<img 
+			<!-- <img 
 				src="@/assets/close_icon.png" 
 				alt="close" 
 				class="cursor-pointer tw-w-8 tw-h-8" 
 				@click="handleClose"
-			/>
+			/> -->
 		</div>
       </div>
     </div>

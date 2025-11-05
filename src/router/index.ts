@@ -139,7 +139,7 @@ export const asyncRoutes:RouteRecordRaw[] = [
     name: 'OrderBuyerBuy',
     meta: { 
       hidden: true,
-      roles: ['buyer']
+      roles: ['buyer', 'autoBuyer']
     },
     children: [
       {
@@ -155,7 +155,7 @@ export const asyncRoutes:RouteRecordRaw[] = [
     name: 'OrderBuyerDetail',
     meta: { 
       hidden: true,
-      roles: ['buyer']
+      roles: ['buyer', 'autoBuyer']
     },
     children: [
       {
@@ -329,7 +329,7 @@ export const asyncRoutes:RouteRecordRaw[] = [
     component: Layout,
     redirect: '/order/index',
     meta: { 
-      roles: ['buyer', 'seller', 'agent']
+      roles: ['buyer', 'autoBuyer', 'seller', 'agent']
     },
     children: [
       {
@@ -362,7 +362,7 @@ export const asyncRoutes:RouteRecordRaw[] = [
     component: Layout,
     redirect: '/finance/index',
     meta: { 
-      roles: ['buyer', 'seller', 'agent']
+      roles: ['buyer', 'autoBuyer', 'seller', 'agent']
     },
     children: [
       {

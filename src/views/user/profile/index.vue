@@ -32,7 +32,7 @@
       <div class="tw-w-[86%] tw-text-[#333333]">
         <!-- 商户号 -->
         <div class="tw-flex tw-justify-start tw-mt-2 tw-mb-2">
-          <p class="tw-w-2/5 tw-text-left tw-font-pingfang tw-font-normal">会员号：</p>
+          <p class="tw-w-2/5 tw-text-left tw-font-pingfang tw-font-normal">ID：</p>
           <p class="tw-font-pingfangsb tw-font-bold">{{ formatIdDisplay(userStore?.user?.value?.id) }}</p>
         </div>
 
@@ -57,6 +57,17 @@
             alt="复制邀请码"
             class="tw-w-[20px] tw-h-[22px] tw-ml-4 cursor-pointer"
             @click="copyInviteCode"
+          />
+        </div>
+
+        <div v-if="userStore?.user?.value?.role === 'autoBuyer'" class="tw-flex tw-justify-start tw-mb-2 tw-items-center">
+          <p class="tw-w-2/5 tw-text-left tw-font-pingfang tw-font-normal">远程下单链接：</p>
+          <p class="tw-font-pingfangsb tw-font-bold">{{ truncatedRemoteBuyLink }}</p>
+          <img 
+            src="@/assets/copy_icon.png" 
+            alt="复制下单链接"
+            class="tw-w-[20px] tw-h-[22px] tw-ml-4 cursor-pointer"
+            @click="copyRemoteBuyLink"
           />
         </div>
 
@@ -178,7 +189,7 @@
 <script setup>
 
 import { useRouter } from 'vue-router';
-import { ref, onMounted } from 'vue'
+import { ref, onMounted, computed } from 'vue'
 import Hamburger from '@/components/Hamburger';
 import NotificationBell from '@/components/NotificationBell';
 import PaymentMethod from './components/PaymentMethod';
@@ -285,6 +296,32 @@ const copyInviteCode = async () => {
     }
   }
 };
+
+// 获取当前页面 URL 并生成目标链接
+const remoteBuyLink = computed(() => {
+  const origin = window.location.origin // 域名部分，例如 https://www.google.com
+  return `${origin}/#/remote/buy?autoBuyerId=${userStore?.user?.value?.id}`
+})
+
+const truncatedRemoteBuyLink = computed(() => {
+  const maxLength = 20
+  if (!remoteBuyLink.value) return ''
+  return remoteBuyLink.value.length > maxLength
+    ? remoteBuyLink.value.slice(0, maxLength) + '...'
+    : remoteBuyLink.value
+})
+
+const copyRemoteBuyLink = async() => {
+  if (remoteBuyLink) {
+    try {
+      // 使用 Clipboard API 复制文本到剪贴板
+      await navigator.clipboard.writeText(remoteBuyLink.value);
+      ElMessage.success('下单链接已复制！');
+    } catch (err) {
+      ElMessage.error('复制失败，请手动复制！');
+    }
+  }
+}
 
 onMounted(async () => {
   await userStore.getAccountInfo()

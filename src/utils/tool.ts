@@ -18,6 +18,7 @@ export function formatRole(role) {
         'agent': '代理',
         'seller': '商户',
         'buyer': '买家',
+        'autoBuyer': '自动化买家',
         'default': '默认用户'
     }
     return roleMap[role]

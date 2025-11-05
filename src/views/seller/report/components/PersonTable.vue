@@ -70,7 +70,7 @@ const minTableRowCount = ref(15)
 const isRefreshing = ref(false)
 const touchStartY = ref(0) // 触摸开始位置
 const touchMoveY = ref(0) // 触摸移动位置
-const threshold = ref(50) // 下拉刷新阈值
+const threshold = ref(200) // 下拉刷新阈值
 
 // 用于防止重复调用的标志位
 let isFirstCall = true;
@@ -131,6 +131,17 @@ watch(
 // 监听 endTime 变化，获取数据
 watch(
   () => props.endTime,
+  () => {
+    if (!isFirstCall && props.tableType == 'person') {
+      getList();
+    }
+  },
+  { immediate: true } // immediate 保证在首次渲染时监听
+);
+
+// 监听 tableType 变化，获取数据
+watch(
+  () => props.tableType,
   () => {
     if (!isFirstCall && props.tableType == 'person') {
       getList();

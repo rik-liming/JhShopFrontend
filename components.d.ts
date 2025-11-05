@@ -31,6 +31,7 @@ declare module 'vue' {
     ElTooltip: typeof import('element-plus/es')['ElTooltip']
     GlobalEventListener: typeof import('./src/components/GlobalEventListener/index.vue')['default']
     Hamburger: typeof import('./src/components/Hamburger/index.vue')['default']
+    'Index copy': typeof import('./src/components/NotificationBell/index copy.vue')['default']
     NotificationBell: typeof import('./src/components/NotificationBell/index.vue')['default']
     NotificationTable: typeof import('./src/components/NotificationTable/index.vue')['default']
     RouterLink: typeof import('vue-router')['RouterLink']

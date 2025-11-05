@@ -111,12 +111,13 @@ import { ref, reactive, watch, nextTick } from 'vue'
 import PersonTable from './components/PersonTable.vue'
 import GroupTable from './components/GroupTable.vue'
 import store from '@/store'
+import dayjs from 'dayjs'
 
 const userStore = store.user()
 const appStore = store.app()
 const router = useRouter()
-const startTime = ref(new Date().toISOString().split('T')[0]);
-const endTime = ref(new Date().toISOString().split('T')[0]);
+const startTime = ref(dayjs().format('YYYY-MM-DD'));
+const endTime = ref(dayjs().format('YYYY-MM-DD'));
 
 const animate = ref(false)
 const tableWrapper = ref(null)

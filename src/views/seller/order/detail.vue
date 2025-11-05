@@ -193,7 +193,7 @@ const getStatusStyle = (status) => {
     case 5:
       return { style: 'tw-text-green-500', text: '已完成（争议结束）'};
     case 6:
-      return { style: 'tw-text-green-500', text: '已完成（争议撤单）'};
+      return { style: 'tw-text-gray-500', text: '已完成（争议撤单）'};
     default:
       return { style: 'tw-text-gray-500', text: '-'};
   }
