@@ -23,6 +23,12 @@
             <span v-else class="opacity-30">-</span>
           </template>
         </el-table-column>
+        <el-table-column label="市场" width="'40%'" align="center">
+          <template v-slot="{ row }">
+            <span v-if="row.payment_method">{{ formatPaymentMethod(row.payment_method) }}</span>
+            <span v-else class="opacity-30">-</span>
+          </template>
+        </el-table-column>
         <el-table-column label="操作" width="'30%'" align="center">
           <template v-slot="{ row }">
             <div v-if="row.user_id">
@@ -45,7 +51,7 @@ import { ref, onMounted, reactive, watch, defineEmits, nextTick } from 'vue';
 import { useRouter } from 'vue-router';
 import store from '@/store';
 import * as OrderListingApi from '@/api/order_listing'
-import { getAdjustWidth, formatIdDisplay } from '@/utils/tool'
+import { getAdjustWidth, formatIdDisplay, formatPaymentMethod } from '@/utils/tool'
 
 const emit = defineEmits();
 

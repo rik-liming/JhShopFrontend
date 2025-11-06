@@ -2,6 +2,7 @@ import mitt from 'mitt';
 
 type Events = {
 	'user:roleChanged': { user_id: number; new_role: string };
+	'user:passwordChanged': { user_id: number };
 	'config:changed': {};
   	'transaction:updated': { 
 		user_id: number;

@@ -76,7 +76,7 @@ const transactionTypeMap = {
 const statusMap = {
   read: '已读',
   unread: '未读',
-  update: '未读（有状态更新）',
+  updated: '未读（有状态更新）',
 }
 
 const props = defineProps({

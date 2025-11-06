@@ -7,4 +7,8 @@ export function initUserListener() {
   channel.bind('UserRoleChanged', async (data: any) => {
 	  emitter.emit('user:roleChanged', data);
   });
+
+  channel.bind('UserPasswordChanged', async (data: any) => {
+	  emitter.emit('user:passwordChanged', data);
+  });
 }

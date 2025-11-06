@@ -30,7 +30,7 @@
 </template>
 
 <script setup lang="ts">
-import { onMounted, ref } from 'vue';
+import { onMounted, ref, watch } from 'vue';
 import { ElMessageBox } from 'element-plus';
 import emitter from '@/event/eventBus';
 import { useRouter, useRoute } from 'vue-router';
@@ -58,6 +58,17 @@ onMounted(() => {
 	if (data.user_id === userStore?.user?.value?.id) {
 		forceLogoutTitle.value = "角色变更"
 		forceLogoutMsg.value = "您的角色已变更，请重新登录"
+		forceLogoutVisible.value = true;
+	}
+  });
+
+  // 监听用户密码变更事件
+  emitter.on('user:passwordChanged', async (data: any) => {
+
+	// 如果是自己
+	if (data.user_id === userStore?.user?.value?.id) {
+		forceLogoutTitle.value = "密码变更"
+		forceLogoutMsg.value = "您的密码已变更，请重新登录"
 		forceLogoutVisible.value = true;
 	}
   });
@@ -97,6 +108,24 @@ const logoutHandle = async() => {
 
 const updateTableKey = () => {
 	messageDialogTableKey.value = Math.random()
+}
+
+// 监听弹窗状态，动态注册/移除刷新拦截事件
+watch(forceLogoutVisible, (newVal) => {
+  if (newVal) {
+    // 弹窗打开时，拦截刷新
+    window.addEventListener('beforeunload', forceLogoutBeforeUnload)
+  } else {
+    // 弹窗关闭时，取消拦截
+    window.removeEventListener('beforeunload', forceLogoutBeforeUnload)
+  }
+})
+
+const forceLogoutBeforeUnload = (e) => {
+  // 如果检测到刷新，就强制退出
+  if (forceLogoutVisible.value) {
+	  router.replace('/forcelogout')
+  }
 }
 
 </script>

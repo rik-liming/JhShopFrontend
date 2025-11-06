@@ -43,12 +43,12 @@
 
 			<div v-if="orderData?.payment_method === 'bank'" class="tw-flex tw-justify-between tw-space-x-4 tw-mb-2 tw-font-pingfangsb tw-font-semibold">
 			<p class="tw-text-left">银行名称：</p>
-			<p class="tw-font-semibold tw-text-right">{{ 'sell_bank_name' }}</p>
+			<p class="tw-font-semibold tw-text-right">{{ orderData?.sell_bank_name }}</p>
 			</div>
 
 			<div v-if="orderData?.payment_method === 'bank'" class="tw-flex tw-justify-between tw-space-x-4 tw-mb-2 tw-font-pingfangsb tw-font-semibold">
 			<p class="tw-text-left">开户行：</p>
-			<p class="tw-font-semibold tw-text-right">{{ 'sell_issue_bank_name' }}</p>
+			<p class="tw-font-semibold tw-text-right">{{ orderData?.sell_issue_bank_name }}</p>
 			</div>
 
 			<div class="tw-flex tw-justify-between tw-space-x-4 tw-mb-2 tw-font-pingfangsb tw-font-semibold">
