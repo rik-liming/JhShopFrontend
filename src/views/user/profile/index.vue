@@ -181,7 +181,7 @@
       </div>
 
       <!-- 底部版权 -->
-      <p class="tw-absolute tw-bottom-4 tw-text-xs tw-text-gray-400 tw-mt-4">Copy@ JH嘉禾商城</p>
+      <p class="tw-text-xs tw-text-gray-400 tw-mt-14">Copy@ JH嘉禾商城</p>
     </div>
   </div>
 </template>

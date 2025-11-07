@@ -105,6 +105,7 @@ const getList = async () => {
       emit('table-update-end');
     }, 100);
     
+    list.value = []
     const response = await MessageApi.getMessageList(userStore.loginToken)
     if (response.data.code === 10000) {
       const messages = response.data.data.messages;
@@ -137,6 +138,8 @@ onMounted(() => {
 
 const router = useRouter();
 const handleRowClick = async(row) => {
+
+  console.log("before jump url: ", row)
   
   // 标记已读
   await MessageApi.markAsRead(userStore.loginToken, row.id)
@@ -165,6 +168,8 @@ const handleRowClick = async(row) => {
       targetPage = `/order/buyer/detail?orderId=${row.reference_id}`;
       break;
   }
+
+  console.log("jump url: ", targetPage)
 
   if (targetPage.length > 0) {
     const randomParam = Math.random()

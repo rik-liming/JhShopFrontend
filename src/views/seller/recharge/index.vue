@@ -70,8 +70,9 @@
             placeholder="请输入充值金额"
             v-model="form.amount"
             required
-            min="0"
+            min="0.01"
             @input="onAmountInput"
+            step="0.01"
             class="tw-w-full tw-border tw-border-solid tw-border-black tw-border-opacity-20 tw-rounded-md tw-px-3 tw-py-2 tw-text-sm tw-placeholder-gray-400 tw-mb-4"
           />
 

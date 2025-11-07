@@ -50,7 +50,7 @@
         <!-- 充值金额 -->
         <div class="tw-flex tw-justify-between tw-space-x-4 tw-mb-2 tw-font-pingfangsb tw-font-semibold">
           <p class="tw-text-left">转账金额：</p>
-          <p class="tw-font-semibold tw-text-right tw-text-[#D9001B]">{{ transferData?.amount }} USDT</p>
+          <p class="tw-font-semibold tw-text-right tw-text-[#D9001B]">- {{ transferData?.amount }} USDT</p>
         </div>
       </div>
 

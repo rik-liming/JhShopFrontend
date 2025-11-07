@@ -75,10 +75,10 @@
           <p class="tw-font-semibold tw-text-right">{{ order?.buy_bank_name }}</p>
         </div>
 
-        <div v-if="order?.payment_method === 'bank'" class="tw-flex tw-justify-between tw-space-x-4 tw-mb-2 tw-font-pingfangsb tw-font-semibold">
+        <!-- <div v-if="order?.payment_method === 'bank'" class="tw-flex tw-justify-between tw-space-x-4 tw-mb-2 tw-font-pingfangsb tw-font-semibold">
           <p class="tw-text-left">开户行：</p>
           <p class="tw-font-semibold tw-text-right">{{ order?.buy_issue_bank_name }}</p>
-        </div>
+        </div> -->
 
         <div class="tw-flex tw-justify-between tw-space-x-4 tw-mb-2 tw-font-pingfangsb tw-font-semibold">
           <p class="tw-text-left">付款账号：</p>

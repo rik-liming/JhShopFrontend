@@ -22,7 +22,7 @@
 		></v-btn>
 	</el-dialog>
 
-	<el-dialog v-model="messageDialogVisible" class="messageDialog" @open="updateTableKey">
+	<el-dialog v-model="messageDialogVisible" class="messageDialog">
       <div class="tw-text-[20px] tw-text-center tw-mb-4">{{ messageDialogTitle }}</div>
       <notification-table :tableKey="messageDialogTableKey" />
     </el-dialog>
@@ -84,7 +84,12 @@ onMounted(() => {
 	// 如果是自己
 	if (data.user_id === userStore?.user?.value?.id) {
 		messageDialogTitle.value = "系统消息"
-		messageDialogVisible.value = true;
+
+		updateTableKey()
+
+		if (!messageDialogVisible.value) {
+			messageDialogVisible.value = true;
+		}
 	}
   });
 

@@ -30,7 +30,7 @@
           />
         </div>
         <div class="tw-absolute tw-top-[-84px] tw-right-[-12px] tw-flex tw-flex-col tw-items-end tw-mt-48">
-          <p class="tw-text-sm tw-mb-2 tw-mr-4 tw-font-songti tw-font-bold tw-text-[#333333]">市场汇率：<span class="tw-text-red-500 tw-font-pingfang tw-font-normal" style="color: rgba(rgba(217, 0, 27, 0.854901960784314))">{{ configStore.config?.value?.exchange_rate_platform }}</span></p>
+          <p class="tw-text-sm tw-mb-2 tw-mr-4 tw-font-songti tw-font-bold tw-text-[#333333]">市场汇率：<span class="tw-text-red-500 tw-font-pingfang tw-font-normal" style="color: rgba(rgba(217, 0, 27, 0.854901960784314))">{{ exchangeRate }}</span></p>
         </div>
       </div>
 
@@ -63,14 +63,14 @@
             class="tw-w-full tw-border tw-border-solid tw-border-black tw-border-opacity-40 tw-rounded-lg tw-px-3 tw-py-2 tw-text-md tw-placeholder-black tw-placeholder-opacity-35 tw-mt-4 tw-mb-2"
           />
 
-          <input
+          <!-- <input
             v-if="orderListingData?.payment_method == 'bank'"
             type="text"
             placeholder="请输入付款银行开户行"
             v-model="form.issue_bank_name"
             required
             class="tw-w-full tw-border tw-border-solid tw-border-black tw-border-opacity-40 tw-rounded-lg tw-px-3 tw-py-2 tw-text-md tw-placeholder-black tw-placeholder-opacity-35 tw-mt-4 tw-mb-2"
-          />
+          /> -->
 
           <input
             type="text"
@@ -116,6 +116,7 @@
             v-model="form.cny_amount"
             ref="cnyAmountInput"
             :min="minBuyCnyAmount"
+            step="0.01"
             required
             class="tw-w-full tw-border tw-border-solid tw-border-black tw-border-opacity-40 tw-rounded-lg tw-px-3 tw-py-2 tw-text-md tw-placeholder-black tw-placeholder-opacity-35 tw-mt-4 tw-mb-2"
           />
@@ -216,7 +217,7 @@ watch(() => form.value.cny_amount, (newCNYAmount) => {
 });
 
 const minBuyCnyAmount = computed(() => {
-  const minSaleAmount = orderListingData?.value?.min_sale_amount || 0.00
+  const minSaleAmount = orderListingData?.value?.min_sale_amount || 0.01
   return getExchangeCNY(minSaleAmount);
 });
 
