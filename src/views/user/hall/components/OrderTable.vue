@@ -42,11 +42,12 @@
 </template>
 
 <script setup>
-import { ref, onMounted, reactive, watch, defineEmits, nextTick } from 'vue';
+import { ref, onMounted, reactive, watch, defineEmits, nextTick, onUnmounted } from 'vue';
 import { useRouter } from 'vue-router';
 import store from '@/store';
 import * as OrderApi from '@/api/order'
 import { formatPaymentMethod, getAdjustWidth } from '@/utils/tool'
+import emitter from '@/event/eventBus';
 
 const payStatusMap = {
   0: '待买家付款',
@@ -148,12 +149,33 @@ watch(
   { immediate: true } // immediate 保证在首次渲染时监听
 );
 
+const listenTransactionTypes = [
+  'order_buy',
+  'order_auto_buy',
+  'order_sell',
+  'order_auto_sell',
+]
+const onTransactionUpdate = async(data) => {
+  // 如果是自己
+  if (data.user_id === userStore?.user?.value?.id 
+  && listenTransactionTypes.includes(data.transaction_type)) {
+    triggerRefresh();
+  }
+} 
+
 // 生命周期钩子，组件加载时获取数据
 onMounted(() => {
   nextTick(() => {
     // 确保 getList 在 DOM 更新后调用
     getList();
   });
+
+  // 监听交易状态变更事件
+  emitter.on('transaction:updated', onTransactionUpdate);
+});
+
+onUnmounted(() => {
+  emitter.off('transaction:updated', onTransactionUpdate);
 });
 
 // 跳转到指定页面
@@ -168,10 +190,10 @@ const handleRowClick = (row) => {
   let targetPage = ''
   if (role === 'buyer' || role === 'autoBuyer') {
     // 根据点击的行的数据，构造目标路由地址
-    targetPage = `/order/buyer/detail?orderId=${row.id}`; // 假设根据 row.id 构造跳转路径
+    targetPage = `/order/buyer/detail?orderId=${row.id}&goback=/hall&myTableType=order`; // 假设根据 row.id 构造跳转路径
     router.push(targetPage); // 跳转到 /buy 页面，带上 tradeId 参数
   } else if (role === 'seller' || role === 'agent') {
-    targetPage = `/order/seller/detail?orderId=${row.id}`; // 假设根据 row.id 构造跳转路径
+    targetPage = `/order/seller/detail?orderId=${row.id}&goback=/hall&myTableType=order`; // 假设根据 row.id 构造跳转路径
     router.push(targetPage); // 跳转到 /buy 页面，带上 tradeId 参数
   }
 };
@@ -226,6 +248,8 @@ const onTouchEnd = () => {
 
 // 触发刷新
 const triggerRefresh = () => {
+  touchMoveY.value = 0
+  touchStartY.value = 0
   isRefreshing.value = true; // 显示刷新状态
   getList()
 }

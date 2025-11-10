@@ -29,9 +29,8 @@
       <hr class="tw-w-[90%] tw-my-3 tw-border-black tw-border-opacity-30" />
 
       <div class="tw-w-[72%] tw-text-[#333333] tw-mt-4">
-        <!-- 商户号 -->
         <div class="tw-flex tw-justify-start tw-mt-6 tw-mb-2">
-          <p class="tw-w-2/5 tw-text-left tw-font-pingfang tw-font-normal">商户号：</p>
+          <p class="tw-w-2/5 tw-text-left tw-font-pingfang tw-font-normal">ID：</p>
           <p class="tw-font-pingfangsb tw-font-semibold">{{ formatIdDisplay(userStore?.user?.value?.id) }}</p>
         </div>
 
@@ -120,8 +119,9 @@
             type="submit"
             class="tw-w-[90%] !tw-bg-[rgba(217,0,27,0.67843137254902)] !tw-text-[#f2f2f2] tw-font-normal tw-font-pingfang tw-text-[20px] tw-rounded-3xl tw-py-3 tw-mt-16 hover:tw-bg-rose-600"
             style="letter-spacing: 4px;"
+            :disabled="isApiRequesting"
           >
-            发布
+            {{ isApiRequesting ? '处理中...' : '发布' }}
           </button>
           <button 
             type="button"
@@ -187,6 +187,8 @@ const paymentMethodOptions = [
   { label: '微信', value: 'wechat' },
 ]
 
+const isApiRequesting = ref(false)
+
 const router = useRouter();
 
 const handleClose = () => {
@@ -195,12 +197,18 @@ const handleClose = () => {
 
 const handlePublish = async() => {
   try {
+    if (isApiRequesting.value) {
+      ElMessage.error('处理中');
+      return;
+    }
+
     if (!form.value.amount || form.value.amount > userStore.account?.value?.availableBalance) {
       ElMessage.error('出售数量不在合理区间，请检查！');
       return;
     }
 
     // 发送请求到 /api/publish
+    isApiRequesting.value = true
     const response = await OrderListingApi.createOrderListing(userStore.loginToken, form.value)
 
     if (response.data.code === 10000) {
@@ -220,6 +228,10 @@ const handlePublish = async() => {
   } catch (error) {
     console.log(error)
     ElMessage.error('发布失败');
+  } finally {
+    setTimeout(() => {
+      isApiRequesting.value = false  
+    }, 6000);
   }
 };
 

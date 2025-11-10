@@ -71,7 +71,7 @@ export default defineStore({
           totalBalance: account.total_balance,
           availableBalance: account.available_balance,
         };
-        console.log("update account... ", this.account.value)
+        // console.log("update account... ", this.account.value)
       }
       return response;
     },

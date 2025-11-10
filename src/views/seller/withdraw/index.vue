@@ -34,9 +34,8 @@
       <hr class="tw-w-full tw-my-3 tw-border-black tw-border-opacity-30" />
 
       <div class="tw-w-[86%] tw-text-[#333333]">
-        <!-- 商户号 -->
         <div class="tw-flex tw-justify-between tw-space-x-4 tw-mt-6 tw-mb-2 tw-font-pingfangsb tw-font-semibold">
-          <p class="tw-text-left">商户号：</p>
+          <p class="tw-text-left">ID：</p>
           <p class="tw-font-semibold tw-text-right">{{ formatIdDisplay(userStore?.user?.value?.id) }}</p>
         </div>
 
@@ -101,8 +100,9 @@
             type="submit"
             class="tw-w-[80%] !tw-bg-[rgba(217,0,27,0.67843137254902)] !tw-text-[#f2f2f2] tw-font-normal tw-font-pingfang tw-text-[20px] tw-rounded-3xl tw-py-3 tw-mt-12 hover:tw-bg-rose-600"
             style="letter-spacing: 4px;"
+            :disabled="isApiRequesting"
           >
-            立即提现
+            {{ isApiRequesting ? '处理中...' : '立即提现' }}
           </button>
           <button 
             type="button"
@@ -140,6 +140,8 @@ const form = ref({
   payment_password: '',
 });
 
+const isApiRequesting = ref(false)
+
 const maxWithdrawAmount = computed(() => {
   const totalAvailableBalance = new Decimal(userStore?.account?.value?.availableBalance || 1)
   const withdrawFee = new Decimal(configStore?.config?.value?.withdrawl_fee || 1)
@@ -153,6 +155,11 @@ const handleClose = () => {
 };
 
 const handleWithdraw = async() => {
+  if (isApiRequesting.value) {
+    ElMessage.error('处理中');
+    return;
+  }
+
   try {
     if (!form.value.amount || !form.value.withdraw_address || !form.value.payment_password) {
       ElMessage.error('请完整输入各项内容!');
@@ -164,6 +171,7 @@ const handleWithdraw = async() => {
       return;
     }
 
+    isApiRequesting.value = true
     const resp = await WithdrawApi.createWithdraw(userStore.loginToken, form.value)
 
     if (resp.data.code === 10000) {
@@ -181,6 +189,10 @@ const handleWithdraw = async() => {
   } catch (error) {
     console.log(error)
     ElMessage.error('提现申请失败');
+  } finally {
+    setTimeout(() => {
+      isApiRequesting.value = false  
+    }, 3000);
   }
 };
 

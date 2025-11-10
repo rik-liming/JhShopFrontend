@@ -19,7 +19,7 @@
       <!-- 用户信息 -->
       <div class="tw-mt-8 tw-mb-8">
         <div class="tw-flex tw-justify-between tw-space-x-4">
-          <p class="tw-text-left">商户号：</p>
+          <p class="tw-text-left">ID：</p>
           <p class="tw-font-semibold tw-text-right">{{ formatIdDisplay(userStore.user?.value?.id)}}</p>
         </div>
         <div class="tw-flex tw-justify-between tw-space-x-4">
@@ -46,7 +46,7 @@
         <div class="tw-flex tw-flex-col tw-gap-4">
           <input
             type="text"
-            placeholder="对方商户号"
+            placeholder="对方ID"
             v-model="form.receiverUserId"
             class="tw-w-full tw-border tw-border-solid tw-border-gray tw-rounded-md tw-px-3 tw-py-2 tw-text-sm tw-placeholder-gray-400 tw-mb-4"
           />

@@ -23,7 +23,7 @@
       <!-- 用户信息 -->
       <div class="tw-mb-6 tw-mt-8">
         <div class="tw-flex tw-justify-between tw-space-x-4">
-          <p class="tw-text-left">商户号：</p>
+          <p class="tw-text-left">ID：</p>
           <p class="tw-font-semibold tw-text-right">{{ formatIdDisplay(userStore.user?.value?.id) }}</p>
         </div>
         <div class="tw-flex tw-justify-between tw-space-x-4">

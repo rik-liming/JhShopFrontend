@@ -104,7 +104,6 @@
 		<hr class="tw-w-full tw-my-1 tw-border-black tw-border-opacity-30" />
 
 		<div class="tw-w-[86%] tw-text-[#333333]">
-			<!-- 商户号 -->
 			<div class="tw-flex tw-justify-between tw-space-x-4 tw-mt-4 tw-mb-2 tw-font-pingfangsb tw-font-semibold">
 				<p class="tw-text-left">创建时间：</p>
 				<p class="tw-font-semibold tw-text-right">{{ orderData?.created_at }}</p>

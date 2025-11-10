@@ -64,10 +64,10 @@
 				class="tw-w-[70%] !tw-bg-[#a30014] !tw-text-[#f2f2f2] tw-font-normal tw-font-pingfang tw-text-[23px] tw-rounded-3xl tw-py-3 hover:tw-bg-rose-600 tw-opacity-50"
 				:class="form.cny_amount && form.payment_method && `!tw-opacity-100`"
 				style="letter-spacing: 4px;"
-				:disabled="!form.cny_amount || !form.payment_method"
+				:disabled="!form.cny_amount || !form.payment_method || isApiRequesting"
 				@click="handleCreateOrder"
 			>
-				立即下单
+				{{ isApiRequesting ? '处理中...' : '立即下单' }}
 			</button>
 		</div>
 	</div>
@@ -100,6 +100,8 @@ const form = ref({
   payment_method: '',
   auto_buyer_id: autoBuyerId,
 });
+
+const isApiRequesting = ref(false)
 
 const radioSelectAmount = (amount) => {
 	form.value.cny_amount = amount
@@ -136,6 +138,11 @@ const getImageStyle = (paymentMethod) => {
 
 const handleCreateOrder = async() => {
 	try {
+		if (isApiRequesting.value) {
+			ElMessage.error('处理中');
+			return;
+		}
+		
 		if (!form.value.cny_amount
 			|| !form.value.payment_method
 		) {
@@ -143,6 +150,7 @@ const handleCreateOrder = async() => {
 			return;
 		}
 
+		isApiRequesting.value = true
 		const resp = await OrderApi.createAutoBuyerOrder(form.value)
 		if (resp.data.code === 10000) {
 			ElMessage.success('下单成功');
@@ -156,7 +164,11 @@ const handleCreateOrder = async() => {
 	} catch (error) {
 		console.log(error)
 		ElMessage.error('下单失败');
-	}
+	} finally {
+		setTimeout(() => {
+			isApiRequesting.value = false  
+		}, 3000);
+  	}
 }
 
 onMounted(async () => {

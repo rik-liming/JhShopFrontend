@@ -37,7 +37,6 @@
       <hr class="tw-w-[90%] tw-mt-8 tw-border-black tw-border-opacity-20" />
 
       <div class="tw-w-[86%] tw-text-[#333333] tw-mt-12">
-        <!-- 商户号 -->
         <div class="tw-flex tw-justify-between tw-space-x-4 tw-mt-6 tw-mb-2 tw-font-pingfangsb tw-font-semibold">
           <p class="tw-text-left">购买信息（店铺名）：{{ formatIdDisplay(orderListingData?.user_id) }}</p>
         </div>
@@ -158,8 +157,9 @@
             type="submit"
             class="tw-w-[80%] !tw-bg-[rgba(217,0,27,0.67843137254902)] !tw-text-[#f2f2f2] tw-font-normal tw-font-pingfang tw-text-[20px] tw-rounded-3xl tw-py-3 tw-mt-12 hover:tw-bg-rose-600"
             style="letter-spacing: 4px;"
+            :disabled="isApiRequesting"
           >
-            立即购买
+            {{ isApiRequesting ? '处理中...' : '立即购买' }}
           </button>
           <button 
             type="button"
@@ -193,6 +193,8 @@ const appStore = store.app()
 
 const route = useRoute()
 const router = useRouter();
+
+const isApiRequesting = ref(false)
 
 const orderListingData = ref(null);
 const orderListingId = ref(route.query.orderListingId)
@@ -260,6 +262,11 @@ const handleClose = () => {
 // 提交表单
 const handleBuy = async() => {
   try {
+    if (isApiRequesting.value) {
+      ElMessage.error('处理中');
+      return;
+    }
+
     if (!form.value.account_name 
       || !form.value.account_number
       || !form.value.amount
@@ -275,6 +282,7 @@ const handleBuy = async() => {
       return;
     }
 
+    isApiRequesting.value = true
     const resp = await OrderApi.createOrder(userStore.loginToken, form.value)
 
     if (resp.data.code === 10000) {
@@ -293,6 +301,10 @@ const handleBuy = async() => {
   } catch (error) {
     console.log(error)
     ElMessage.error('订单创建失败');
+  } finally {
+    setTimeout(() => {
+      isApiRequesting.value = false  
+    }, 6000);
   }
 };
 

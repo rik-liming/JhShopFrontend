@@ -30,7 +30,6 @@
       <hr class="tw-w-full tw-my-3 tw-border-black tw-border-opacity-30" />
 
       <div class="tw-w-[86%] tw-text-[#333333]">
-        <!-- 商户号 -->
         <div class="tw-flex tw-justify-start tw-mt-2 tw-mb-2">
           <p class="tw-w-2/5 tw-text-left tw-font-pingfang tw-font-normal">ID：</p>
           <p class="tw-font-pingfangsb tw-font-bold">{{ formatIdDisplay(userStore?.user?.value?.id) }}</p>
@@ -43,7 +42,6 @@
       </div>
 
       <div class="tw-w-[86%] tw-text-[#333333]">
-        <!-- 商户号 -->
         <div class="tw-flex tw-justify-start tw-mt-4 tw-mb-2">
           <p class="tw-w-2/5 tw-text-left tw-font-pingfang tw-font-normal">角色：</p>
           <p class="tw-font-pingfangsb tw-font-bold">{{ formatRole(userStore?.user?.value?.role) }}</p>
@@ -161,7 +159,6 @@
         v-if="userStore?.user?.value?.role === 'agent' 
           || userStore?.user?.value?.role === 'seller'"
       >
-        <!-- 商户号 -->
         <div class="tw-flex tw-justify-start tw-mt-4 tw-mb-2">
           <p class="tw-w-2/5 tw-text-left tw-font-pingfang tw-font-normal">总资产：</p>
           <p class="tw-font-pingfangsb tw-font-bold">{{ userStore?.account?.value?.totalBalance }} USDT</p>

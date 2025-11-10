@@ -20,7 +20,7 @@
       <!-- 用户信息 -->
       <div class="tw-mb-4">
         <div class="tw-flex tw-justify-between tw-space-x-4">
-          <p class="tw-text-left">商户号：</p>
+          <p class="tw-text-left">ID：</p>
           <p class="tw-font-semibold tw-text-right">JH001</p>
         </div>
         <div class="tw-flex tw-justify-between tw-space-x-4">

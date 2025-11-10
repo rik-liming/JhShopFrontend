@@ -19,7 +19,7 @@
       <!-- 用户信息 -->
       <div class="tw-my-4">
         <div class="tw-flex tw-justify-between tw-space-x-4">
-          <p class="tw-text-left">商户号：</p>
+          <p class="tw-text-left">ID：</p>
           <p class="tw-font-semibold tw-text-right">{{ formatIdDisplay(transferData?.sender_user_id) }}</p>
         </div>
         <div class="tw-flex tw-justify-between tw-space-x-4">
@@ -55,7 +55,7 @@
       <!-- 用户信息 -->
       <div class="tw-my-6">
         <div class="tw-flex tw-justify-between tw-space-x-4">
-          <p class="tw-text-left">对方商户号：</p>
+          <p class="tw-text-left">对方ID：</p>
           <p class="tw-font-semibold tw-text-right">{{ formatIdDisplay(transferData?.receiver_user_id) }}</p>
         </div>
         <div class="tw-flex tw-justify-between tw-space-x-4">

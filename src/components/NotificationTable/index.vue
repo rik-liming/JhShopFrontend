@@ -139,8 +139,10 @@ onMounted(() => {
 const router = useRouter();
 const handleRowClick = async(row) => {
 
-  console.log("before jump url: ", row)
-  
+  if (!row.id) {
+    return
+  }
+
   // 标记已读
   await MessageApi.markAsRead(userStore.loginToken, row.id)
   emitter.emit('message:read', {'user_id': userStore.user?.value?.id });
@@ -168,8 +170,6 @@ const handleRowClick = async(row) => {
       targetPage = `/order/buyer/detail?orderId=${row.reference_id}`;
       break;
   }
-
-  console.log("jump url: ", targetPage)
 
   if (targetPage.length > 0) {
     const randomParam = Math.random()
@@ -203,6 +203,8 @@ const onTouchEnd = () => {
 
 // 触发刷新
 const triggerRefresh = () => {
+  touchMoveY.value = 0
+  touchStartY.value = 0
   isRefreshing.value = true; // 显示刷新状态
   getList()
 }

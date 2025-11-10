@@ -146,7 +146,7 @@ import waves from '@/directive/waves'
 import { parseTime } from '@/utils'
 import Navbar from './navbar.vue';
 import store from '@/store';
-import { useRouter } from 'vue-router';
+import { useRouter, useRoute } from 'vue-router';
 import MarketTable from './components/MarketTable.vue'
 import OrderTable from './components/OrderTable.vue'
 import FinanceTable from './components/FinanceTable.vue'
@@ -191,6 +191,7 @@ const listQuery = reactive({
 })
 
 const router = useRouter();
+const route = useRoute();
 
 const animate = ref(false)
 
@@ -286,6 +287,13 @@ const updateCurrentShowTable = (currentShowTable) => {
   } else if (currentShowTable == 'my') {
     listQuery.marketTableType = "市场"
   }
+}
+
+
+const myTableType = route.query.myTableType
+if (myTableType) {
+  listQuery.myTableType = myTableType
+  updateCurrentShowTable('my')
 }
 
 </script>

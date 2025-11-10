@@ -146,6 +146,10 @@ const router = useRouter();
 
 const handleRowClick = (row) => {
 
+  if (!row.id) {
+    return
+  }
+
   const role = userStore.user?.value?.role
   if (role === 'buyer') {
     // 根据点击的行的数据，构造目标路由地址
@@ -209,6 +213,8 @@ const onTouchEnd = () => {
 
 // 触发刷新
 const triggerRefresh = () => {
+  touchMoveY.value = 0
+  touchStartY.value = 0
   isRefreshing.value = true; // 显示刷新状态
   getList()
 }

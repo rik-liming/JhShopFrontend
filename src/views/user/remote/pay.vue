@@ -184,9 +184,9 @@
 					class="!tw-bg-[#a30014] !tw-text-[#f2f2f2] tw-font-normal tw-font-pingfang tw-text-[23px] tw-rounded-3xl tw-py-3 tw-mt-16 hover:tw-bg-rose-600 tw-opacity-50"
 					:class="form.account_name && form.account_number && `!tw-opacity-100`"
 					style="letter-spacing: 4px;"
-					:disabled="!form.account_name || !form.account_number"
+					:disabled="!form.account_name || !form.account_number || isApiRequesting"
 				>
-					我已付款
+					{{ isApiRequesting ? '处理中...' : '我已付款' }}
 				</button>
 				<button 
 					type="button"
@@ -233,6 +233,7 @@ const orderId = route.query.orderId
 
 const isPreviewOpen = ref(false)
 const currentImageUrl = ref('');
+const isApiRequesting = ref(false)
 
 const orderData = ref(null)
 
@@ -246,6 +247,11 @@ const form = ref({
 
 const confirmHandle = async () => {
 	try {
+		if (isApiRequesting.value) {
+			ElMessage.error('处理中');
+			return;
+		}
+
 		if (!form.value.account_number 
 			|| !form.value.account_name
 		) {
@@ -253,6 +259,7 @@ const confirmHandle = async () => {
 			return;
 		}
 
+		isApiRequesting.value = true
 		const resp = await OrderApi.autoBuyerOrderConfirm(form.value)
 		if (resp.data.code === 10000) {
 			ElMessage.success('确认成功');

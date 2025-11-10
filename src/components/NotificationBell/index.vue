@@ -72,9 +72,9 @@ function handleClick() {
 }
 
 // 更新红点数量
-const updateReddot = async() => {
+const updateReddot = async(from) => {
   try {
-    const resp = await MessageApi.getMessageUnreadCount(userStore.loginToken)
+    const resp = await MessageApi.getMessageUnreadCount(userStore.loginToken, from)
     if (resp.data.code === 10000) {
       unreadCount.value = resp.data.data.unread_count
     }
@@ -83,25 +83,37 @@ const updateReddot = async() => {
   }
 }
 
+const onUpdateReddotByTransaction = async(data) => {
+  // 如果是自己
+  if (data.user_id === userStore?.user?.value?.id) {
+    updateReddot('transactionUpdated')
+  }
+}
+
+const onUpdateReddotByMessageRead = async(data) => {
+  // 如果是自己
+  if (data.user_id === userStore?.user?.value?.id) {
+    updateReddot('messageRead')
+  }
+}
+
 // 初始化并定时更新红点
 onMounted(async() => {
-  updateReddot()
+  updateReddot('showMessageBox')
 
   // 监听交易状态变更事件
-  emitter.on('transaction:updated', async (data) => {
-    // 如果是自己
-    if (data.user_id === userStore?.user?.value?.id) {
-      updateReddot()
-    }
-  });
+  emitter.on('transaction:updated', onUpdateReddotByTransaction);
 
   // 监听消息弹框状态变更事件
-  emitter.on('message:read', async (data) => {
-    // 如果是自己
-    if (data.user_id === userStore?.user?.value?.id) {
-      updateReddot()
-    }
-  });
+  emitter.on('message:read', onUpdateReddotByMessageRead);
+});
+
+onUnmounted(() => {
+  // 监听交易状态变更事件
+  emitter.off('transaction:updated', onUpdateReddotByTransaction);
+
+  // 监听消息弹框状态变更事件
+  emitter.off('message:read', onUpdateReddotByMessageRead);
 });
 
 </script>

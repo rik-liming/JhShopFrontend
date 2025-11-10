@@ -34,9 +34,8 @@
       <hr class="tw-w-[90%] tw-my-3 tw-border-black tw-border-opacity-30" />
 
       <div class="tw-w-[86%] tw-text-[#333333]">
-        <!-- 商户号 -->
         <div class="tw-flex tw-justify-between tw-space-x-4 tw-mt-6 tw-mb-2 tw-font-pingfangsb tw-font-semibold">
-          <p class="tw-text-left">商户号：</p>
+          <p class="tw-text-left">ID：</p>
           <p class="tw-font-semibold tw-text-right">{{ formatIdDisplay(userStore?.user?.value?.id) }}</p>
         </div>
 
@@ -64,7 +63,7 @@
           <!-- 输入金额 -->
           <input
             type="text"
-            placeholder="请输入对方商户号"
+            placeholder="请输入对方ID"
             v-model="form.input_receiver_user_id"
             required
             class="tw-w-full tw-border tw-border-solid tw-border-black tw-border-opacity-40 tw-rounded-lg tw-px-3 tw-py-2 tw-text-md tw-placeholder-black tw-placeholder-opacity-35 tw-mt-4 tw-mb-6"
@@ -96,8 +95,9 @@
             type="submit"
             class="tw-w-[80%] !tw-bg-[rgba(217,0,27,0.67843137254902)] !tw-text-[#f2f2f2] tw-font-normal tw-font-pingfang tw-text-[20px] tw-rounded-3xl tw-py-3 tw-mt-28 hover:tw-bg-rose-600"
             style="letter-spacing: 4px;"
+            :disabled="isApiRequesting"
           >
-            立即转账
+            {{ isApiRequesting ? '处理中...' : '立即转账' }}
           </button>
           <button 
             type="button"
@@ -143,12 +143,18 @@ const maxTransferAmount = computed(() => {
 });
 
 const router = useRouter();
+const isApiRequesting = ref(false)
 
 const handleClose = () => {
   router.push('/');
 };
 
 const handleTransfer = async() => {
+  if (isApiRequesting.value) {
+    ElMessage.error('处理中');
+    return;
+  }
+
   try {
     if (!form.value.amount || !form.value.input_receiver_user_id || !form.value.payment_password) {
       ElMessage.error('请完整输入各项内容!');
@@ -162,8 +168,9 @@ const handleTransfer = async() => {
 
     // 需要整理格式化用户输入
     form.value.receiver_user_id = exactIdFromDisplay(form.value.input_receiver_user_id)
-    const resp = await TransferApi.createTransfer(userStore.loginToken, form.value)
 
+    isApiRequesting.value = true
+    const resp = await TransferApi.createTransfer(userStore.loginToken, form.value)
     if (resp.data.code === 10000) {
       ElMessage.success('转账申请成功');
       const reference_id = resp.data.data.transfer.id
@@ -179,6 +186,10 @@ const handleTransfer = async() => {
   } catch (error) {
     console.log(error)
     ElMessage.error('转账申请失败');
+  } finally {
+    setTimeout(() => {
+      isApiRequesting.value = false  
+    }, 3000);
   }
 };
 

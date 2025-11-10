@@ -15,10 +15,10 @@ export async function getMessageList(loginToken) {
 }
 
 // request my message unread count
-export async function getMessageUnreadCount(loginToken) {
+export async function getMessageUnreadCount(loginToken, from) {
 
     // 构建请求的基础 URL
-    let requestUrl = `/api/message/unread`;
+    let requestUrl = `/api/message/unread?from=${from}`;
 
     const response = await requestBase.get(requestUrl, {
         headers: {

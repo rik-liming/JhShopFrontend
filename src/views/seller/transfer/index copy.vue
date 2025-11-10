@@ -9,7 +9,7 @@
 
     <div class="tw-mt-4">
       <div class="tw-flex tw-justify-between tw-items-center">
-        <div class="tw-text-blue-800 tw-font-semibold">商户号：JH001</div>
+        <div class="tw-text-blue-800 tw-font-semibold">ID：JH001</div>
       </div>
       <div class="tw-mt-2 tw-text-gray-600">总资产：1650 USDT</div>
       <div class="tw-mt-2 tw-text-gray-600">可用资产：1250 USDT</div>
@@ -22,7 +22,7 @@
       </div>
 
       <div class="tw-mt-6">
-        <label for="recipient" class="tw-block tw-text-gray-700 tw-font-medium">对方商户号</label>
+        <label for="recipient" class="tw-block tw-text-gray-700 tw-font-medium">对方ID</label>
         <input id="recipient" v-model="recipient" type="text" class="tw-w-full tw-p-2 tw-border tw-border-gray-300 tw-rounded-md" placeholder="此处文字透明度35%" />
       </div>
 

@@ -109,7 +109,6 @@
       <hr class="tw-w-full tw-my-1 tw-border-black tw-border-opacity-30" />
 
       <div class="tw-w-[86%] tw-text-[#333333]">
-        <!-- 商户号 -->
         <div class="tw-flex tw-justify-between tw-space-x-4 tw-mt-4 tw-mb-2 tw-font-pingfangsb tw-font-semibold">
           <p class="tw-text-left">创建时间：</p>
           <p class="tw-font-semibold tw-text-right">{{ order?.created_at }}</p>
@@ -135,8 +134,9 @@
           class="tw-w-[80%] !tw-bg-[rgba(217,0,27,0.67843137254902)] !tw-text-[#f2f2f2] tw-font-normal tw-font-pingfang tw-text-[20px] tw-rounded-3xl tw-py-3 hover:tw-bg-rose-600"
           style="letter-spacing: 4px;"
           @click="handleConfirm"
+          :disabled="isApiRequesting"
         >
-          我已付款
+          {{ isApiRequesting ? '处理中...' : '我已付款' }}
         </button>
 
         <button
@@ -182,17 +182,23 @@
 
 <script setup>
 import { ref, onMounted } from 'vue';
-import { useRouter } from 'vue-router';
+import { useRouter, useRoute } from 'vue-router';
 import * as OrderApi from '@/api/order'
 import store from '@/store'
 import { formatPaymentMethod, formatImageUrl } from '@/utils/tool'
 
 const userStore = store.user()
 const router = useRouter();
+const route = useRoute();
 const order = ref(null);
+
+const isApiRequesting = ref(false)
 
 const isPreviewOpen = ref(false)
 const currentImageUrl = ref('');
+
+const goback = route.query.goback
+const myTableType = route.query.myTableType
 
 const getStatusStyle = (status) => {
   switch (status) {
@@ -230,6 +236,13 @@ const fetchOrderDetails = async (orderId) => {
 // 确认付款
 const handleConfirm = async () => {
   try {
+
+    if (isApiRequesting.value) {
+      ElMessage.error('处理中');
+      return;
+    }
+    
+    isApiRequesting.value = true
     const response = await OrderApi.orderConfirm(userStore.loginToken, {
       role: userStore?.user?.value?.role,
       orderId: order.value.id
@@ -239,17 +252,32 @@ const handleConfirm = async () => {
       ElMessage.success('确认付款成功');
       order.value.status = 1;  // 更新状态
       setTimeout(() => {
-        router.push(`/`);
+        if (goback) {
+          router.push(`${goback}?myTableType=${myTableType}`);
+        } else {
+          router.push('/');
+        }
       }, 3000);
+    } else {
+      ElMessage.error(response.data.msg);
+      window.location.reload()
     }
   } catch (error) {
     console.error('Error confirming payment:', error);
+  } finally {
+    setTimeout(() => {
+      isApiRequesting.value = false  
+    }, 6000);
   }
 };
 
 // 关闭页面
 const handleClose = () => {
-  router.push('/');
+  if (goback) {
+    router.push(`${goback}?myTableType=${myTableType}`);
+  } else {
+    router.push('/');
+  }
 };
 
 // 页面加载时获取订单数据

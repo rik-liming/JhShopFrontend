@@ -36,9 +36,8 @@
           <h1 class="tw-text-left tw-text-[23px] tw-font-pingfangsb tw-mt-6 tw-mb-4">充值详情</h1>
         </div>
 
-        <!-- 商户号 -->
         <div class="tw-flex tw-justify-between tw-space-x-4 tw-mt-6 tw-mb-2 tw-font-pingfangsb tw-font-semibold">
-          <p class="tw-text-left">商户号：</p>
+          <p class="tw-text-left">ID：</p>
           <p class="tw-font-semibold tw-text-right">{{ formatIdDisplay(rechargeData?.user_id) }}</p>
         </div>
 
@@ -80,7 +79,6 @@
       <hr class="tw-w-full tw-my-3 tw-border-black tw-border-opacity-30" />
 
       <div class="tw-w-[86%] tw-text-[#333333]">
-        <!-- 商户号 -->
         <div class="tw-flex tw-justify-between tw-space-x-4 tw-mt-6 tw-mb-2 tw-font-pingfangsb tw-font-semibold">
           <p class="tw-text-left">充值时间：</p>
           <p class="tw-font-semibold tw-text-right">{{ rechargeData?.created_at }}</p>
@@ -133,6 +131,8 @@ const configStore = store.config()
 const appStore = store.app()
 
 const recharge_id = route.query.reference_id
+const goback = route.query.goback
+const myTableType = route.query.myTableType
 
 const getStatusStyle = (status) => {
   switch (status) {
@@ -164,11 +164,19 @@ const fetchRechargeDetail = async () => {
   }
 };
 const handleClose = () => {
-  router.push('/');
+  if (goback) {
+    router.push(`${goback}?myTableType=${myTableType}`);
+  } else {
+    router.push('/');
+  }
 };
 
 const handleConfirm = () => {
-  router.push('/');
+  if (goback) {
+    router.push(`${goback}?myTableType=${myTableType}`);
+  } else {
+    router.push('/');
+  }
 };
 
 // 页面加载时获取充值数据

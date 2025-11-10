@@ -34,9 +34,8 @@
       <hr class="tw-w-full tw-my-3 tw-border-black tw-border-opacity-30" />
 
       <div class="tw-w-[86%] tw-text-[#333333]">
-        <!-- 商户号 -->
         <div class="tw-flex tw-justify-between tw-space-x-4 tw-mt-6 tw-mb-2 tw-font-pingfangsb tw-font-semibold">
-          <p class="tw-text-left">商户号：</p>
+          <p class="tw-text-left">ID：</p>
           <p class="tw-font-semibold tw-text-right">{{ formatIdDisplay(userStore?.user?.value?.id) }}</p>
         </div>
 
@@ -173,7 +172,9 @@ const handleRecharge = async() => {
     console.log(error)
     ElMessage.error('提交充值失败');
   } finally {
-    isApiRequesting.value = false
+    setTimeout(() => {
+      isApiRequesting.value = false  
+    }, 3000);
   }
 };
 

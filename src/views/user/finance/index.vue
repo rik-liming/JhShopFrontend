@@ -77,11 +77,12 @@
 </template>
 
 <script setup>
-import { ref, onMounted, reactive, watch, defineEmits, nextTick } from 'vue';
+import { ref, onMounted, reactive, watch, defineEmits, nextTick, onUnmounted } from 'vue';
 import { useRouter } from 'vue-router';
 import store from '@/store';
 import * as FinanceApi from '@/api/finance'
 import { getAdjustWidth } from '@/utils/tool'
+import emitter from '@/event/eventBus';
 
 const emit = defineEmits();
 
@@ -180,31 +181,43 @@ onMounted(() => {
     // 确保 getList 在 DOM 更新后调用
     getList();
   });
+
+  // 监听交易状态变更事件
+  emitter.on('transaction:updated', onTransactionUpdate);
+});
+
+onUnmounted(() => {
+  emitter.off('transaction:updated', onTransactionUpdate);
 });
 
 const router = useRouter();
 const handleRowClick = (row) => {
+
+  if (!row.reference_id) {
+    return
+  }
+
   let targetPage = ''
   switch(row.transaction_type) {
     case 'recharge':
-      targetPage = `/recharge/detail?reference_id=${row.reference_id}`
+      targetPage = `/recharge/detail?reference_id=${row.reference_id}&goback=/finance&myTableType=finance`
       break;
     case 'transfer_send':
-      targetPage = `/transfer/sender/detail?reference_id=${row.reference_id}`;
+      targetPage = `/transfer/sender/detail?reference_id=${row.reference_id}&goback=/finance/index&myTableType=finance`;
       break;
     case 'transfer_receive':
-      targetPage = `/transfer/receiver/detail?reference_id=${row.reference_id}`;
+      targetPage = `/transfer/receiver/detail?reference_id=${row.reference_id}&goback=/finance&myTableType=finance`;
       break;
     case 'withdraw':
-      targetPage = `/withdraw/detail?reference_id=${row.reference_id}`
+      targetPage = `/withdraw/detail?reference_id=${row.reference_id}&goback=/finance&myTableType=finance`
       break;
     case 'order_sell':
     case 'order_auto_sell':
-      targetPage = `/order/seller/detail?orderId=${row.reference_id}`;
+      targetPage = `/order/seller/detail?orderId=${row.reference_id}&goback=/finance&myTableType=finance`;
       break;
     case 'order_buy':
     case 'order_auto_buy':
-      targetPage = `/order/buyer/detail?orderId=${row.reference_id}`;
+      targetPage = `/order/buyer/detail?orderId=${row.reference_id}&goback=/finance&myTableType=finance`;
       break;
   }
 
@@ -239,6 +252,8 @@ const onTouchEnd = () => {
 
 // 触发刷新
 const triggerRefresh = () => {
+  touchMoveY.value = 0
+  touchStartY.value = 0
   isRefreshing.value = true; // 显示刷新状态
   getList()
 }
@@ -250,6 +265,13 @@ const toggleSidebar = () => {
 const handleClose = () => {
   router.push('/');
 };
+
+const onTransactionUpdate = async(data) => {
+  // 如果是自己
+  if (data.user_id === userStore?.user?.value?.id) {
+    triggerRefresh();
+  }
+}
 
 </script>
 

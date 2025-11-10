@@ -16,7 +16,7 @@
     <!-- 信息块 -->
     <div class="tw-px-6 tw-space-y-2">
       <div class="tw-flex tw-justify-between">
-        <span>商户号：</span>
+        <span>ID：</span>
         <span class="tw-font-medium">JH001</span>
       </div>
       <div class="tw-flex tw-justify-between">

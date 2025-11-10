@@ -179,6 +179,8 @@ const onTouchEnd = () => {
 
 // 触发刷新
 const triggerRefresh = () => {
+  touchMoveY.value = 0
+  touchStartY.value = 0
   isRefreshing.value = true; // 显示刷新状态
   getList()
 }
