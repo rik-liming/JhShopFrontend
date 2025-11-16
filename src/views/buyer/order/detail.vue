@@ -160,7 +160,7 @@
 
       <!-- 底部版权 -->
       <p 
-        class="tw-absolute tw-bottom-2 tw-text-xs tw-text-gray-400"
+        class="tw-text-xs tw-text-gray-400 tw-mt-4"
       >
         Copy@ JH嘉禾商城</p>
     </div>
