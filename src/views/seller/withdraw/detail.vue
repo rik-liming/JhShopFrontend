@@ -51,6 +51,12 @@
           <p class="tw-text-left">提现金额：</p>
           <p class="tw-font-semibold tw-text-right tw-text-[#D9001B]">- {{ withdrawData?.amount }} USDT</p>
         </div>
+
+        <!-- 手续费 -->
+        <div class="tw-flex tw-justify-between tw-space-x-4 tw-mb-2 tw-font-pingfangsb tw-font-semibold">
+          <p class="tw-text-left">手续费：</p>
+          <p class="tw-font-semibold tw-text-right tw-text-[#D9001B]">- {{ withdrawData?.fee }} USDT</p>
+        </div>
       </div>
 
       <hr class="tw-w-full tw-my-3 tw-border-black tw-border-opacity-30" />
@@ -113,7 +119,7 @@
       <!-- 底部版权 -->
       <p 
         class="tw-text-xs tw-text-gray-400"
-        :class="(withdrawData?.status == 1 || withdrawData?.status == -1) ? `tw-mt-16` : `tw-mt-24`"
+        :class="(withdrawData?.status == 1 || withdrawData?.status == -1) ? `tw-mt-8` : `tw-mt-16`"
       >
         Copy@ JH嘉禾商城</p>
     </div>
