@@ -1,5 +1,5 @@
 <template>
-  <div class="tw-w-full tw-flex tw-flex-col tw-justify-center tw-items-center">
+  <div class="tw-w-full tw-min-h-[288px] tw-flex tw-flex-col tw-justify-start tw-items-center">
     <!-- 卖场选择 -->
     <div class="tw-w-[86%] tw-mt-4 tw-text-left">
       <label class="tw-text-md tw-font-pingfang tw-font-normal">收款卡管理</label>
@@ -45,6 +45,18 @@
               />
               <p class="tw-absolute tw-left-7 tw-top-7 tw-font-bold">{{ item.bank_name }}</p>
               <p class="tw-absolute tw-right-7 tw-top-7 tw-font-bold">{{ item.issue_bank_name }}</p>
+              <p class="tw-absolute tw-left-7 tw-bottom-10 tw-font-bold">{{ item.account_name }}</p>
+              <p class="tw-absolute tw-left-7 tw-bottom-[70px] tw-font-bold">{{ item.account_number }}</p>
+            </div>
+          </div>
+          <div v-else-if="currentPaymentMethod === 'ecny'">
+            <div class="tw-relative">
+              <img
+                src="@/assets/bank_pay.png"
+                alt="支付信息"
+                class="tw-w-[264px] tw-h-[210px] tw-object-contain"
+              />
+              <p class="tw-absolute tw-left-7 tw-top-7 tw-font-bold">{{ item.bank_name }}</p>
               <p class="tw-absolute tw-left-7 tw-bottom-10 tw-font-bold">{{ item.account_name }}</p>
               <p class="tw-absolute tw-left-7 tw-bottom-[70px] tw-font-bold">{{ item.account_number }}</p>
             </div>
@@ -114,6 +126,7 @@ const paymentMethodOptions = [
   { label: '支付宝', value: 'alipay' },
   { label: '银行卡', value: 'bank' },
   { label: '微信', value: 'wechat' },
+  { label: '数字人民币', value: 'ecny' },
 ]
 
 const userStore = store.user()

@@ -27,7 +27,12 @@
           <p class="tw-font-semibold tw-text-right">{{ formatPaymentMethod(order?.payment_method) }}</p>
         </div>
 
-        <div v-if="order?.payment_method === 'bank'" class="tw-flex tw-justify-between tw-space-x-4 tw-mb-2 tw-font-pingfangsb tw-font-semibold">
+        <div 
+          v-if="order?.payment_method === 'bank'
+            || order?.payment_method === 'ecny'
+          " 
+          class="tw-flex tw-justify-between tw-space-x-4 tw-mb-2 tw-font-pingfangsb tw-font-semibold"
+        >
           <p class="tw-text-left">银行名称：</p>
           <p class="tw-font-semibold tw-text-right">{{ order?.sell_bank_name }}</p>
         </div>
@@ -46,7 +51,11 @@
 
       <hr class="tw-w-full tw-my-1 tw-border-black tw-border-opacity-30" />
 
-      <div v-if="order?.payment_method !== 'bank'" class="tw-w-[86%] tw-text-[#333333]">
+      <div 
+        v-if="order?.payment_method !== 'bank'
+          && order?.payment_method !== 'ecny'
+        " 
+        class="tw-w-[86%] tw-text-[#333333]">
         <div class="tw-flex tw-justify-between tw-space-x-4 tw-items-center tw-font-pingfangsb tw-font-semibold">
           <p class="tw-text-left">收款码：</p>
           <img 
@@ -57,7 +66,12 @@
         </div>
       </div>
 
-      <hr v-if="order?.payment_method !== 'bank'" class="tw-w-full tw-my-1 tw-border-black tw-border-opacity-30" />
+      <hr 
+        v-if="order?.payment_method !== 'bank'
+          && order?.payment_method !== 'ecny'
+        " 
+        class="tw-w-full tw-my-1 tw-border-black tw-border-opacity-30" 
+      />
 
       <div class="tw-w-[86%] tw-text-[#333333]">
         <div class="tw-flex tw-justify-between tw-space-x-4 tw-mt-4 tw-mb-2 tw-font-pingfangsb tw-font-semibold">
@@ -70,7 +84,12 @@
           <p class="tw-font-semibold tw-text-right">{{ formatPaymentMethod(order?.payment_method) }}</p>
         </div>
 
-        <div v-if="order?.payment_method === 'bank'" class="tw-flex tw-justify-between tw-space-x-4 tw-mb-2 tw-font-pingfangsb tw-font-semibold">
+        <div 
+          v-if="order?.payment_method === 'bank'
+            || order?.payment_method === 'ecny'
+          " 
+          class="tw-flex tw-justify-between tw-space-x-4 tw-mb-2 tw-font-pingfangsb tw-font-semibold"
+        >
           <p class="tw-text-left">银行名称：</p>
           <p class="tw-font-semibold tw-text-right">{{ order?.buy_bank_name }}</p>
         </div>
@@ -122,7 +141,7 @@
         <!-- 可用资产 -->
         <div 
           class="tw-flex tw-justify-between tw-space-x-4 tw-font-pingfangsb tw-font-semibold"
-          :class="order?.payment_method === 'bank' ? `tw-mb-20` : `tw-mb-10`"
+          :class="(order?.payment_method === 'bank' || order?.payment_method === 'ecny') ? `tw-mb-20` : `tw-mb-10`"
         >
           <p class="tw-text-left">订单状态：</p>
           <p class="tw-font-semibold tw-text-right" :class="getStatusStyle(order?.status).style">{{ getStatusStyle(order?.status).text }}</p>
@@ -160,7 +179,8 @@
 
       <!-- 底部版权 -->
       <p 
-        class="tw-text-xs tw-text-gray-400 tw-mt-4"
+        class="tw-text-xs tw-text-gray-400"
+        :class="(order?.payment_method !== 'bank' && order?.payment_method !== 'ecny') ? 'tw-mt-4' : 'tw-mt-12'"
       >
         Copy@ JH嘉禾商城</p>
     </div>

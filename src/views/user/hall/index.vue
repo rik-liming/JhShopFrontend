@@ -171,6 +171,7 @@ const marketTableTypeOptions = [
   { label: '支付宝', value: 'alipay' },
   { label: '银行卡', value: 'bank' },
   { label: '微信', value: 'wechat' },
+  { label: '数字人民币', value: 'ecny' },
 ]
 
 const allMyTableTypeOptions = [
@@ -236,6 +237,9 @@ function getExchangeRate() {
       break;
     case 'bank':
       exchangeRate = configStore.config.value.exchange_rate_bank;
+      break;
+    case 'ecny':
+      exchangeRate = configStore.config.value.exchange_rate_ecny;
       break;
     default: 
       exchangeRate = configStore.config.value.exchange_rate_alipay;

@@ -268,7 +268,12 @@ export const asyncRoutes:RouteRecordRaw[] = [
         path: 'bank',
         name: 'PaymentMethodBank',
         component: () => import('@/views/seller/payment_method/bank.vue')
-      }
+      },
+      {
+        path: 'ecny',
+        name: 'PaymentMethodEcny',
+        component: () => import('@/views/seller/payment_method/ecny.vue')
+      },
     ]
   },
 

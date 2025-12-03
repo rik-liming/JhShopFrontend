@@ -54,7 +54,9 @@
           </div>
 
           <input
-            v-if="orderListingData?.payment_method == 'bank'"
+            v-if="orderListingData?.payment_method == 'bank'
+              || orderListingData?.payment_method == 'ecny'
+            "
             type="text"
             placeholder="请输入付款银行名称"
             v-model="form.bank_name"
@@ -81,7 +83,7 @@
 
           <input
             type="text"
-            placeholder="请输入姓名"
+            placeholder="请输入付款人姓名"
             v-model="form.account_name"
             required
             class="tw-w-full tw-border tw-border-solid tw-border-black tw-border-opacity-40 tw-rounded-lg tw-px-3 tw-py-2 tw-text-md tw-placeholder-black tw-placeholder-opacity-35 tw-mt-4 tw-mb-2"
@@ -240,6 +242,9 @@ const accountPlaceHolder = computed(() => {
     case 'bank':
       placeHolder = '请输入银行卡号'
       break;
+    case 'ecny':
+      placeHolder = '请输入付款人账号'
+      break;
   }
 
   return placeHolder
@@ -324,6 +329,9 @@ const exchangeRate = computed(() => {
     case 'bank':
       rate = configStore.config.value.exchange_rate_bank;
       break;
+    case 'ecny':
+      rate = configStore.config.value.exchange_rate_ecny;
+      break;
   }
   return rate;
 })
@@ -373,6 +381,11 @@ const getImageStyle = (paymentMethod) => {
       return {
         src: new URL('@/assets/bank_pay.png', import.meta.url).href,
         class: 'tw-w-[140px] tw-h-[90px]',
+      }
+    case 'ecny':
+      return {
+        src: new URL('@/assets/ecny_pay.png', import.meta.url).href,
+        class: 'tw-w-[140px] tw-h-[100px]',
       }
     default:
       return {

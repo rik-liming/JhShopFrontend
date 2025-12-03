@@ -45,7 +45,7 @@
 			</div>
 		</div>
 
-		<div class="tw-flex tw-mt-10 tw-gap-10">
+		<div class="tw-flex tw-mt-10 tw-pb-4 tw-gap-10 tw-max-w-full tw-overflow-x-auto tw-overflow-y-hidden">
 			<img
 				v-for="paymentMethod in paymentMethodOptions"
 				:key="paymentMethod"
@@ -58,7 +58,7 @@
 			/>
 		</div>
 
-		<div class="tw-w-full tw-flex tw-flex-col tw-items-center tw-mt-20">
+		<div class="tw-w-full tw-flex tw-flex-col tw-items-center tw-mt-16">
 			<button
 				type="button"
 				class="tw-w-[70%] !tw-bg-[#a30014] !tw-text-[#f2f2f2] tw-font-normal tw-font-pingfang tw-text-[23px] tw-rounded-3xl tw-py-3 hover:tw-bg-rose-600 tw-opacity-50"
@@ -126,7 +126,12 @@ const getImageStyle = (paymentMethod) => {
     case 'bank':
       return {
         src: new URL('@/assets/bank_pay.png', import.meta.url).href,
-        class: 'tw-w-[95px] tw-h-[60px] tw-opacity-30',
+        class: 'tw-w-[95px] tw-h-[58px] tw-opacity-30',
+	  }
+	case 'ecny':
+      return {
+        src: new URL('@/assets/ecny_pay.png', import.meta.url).href,
+        class: 'tw-w-[95px] tw-h-[68px] tw-opacity-30 tw-mt-[-6px]',
       }
     default:
       return {

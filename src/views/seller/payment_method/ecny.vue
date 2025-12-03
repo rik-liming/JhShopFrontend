@@ -4,7 +4,7 @@
       <!-- 顶部图标 -->
       <div class="tw-w-full tw-flex tw-items-center tw-justify-between tw-mt-14 tw-mb-2 tw-relative">
         <div class="tw-flex tw-items-center tw-w-full">
-          <img src="@/assets/bank_pay.png" alt="logo" class="tw-w-[168px] tw-h-[105px] tw-mx-auto" />
+          <img src="@/assets/ecny_pay.png" alt="logo" class="tw-w-[155px] tw-h-[117px] tw-mx-auto" />
         </div>
         <div class="tw-absolute tw-left-0 tw-flex tw-flex-col tw-items-end">
           <!-- <hamburger 
@@ -25,7 +25,7 @@
           />
         </div>
         <div class="tw-absolute tw-top-[-40px] tw-right-[-20px] tw-flex tw-flex-col tw-items-end tw-mt-36">
-          <p class="tw-text-sm tw-mb-2 tw-mr-4 tw-font-songti tw-font-bold tw-text-[#333333]">市场汇率：<span class="tw-text-red-500 tw-font-pingfang tw-font-normal" style="color: rgba(rgba(217, 0, 27, 0.854901960784314))">{{ configStore.config?.value?.exchange_rate_bank }}</span></p>
+          <p class="tw-text-sm tw-mb-2 tw-mr-4 tw-font-songti tw-font-bold tw-text-[#333333]">市场汇率：<span class="tw-text-red-500 tw-font-pingfang tw-font-normal" style="color: rgba(rgba(217, 0, 27, 0.854901960784314))">{{ configStore.config?.value?.exchange_rate_ecny }}</span></p>
         </div>
       </div>
 
@@ -46,18 +46,6 @@
             style="border-color: rgba(215, 215, 215, 1)"
           />
 
-          <div class="tw-text-left tw-mb-3 tw-mt-8">
-            <p class="tw-text-md tw-font-pingfang tw-font-normal">开户行：</p>
-          </div>
-          <input
-            type="text"
-            placeholder="请输入开户行"
-            v-model="form.issue_bank_name"
-            required
-            class="tw-w-full tw-border-solid tw-border-0 tw-border-b-[2px] tw-outline-none tw-text-md tw-font-bold tw-placeholder-gray-400"
-            style="border-color: rgba(215, 215, 215, 1)"
-          />
-
 		  <div class="tw-text-left tw-mb-3 tw-mt-8">
             <p class="tw-text-md tw-font-pingfang tw-font-normal">持卡人：</p>
           </div>
@@ -71,11 +59,11 @@
           />
 
 		  <div class="tw-text-left tw-mb-3 tw-mt-8">
-            <p class="tw-text-md tw-font-pingfang tw-font-normal">银行卡号：</p>
+            <p class="tw-text-md tw-font-pingfang tw-font-normal">手机号/数字人民币钱包编号：</p>
           </div>
           <input
             type="text"
-            placeholder="请输入银行卡号"
+            placeholder="请输入手机号/数字人民币钱包编号"
             v-model="form.account_number"
             required
             class="tw-w-full tw-border-solid tw-border-0 tw-border-b-[2px] tw-outline-none tw-text-md tw-font-bold tw-placeholder-gray-400"
@@ -98,7 +86,7 @@
           <button
             v-if="!paymentMethodId"
             type="submit"
-            class="tw-w-full !tw-bg-[rgba(217,0,27,0.67843137254902)] !tw-text-[#f2f2f2] tw-font-normal tw-font-pingfang tw-text-[20px] tw-rounded-3xl tw-py-3 tw-mt-10 hover:tw-bg-rose-600"
+            class="tw-w-full !tw-bg-[rgba(217,0,27,0.67843137254902)] !tw-text-[#f2f2f2] tw-font-normal tw-font-pingfang tw-text-[20px] tw-rounded-3xl tw-py-3 tw-mt-20 hover:tw-bg-rose-600"
             style="letter-spacing: 4px;"
           >
             添加
@@ -106,7 +94,7 @@
           <button
             v-else
             type="submit"
-            class="tw-w-full !tw-bg-[rgba(217,0,27,0.67843137254902)] !tw-text-[#f2f2f2] tw-font-normal tw-font-pingfang tw-text-[20px] tw-rounded-3xl tw-py-3 tw-mt-10 hover:tw-bg-rose-600"
+            class="tw-w-full !tw-bg-[rgba(217,0,27,0.67843137254902)] !tw-text-[#f2f2f2] tw-font-normal tw-font-pingfang tw-text-[20px] tw-rounded-3xl tw-py-3 tw-mt-20 hover:tw-bg-rose-600"
             style="letter-spacing: 4px;"
           >
             更新
@@ -148,7 +136,6 @@ const form = ref({
   account_number: '',
   account_name: '',
   bank_name: '',
-  issue_bank_name: '',
 });
 
 const paymentMethodId = route.query.id
@@ -162,7 +149,6 @@ const paymentHandle = async() => {
     if (!form.value.account_number
 	  || !form.value.account_name
 	  || !form.value.bank_name
-	  || !form.value.issue_bank_name
       || !form.value.verify_code
     ) {
       ElMessage.error('请填写各项内容!');
@@ -173,11 +159,10 @@ const paymentHandle = async() => {
     if (paymentMethodId) {
       formData.append('id', paymentMethodId);
     }
-    formData.append('payment_method', 'bank');
+    formData.append('payment_method', 'ecny');
     formData.append('account_number', form.value.account_number);
     formData.append('account_name', form.value.account_name);
     formData.append('bank_name', form.value.bank_name);
-    formData.append('issue_bank_name', form.value.issue_bank_name);
     formData.append('verify_code', form.value.verify_code);
     formData.append('qr_code', form.value.qr_code)
 
@@ -192,7 +177,7 @@ const paymentHandle = async() => {
       ElMessage.success('操作成功');
       setTimeout(() => {
       router.push(`/profile`);	  
-	  }, 2000);
+      }, 2000);
     } else {
       ElMessage.error(resp.data.msg);
     }
@@ -222,7 +207,6 @@ const fetchPaymentMethodDetail = async () => {
       form.value.account_number = paymentMethod.account_number
       form.value.account_name = paymentMethod.account_name
       form.value.bank_name = paymentMethod.bank_name
-      form.value.issue_bank_name = paymentMethod.issue_bank_name
     } else {
       console.error('获取数据失败');
     }

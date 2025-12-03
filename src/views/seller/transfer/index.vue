@@ -54,7 +54,7 @@
         <div class="tw-mt-10 tw-text-left">
         <div class="tw-text-md tw-font-pingfang tw-font-semibold">平台转账</div>
         <div class="tw-text-md tw-font-pingfang tw-font-normal tw-text-[#D9001B] tw-mt-2 tw-mb-10 transfer-fee-text">
-          每笔提现收取手续费 {{ configStore?.config?.value?.transfer_fee }} USDT
+          每笔转账收取手续费 {{ configStore?.config?.value?.transfer_fee }} USDT
         </div>
       </div>
 

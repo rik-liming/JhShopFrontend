@@ -177,6 +177,15 @@
         <payment-method />
       </div>
 
+      <div 
+        v-if="userStore?.user?.value?.role === 'buyer'
+          || userStore?.user?.value?.role === 'autoBuyer'
+          || userStore?.user?.value?.role === 'default'
+        "
+        class="tw-min-h-[430px]"
+      >
+      </div>
+
       <!-- 底部版权 -->
       <p class="tw-text-xs tw-text-gray-400 tw-mt-14">Copy@ JH嘉禾商城</p>
     </div>

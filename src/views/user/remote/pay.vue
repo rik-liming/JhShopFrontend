@@ -6,7 +6,7 @@
       <!-- Logo -->
       <div class="logo-container tw-relative">
         <img src="@/assets/logo.png" alt="logo" class="logo" />
-		<span class="tw-absolute tw-right-10 tw-top-0 tw-text-[#d9001b] tw-text-[28px] tw-font-songti tw-font-bold">下单中</span>
+		<span class="tw-absolute tw-right-10 tw-top-[-20px] tw-text-[#d9001b] tw-text-[28px] tw-font-songti tw-font-bold">下单中</span>
 		<div class="tw-absolute tw-right-2 tw-top-[-14px]">
 			<!-- <img 
 				src="@/assets/close_icon.png" 
@@ -18,31 +18,49 @@
       </div>
     </div>
 
-	<hr class="tw-w-full tw-mt-10 tw-mb-8 tw-bg-black tw-bg-opacity-30" />
+	<hr 
+		class="tw-w-full tw-mb-8 tw-bg-black tw-bg-opacity-30"
+		:class="(orderData?.payment_method === 'bank' || orderData?.payment_method === 'ecny') ? 'tw-mt-16' : 'tw-mt-10'"
+	/>
 
 	<div class="main-box tw-flex tw-flex-col tw-items-center">
-		<div v-if="orderData?.payment_method !== 'bank'" class="tw-flex tw-gap-8 tw-w-full tw-items-center">
-			<div class="tw-relative tw-flex tw-flex-col tw-items-center tw-w-1/4">
-				<img 
-					src="@/assets/finger_icon.svg" 
-					alt="icon" 
-					style="transform: rotate(90deg);"
-					class="tw-w-[46px] tw-h-[50px]"
-				/>
-				<span class="tw-absolute tw-top-16 tw-text-md tw-font-pingfangsb tw-font-bold">请扫码</span>
+		<div
+			v-if="orderData?.payment_method !== 'bank'
+				&& orderData?.payment_method !== 'ecny'
+			" 
+			class="tw-flex tw-w-full tw-flex-col"
+		>
+			<div
+				class="tw-flex tw-gap-8 tw-w-full tw-items-center"
+			>
+				<div class="tw-relative tw-flex tw-flex-col tw-items-center tw-w-1/4">
+					<img 
+						src="@/assets/finger_icon.svg" 
+						alt="icon" 
+						style="transform: rotate(90deg);"
+						class="tw-w-[46px] tw-h-[50px]"
+					/>
+					<span class="tw-absolute tw-top-16 tw-text-md tw-font-pingfangsb tw-font-bold">请扫码</span>
+				</div>
+				<div class="tw-w-1/2 tw-flex tw-items-center tw-justify-center">
+					<img 
+						:src="orderData?.sell_qr_code ? formatImageUrl(orderData?.sell_qr_code) : ''" 
+						alt="qr_code"
+						class="tw-w-[134px] tw-h-[162px]"
+						@click="openPreview(formatImageUrl(orderData?.sell_qr_code))"
+					/>
+				</div>
+				<div class="tw-w-1/4"></div>
 			</div>
-			<div>
-				<img 
-					:src="orderData?.sell_qr_code ? formatImageUrl(orderData?.sell_qr_code) : ''" 
-					alt="qr_code"
-					class="tw-w-[164px] tw-h-[208px]"
-					@click="openPreview(formatImageUrl(orderData?.sell_qr_code))"
-				/>
+			<div class="tw-flex tw-justify-center">
+				<div class="tw-flex tw-justify-between tw-space-x-4 tw-mt-2 tw-mb-2 tw-items-center">
+					<p class="tw-text-left tw-text-lg tw-font-pingfangsb tw-font-bold tw-text-[#d9001b]">应付金额：{{ orderData?.total_cny_price }} 元</p>
+				</div>
 			</div>
 		</div>
 		<div v-else class="tw-w-[80%] tw-text-[#333333]">
 			<div class="tw-relative tw-w-full tw-flex tw-flex-col tw-justify-start">
-				<span class="tw-mt-[-44px] tw-text-center tw-text-md tw-font-pingfang tw-text-[#333333] tw-mb-4">收款信息</span>
+				<span class="tw-mt-[-76px] tw-text-[#d9001b] tw-text-center tw-text-md tw-font-pingfang tw-text-[#333333] tw-mb-4">收付款信息</span>
 			</div>
 
 			<div class="tw-flex tw-justify-between tw-space-x-4 tw-mt-2 tw-mb-2 tw-font-pingfangsb tw-font-semibold">
@@ -60,7 +78,10 @@
 				<p class="tw-font-semibold tw-text-right">{{ orderData?.sell_bank_name }}</p>
 			</div>
 
-			<div class="tw-relative tw-flex tw-justify-between tw-space-x-4 tw-mb-2 tw-font-pingfangsb tw-font-semibold">
+			<div 
+				v-if="orderData?.payment_method === 'bank'"
+				class="tw-relative tw-flex tw-justify-between tw-space-x-4 tw-mb-2 tw-font-pingfangsb tw-font-semibold"
+			>
 				<p class="tw-text-left">开户行：</p>
 				<p class="tw-font-semibold tw-text-right">{{ orderData?.sell_issue_bank_name }}</p>
 				<img 
@@ -83,7 +104,12 @@
 			</div>
 		</div>
 
-		<hr v-if="orderData?.payment_method === 'bank'" class="tw-w-full tw-mt-10 tw-mb-8 tw-bg-black tw-bg-opacity-30" />
+		<hr 
+			v-if="orderData?.payment_method === 'bank'
+				|| orderData?.payment_method === 'ecny'
+			" 
+			class="tw-w-full tw-border-none tw-h-[1px] tw-mt-10 tw-mb-8 tw-bg-black tw-bg-opacity-30" 
+		/>
 
 		<div class="tw-w-[80%] tw-flex">
 			<form @submit.prevent="confirmHandle" class="tw-w-full tw-mb-4 tw-flex tw-flex-col">
@@ -139,9 +165,19 @@
 				<div v-if="orderData?.payment_method === 'bank'" class="tw-flex tw-flex-col tw-items-center">
 					<div class="tw-w-full tw-text-[#333333]">
 						<div class="tw-relative tw-w-full tw-flex tw-flex-col tw-justify-start">
-							<span class="tw-mt-[-44px] tw-text-center tw-text-md tw-font-pingfang tw-text-[#333333] tw-mb-4">付款信息</span>
+							<!-- <span class="tw-mt-[-44px] tw-text-center tw-text-md tw-font-pingfang tw-text-[#333333] tw-mb-4">付款信息</span> -->
 						</div>
 
+						<div class="tw-flex tw-justify-between tw-space-x-4 tw-mb-2 tw-items-center">
+							<p class="tw-w-[30%] tw-text-left tw-text-md tw-font-songti">应付金额：</p>
+							<input
+								type="text"
+								placeholder="应付金额"
+								:value="`${orderData?.total_cny_price} 元`"
+								disabled
+								class="tw-w-[70%] tw-text-[24px] tw-font-pingfang tw-font-bold tw-text-[#d9001b] tw-rounded-md tw-py-1 tw-px-2"
+							/>
+						</div>
 						<div class="tw-flex tw-justify-between tw-space-x-4 tw-mt-2 tw-mb-2 tw-items-center">
 							<p class="tw-w-[30%] tw-text-left tw-text-md tw-font-songti">付款人：</p>
 							<input
@@ -178,7 +214,59 @@
 					</div>
 					
 				</div>
+				<div v-if="orderData?.payment_method === 'ecny'" class="tw-flex tw-flex-col tw-items-center">
+					<div class="tw-w-full tw-text-[#333333]">
+						<div class="tw-relative tw-w-full tw-flex tw-flex-col tw-justify-start">
+							<!-- <span class="tw-mt-[-44px] tw-text-center tw-text-md tw-font-pingfang tw-text-[#333333] tw-mb-4">付款信息</span> -->
+						</div>
 
+						<div class="tw-flex tw-justify-between tw-space-x-4 tw-mb-2 tw-items-center">
+							<p class="tw-w-[30%] tw-text-left tw-text-md tw-font-songti">应付金额：</p>
+							<input
+								type="text"
+								placeholder="应付金额"
+								:value="`${orderData?.total_cny_price} 元`"
+								disabled
+								class="tw-w-[70%] !tw-text-[24px] tw-font-pingfang tw-font-bold tw-text-[#d9001b] tw-rounded-md tw-py-1 tw-px-2"
+							/>
+						</div>
+
+						<div class="tw-flex tw-justify-between tw-space-x-4 tw-mt-2 tw-mb-2 tw-items-center">
+							<p class="tw-w-[30%] tw-text-left tw-text-md tw-font-songti">付款人：</p>
+							<input
+								type="text"
+								placeholder="请输入付款人姓名"
+								v-model="form.account_name"
+								required
+								class="tw-w-[70%] tw-text-md tw-font-pingfang tw-placeholder-[#d9001b] tw-placeholder-opacity-70 tw-border-solid tw-border-black tw-border-opacity-10 tw-rounded-md tw-py-1 tw-px-2"
+							/>
+						</div>
+
+						<div class="tw-flex tw-justify-between tw-space-x-4 tw-mt-2 tw-mb-2 tw-items-center">
+							<p class="tw-w-[30%] tw-text-left">付款银行：</p>
+							<input
+								type="text"
+								placeholder="请输入付款人银行"
+								v-model="form.bank_name"
+								required
+								class="tw-w-[70%] tw-text-md tw-font-pingfang tw-placeholder-[#d9001b] tw-placeholder-opacity-70 tw-border-solid tw-border-black tw-border-opacity-10 tw-rounded-md tw-py-1 tw-px-2"
+							/>
+						</div>
+
+						<div class="tw-flex tw-justify-between tw-space-x-4 tw-mt-2 tw-mb-2 tw-items-center">
+							<p class="tw-w-[30%] tw-text-left">付款账号：</p>
+							<input
+								type="text"
+								placeholder="请输入付款账号"
+								v-model="form.account_number"
+								required
+								class="tw-w-[70%] tw-text-md tw-font-pingfang tw-placeholder-[#d9001b] tw-placeholder-opacity-70 tw-border-solid tw-border-black tw-border-opacity-10 tw-rounded-md tw-py-1 tw-px-2"
+							/>
+						</div>
+
+					</div>
+					
+				</div>
 				<button
 					type="submit"
 					class="!tw-bg-[#a30014] !tw-text-[#f2f2f2] tw-font-normal tw-font-pingfang tw-text-[23px] tw-rounded-3xl tw-py-3 tw-mt-16 hover:tw-bg-rose-600 tw-opacity-50"
@@ -273,6 +361,10 @@ const confirmHandle = async () => {
 	} catch (error) {
 		console.log(error)
 		ElMessage.error('确认失败');
+	} finally {
+		setTimeout(() => {
+			isApiRequesting.value = false  
+		}, 3000);
 	}
 }
 

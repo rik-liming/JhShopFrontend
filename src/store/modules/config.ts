@@ -16,6 +16,7 @@ export interface IConfig {
   exchange_rate_alipay: number
   exchange_rate_wechat: number
   exchange_rate_bank: number
+  exchange_rate_ecny: number
   advertisement_text: string
   remote_order_config: IRemoteOrderConfig
 }
@@ -42,6 +43,7 @@ export default defineStore({
             exchange_rate_alipay: config.exchange_rate_alipay,
             exchange_rate_wechat: config.exchange_rate_wechat,
             exchange_rate_bank: config.exchange_rate_bank,
+            exchange_rate_ecny: config.exchange_rate_ecny,
             advertisement_text: config.advertisement_text,
             remote_order_config: config.remote_order_config
           }
