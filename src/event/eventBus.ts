@@ -13,6 +13,7 @@ type Events = {
 		reference_id: number;
 	};
 	'message:read': { user_id: number };
+	'order:updated': { order_id: number };
 //   'asset:changed': { user_id: number; delta: number };
   // ...其他类型
 };

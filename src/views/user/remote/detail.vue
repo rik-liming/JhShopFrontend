@@ -174,11 +174,12 @@
 
 <script setup>
 
-import { ref, onMounted } from 'vue'
+import { ref, onMounted, onUnmounted } from 'vue'
 import { useRouter, useRoute } from 'vue-router';
 import * as OrderApi from '@/api/order'
 import * as UserApi from '@/api/user'
 import { formatImageUrl, formatPaymentMethod } from '@/utils/tool'
+import emitter from '@/event/eventBus';
 
 const router = useRouter();
 const route = useRoute();
@@ -195,17 +196,32 @@ const handleClose = () => {
 	router.push(`/remote/buy?autoBuyerId=${autoBuyerId}`);
 }
 
-onMounted(async () => {
+onMounted(() => {
+  // 监听订单状态变更事件
+  emitter.on('order:updated', onOrderUpdate);
+
+  fetchOrderDetail()
+});
+
+onUnmounted(() => {
+  emitter.off('order:updated', onOrderUpdate);
+});
+
+const onOrderUpdate = async(data) => {
+  // 如果是这个订单
+  if (data.order_id == orderId) {
+    window.location.reload()
+  }
+}
+
+const fetchOrderDetail = async () => {
+  
   const verifyResp = await UserApi.autoBuyerVerify(autoBuyerId)
   if (verifyResp.data.code !== 10000) {
 	  ElMessage.error('远程下单身份校验失败!');
 	  return;
   }
 
-  fetchOrderDetail()
-});
-
-const fetchOrderDetail = async () => {
   try {
     const response = await OrderApi.getAutoBuyerOrderDetail(orderId)
     if (response.data.code === 10000) {

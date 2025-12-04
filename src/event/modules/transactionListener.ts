@@ -11,4 +11,8 @@ export function initTransactionListener() {
   channel.bind('OrderListingUpdated', async (data: any) => {
 	  emitter.emit('orderListing:updated', data);
   });
+
+  channel.bind('OrderUpdated', async (data: any) => {
+	  emitter.emit('order:updated', data);
+  });
 }

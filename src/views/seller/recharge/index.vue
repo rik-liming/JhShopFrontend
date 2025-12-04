@@ -2,7 +2,7 @@
   <div class="tw-w-full tw-min-h-screen tw-flex tw-flex tw-justify-center">
     <div class="tw-w-[90%] tw-p-1 tw-text-center tw-flex tw-flex-col tw-justify-start tw-items-center">
       <!-- 顶部图标 -->
-      <div class="tw-w-full tw-flex tw-items-center tw-justify-between tw-mt-14 tw-mb-2 tw-relative">
+      <div class="tw-w-full tw-flex tw-items-center tw-justify-between tw-mt-4 tw-mb-2 tw-relative">
         <div class="tw-flex tw-items-center tw-w-full">
           <img src="@/assets/logo.png" alt="logo" class="tw-w-[104px] tw-h-[100px] tw-mx-auto" />
         </div>
@@ -24,7 +24,7 @@
             @click="handleClose"
           />
         </div>
-        <div class="tw-absolute tw-right-0 tw-flex tw-flex-col tw-items-end tw-mt-36">
+        <div class="tw-absolute tw-right-0 tw-flex tw-flex-col tw-items-end tw-mt-40">
           <p class="tw-text-sm tw-mb-2 tw-mr-4 tw-font-songti tw-font-bold tw-text-[#333333]">市场汇率：<span class="tw-text-red-500 tw-font-pingfang tw-font-normal" style="color: rgba(rgba(217, 0, 27, 0.854901960784314))">{{ configStore.config?.value?.exchange_rate_platform }}</span></p>
         </div>
       </div>
@@ -34,7 +34,7 @@
       <hr class="tw-w-full tw-my-3 tw-border-black tw-border-opacity-30" />
 
       <div class="tw-w-[86%] tw-text-[#333333]">
-        <div class="tw-flex tw-justify-between tw-space-x-4 tw-mt-6 tw-mb-2 tw-font-pingfangsb tw-font-semibold">
+        <div class="tw-flex tw-justify-between tw-space-x-4 tw-mt-4 tw-mb-2 tw-font-pingfangsb tw-font-semibold">
           <p class="tw-text-left">ID：</p>
           <p class="tw-font-semibold tw-text-right">{{ formatIdDisplay(userStore?.user?.value?.id) }}</p>
         </div>
@@ -46,14 +46,45 @@
         </div>
 
         <!-- 可用资产 -->
-        <div class="tw-flex tw-justify-between tw-space-x-4 tw-mb-2 tw-font-pingfangsb tw-font-semibold">
+        <div class="tw-flex tw-justify-between tw-space-x-4 tw-font-pingfangsb tw-font-semibold">
           <p class="tw-text-left">可用资产：</p>
           <p class="tw-font-semibold tw-text-right">{{ userStore?.account?.value?.availableBalance }} USDT</p>
         </div>
 
+        <!-- 二维码 -->
+        <div
+          class="tw-flex tw-w-full tw-items-center tw-justify-between"
+        >
+          <div class="tw-relative tw-flex tw-flex-col tw-items-start tw-w-1/4 tw-opacity-73">
+            <img 
+              src="@/assets/finger_icon.svg" 
+              alt="icon" 
+              style="transform: rotate(90deg);"
+              class="tw-w-[46px] tw-h-[50px] tw-ml-2 tw-mb-4"
+            />
+            <span class="tw-absolute tw-top-14 tw-text-md tw-font-pingfangsb tw-font-bold">请扫码</span>
+          </div>
+          <div class="tw-w-3/4 tw-flex tw-items-center tw-justify-end">
+            <img 
+              :src="configStore.config?.value?.payment_qr_code ? formatImageUrl(configStore.config?.value?.payment_qr_code) : ''" 
+              alt="qr_code"
+              class="tw-w-[150px] tw-h-[150px]"
+              @click="openPreview(formatImageUrl(configStore.config?.value?.payment_qr_code))"
+            />
+          </div>
+        </div>
+
         <!-- 地址展示 -->
-        <div class="tw-text-left tw-mb-3 tw-mt-12">
-          <p class="tw-text-md tw-font-pingfangsb tw-font-semibold">接收地址（平台）：<span class="tw-font-arial tw-font-normal">USDT-TRC20</span></p>
+        <div class="tw-text-left tw-mb-3 tw-mt-2">
+          <div class="tw-relative">
+            <p class="tw-text-md tw-font-pingfangsb tw-font-semibold">接收地址（平台）：<span class="tw-font-arial tw-font-normal">USDT-TRC20</span></p>
+            <img 
+              src="@/assets/copy_icon.png" 
+              alt="复制"
+              class="tw-absolute tw-right-0 tw-top-0 tw-w-[20px] tw-h-[22px] cursor-pointer"
+              @click="copyPaymentAddress"
+            />
+          </div>
           <div
             class="tw-w-full tw-border tw-border-solid tw-border-black tw-border-opacity-30 tw-rounded-md tw-px-2 tw-py-2 tw-break-all tw-text-sm tw-mt-1 tw-font-pingfang tw-font-normal"
           >
@@ -76,8 +107,8 @@
           />
 
           <!-- 上传截图 -->
-          <div class="tw-text-left tw-mt-4 tw-mb-3">
-            <div class="tw-flex tw-justify-start tw-mb-6">
+          <div class="tw-text-left tw-mt-2 tw-mb-2">
+            <div class="tw-flex tw-justify-start tw-mb-4">
               <img src="@/assets/upload_icon.svg" alt="upload" class="tw-w-10 tw-h-7 tw-mr-2" />
               <p class="tw-font-medium tw-font-pingfang tw-text-black tw-font-normal tw-mt-[4px]">上传充值截图</p>
               <span class="tw-text-red-500 tw-ml-2">*</span>
@@ -89,7 +120,7 @@
           <!-- 按钮 -->
           <button
             type="submit"
-            class="tw-w-[90%] !tw-bg-[rgba(217,0,27,0.67843137254902)] !tw-text-[#f2f2f2] tw-font-normal tw-font-pingfang tw-text-[20px] tw-rounded-3xl tw-py-3 tw-mt-10 hover:tw-bg-rose-600"
+            class="tw-w-[90%] !tw-bg-[rgba(217,0,27,0.67843137254902)] !tw-text-[#f2f2f2] tw-font-normal tw-font-pingfang tw-text-[20px] tw-rounded-3xl tw-py-3 tw-mt-4 hover:tw-bg-rose-600"
             style="letter-spacing: 4px;"
             :disabled="isApiRequesting"
           >
@@ -105,8 +136,21 @@
         </form>
       </div>
 
+      <el-dialog
+        v-model="isPreviewOpen"
+        align-center
+        style="width: 380px; height: 380px; background-color: transparent; box-shadow: none;"
+      >
+        <img
+          :src="currentImageUrl"
+          alt="Preview"
+          class="tw-w-full tw-object-contain"
+          @click.stop
+        />
+      </el-dialog>
+
       <!-- 底部版权 -->
-      <p class="tw-text-xs tw-text-gray-400 tw-mt-4">Copy@ JH嘉禾商城</p>
+      <p class="tw-text-xs tw-text-gray-400">Copy@ JH嘉禾商城</p>
     </div>
   </div>
 </template>
@@ -116,7 +160,7 @@ import { ref, onMounted } from 'vue';
 import { useRouter } from 'vue-router';
 import CustomFileUpload from '@/components/CustomFileUpload';
 import store from '@/store'
-import { formatIdDisplay } from '@/utils/tool'
+import { formatIdDisplay, formatImageUrl } from '@/utils/tool'
 import * as RechargeApi from '@/api/recharge'
 import Hamburger from '@/components/Hamburger';
 
@@ -132,6 +176,8 @@ const form = ref({
 const router = useRouter();
 
 const isApiRequesting = ref(false)
+const isPreviewOpen = ref(false)
+const currentImageUrl = ref('');
 
 const handleClose = () => {
   router.push('/');
@@ -192,6 +238,25 @@ const onAmountInput = (e) => {
     form.amount = 0
   }
 }
+
+const openPreview = (imageUrl) => {
+	currentImageUrl.value = imageUrl;
+	isPreviewOpen.value = true;
+}
+
+const copyPaymentAddress = async () => {
+  const paymentAddress = configStore.config?.value?.payment_address
+
+  if (paymentAddress) {
+    try {
+      // 使用 Clipboard API 复制文本到剪贴板
+      await navigator.clipboard.writeText(paymentAddress);
+      ElMessage.success('已复制！');
+    } catch (err) {
+      ElMessage.error('复制失败，请手动复制！');
+    }
+  }
+};
 
 </script>
 
