@@ -160,9 +160,18 @@ const paymentHandle = async() => {
       return;
     }
 
-    if (form.value.qr_code_changed && !form.value.qr_code) {
-      ElMessage.error('二维码不能为空！');
-      return;
+    // 新增时，只要qr_code为空，就阻止提交；
+    // 编辑时，变动过后，qr_code为空，就阻止提交;
+    if (paymentMethodId) {
+      if (form.value.qr_code_changed && !form.value.qr_code) {
+        ElMessage.error('二维码不能为空！');
+        return;
+      }
+    } else {
+      if (!form.value.qr_code) {
+        ElMessage.error('二维码不能为空！');
+        return;
+      }
     }
 
     const formData = new FormData();

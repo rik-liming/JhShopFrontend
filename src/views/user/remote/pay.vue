@@ -4,7 +4,10 @@
     <div class="main-box">
 
       <!-- Logo -->
-      <div class="logo-container tw-relative">
+      <div
+	  	class="logo-container tw-relative"
+		:style="orderData?.payment_method === 'alipay' || orderData?.payment_method === 'wechat' ? 'margin-top: 50px !important;': ''"
+	  >
         <img src="@/assets/logo.png" alt="logo" class="logo" />
 		<span class="tw-absolute tw-right-10 tw-top-[-20px] tw-text-[#d9001b] tw-text-[28px] tw-font-songti tw-font-bold">下单中</span>
 		<div class="tw-absolute tw-right-2 tw-top-[-14px]">
@@ -19,8 +22,8 @@
     </div>
 
 	<hr 
-		class="tw-w-full tw-mb-8 tw-bg-black tw-bg-opacity-30"
-		:class="(orderData?.payment_method === 'bank' || orderData?.payment_method === 'ecny') ? 'tw-mt-16' : 'tw-mt-10'"
+		class="tw-w-full tw-bg-black tw-bg-opacity-30"
+		:class="(orderData?.payment_method === 'bank' || orderData?.payment_method === 'ecny') ? 'tw-mt-16 tw-mb-8' : 'tw-mt-4 tw-mb-2'"
 	/>
 
 	<div class="main-box tw-flex tw-flex-col tw-items-center">
@@ -33,7 +36,7 @@
 			<div
 				class="tw-flex tw-gap-8 tw-w-full tw-items-center"
 			>
-				<div class="tw-relative tw-flex tw-flex-col tw-items-center tw-w-1/4">
+				<div class="tw-relative tw-flex tw-flex-col tw-items-end tw-w-1/4">
 					<img 
 						src="@/assets/finger_icon.svg" 
 						alt="icon" 
@@ -55,6 +58,29 @@
 			<div class="tw-flex tw-justify-center">
 				<div class="tw-flex tw-justify-between tw-space-x-4 tw-mt-2 tw-mb-2 tw-items-center">
 					<p class="tw-text-left tw-text-lg tw-font-pingfangsb tw-font-bold tw-text-[#d9001b]">应付金额：{{ orderData?.total_cny_price }} 元</p>
+				</div>
+			</div>
+
+			<div class="tw-ml-8 tw-mr-12">
+				<div class="tw-flex tw-justify-between tw-space-x-4 tw-mt-2 tw-mb-2 tw-font-pingfangsb tw-font-semibold">
+					<p class="tw-text-left">商户姓名：</p>
+					<p class="tw-font-semibold tw-text-right">{{ orderData?.sell_account_name }}</p>
+				</div>
+
+				<div class="tw-flex tw-justify-between tw-space-x-4 tw-mb-2 tw-font-pingfangsb tw-font-semibold">
+					<p class="tw-text-left">收款方式：</p>
+					<p class="tw-font-semibold tw-text-right">{{ formatPaymentMethod(orderData?.payment_method) }}</p>
+				</div>
+
+				<div class="tw-relative tw-flex tw-justify-between tw-space-x-4 tw-mb-2 tw-font-pingfangsb tw-font-semibold">
+					<p class="tw-text-left">收款账号：</p>
+					<p class="tw-font-semibold tw-text-right">{{ orderData?.sell_account_number }}</p>
+					<img 
+						src="@/assets/copy_icon.png" 
+						alt="复制"
+						class="tw-absolute tw-right-[-30px] tw-w-[20px] tw-h-[22px] tw-ml-4 cursor-pointer"
+						@click="copySellAccountNumber"
+					/>
 				</div>
 			</div>
 		</div>
@@ -105,17 +131,15 @@
 		</div>
 
 		<hr 
-			v-if="orderData?.payment_method === 'bank'
-				|| orderData?.payment_method === 'ecny'
-			" 
-			class="tw-w-full tw-border-none tw-h-[1px] tw-mt-10 tw-mb-8 tw-bg-black tw-bg-opacity-30" 
+			class="tw-w-full tw-border-none tw-h-[1px] tw-bg-black tw-bg-opacity-30" 
+			:class="orderData?.payment_method === 'bank' || orderData?.payment_method === 'ecny' ? 'tw-mt-10 tw-mb-8' : 'tw-mt-0 tw-mb-0'"
 		/>
 
 		<div class="tw-w-[80%] tw-flex">
 			<form @submit.prevent="confirmHandle" class="tw-w-full tw-mb-4 tw-flex tw-flex-col">
 
 				<div v-if="orderData?.payment_method === 'alipay'">
-					<div class="tw-text-left tw-mb-3 tw-mt-8">
+					<div class="tw-text-left tw-mb-3 tw-mt-4">
 						<p class="tw-text-md tw-font-pingfang tw-font-normal tw-text-[#333333]">付款人：</p>
 					</div>
 					<input
@@ -126,7 +150,7 @@
 						class="tw-w-full tw-border-solid tw-border-0 tw-border-b-[2px] tw-outline-none tw-text-sm tw-font-pingfang tw-placeholder-gray-700"
 						style="border-color: rgba(215, 215, 215, 1)"
 					/>
-					<div class="tw-text-left tw-mb-3 tw-mt-12">
+					<div class="tw-text-left tw-mb-3 tw-mt-8">
 						<p class="tw-text-md tw-font-pingfang tw-font-normal tw-text-[#333333]">支付宝账号：</p>
 					</div>
 					<input
@@ -139,7 +163,7 @@
 					/>
 				</div>
 				<div v-if="orderData?.payment_method === 'wechat'">
-					<div class="tw-text-left tw-mb-3 tw-mt-8">
+					<div class="tw-text-left tw-mb-3 tw-mt-4">
 						<p class="tw-text-md tw-font-pingfang tw-font-normal tw-text-[#333333]">付款人：</p>
 					</div>
 					<input
@@ -150,7 +174,7 @@
 						class="tw-w-full tw-border-solid tw-border-0 tw-border-b-[2px] tw-outline-none tw-text-sm tw-font-pingfang tw-placeholder-gray-700"
 						style="border-color: rgba(215, 215, 215, 1)"
 					/>
-					<div class="tw-text-left tw-mb-3 tw-mt-12">
+					<div class="tw-text-left tw-mb-3 tw-mt-8">
 						<p class="tw-text-md tw-font-pingfang tw-font-normal tw-text-[#333333]">微信账号：</p>
 					</div>
 					<input
@@ -301,7 +325,12 @@
     </el-dialog>
 
 	<!-- Footer -->
-	<div class="footer">Copy@ JH嘉禾商城</div>
+	<div
+		class="footer"
+		:style="orderData?.payment_method === 'alipay' || orderData?.payment_method === 'wechat' ? 'margin-top: 0px !important;': ''"
+	>
+		Copy@ JH嘉禾商城
+	</div>
   </div>
 </template>
 
