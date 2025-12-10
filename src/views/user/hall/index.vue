@@ -154,9 +154,9 @@ import OrderListingTable from './components/OrderListingTable.vue'
 
 // --- 广告轮播图片 ---
 const ad_imgs = [
-  new URL('@/assets/scroll_ad_1.png', import.meta.url).href,
-  new URL('@/assets/scroll_ad_2.png', import.meta.url).href,
-  new URL('@/assets/scroll_ad_3.png', import.meta.url).href
+  new URL('@/assets/scroll_ad_1.jpg', import.meta.url).href,
+  new URL('@/assets/scroll_ad_2.jpg', import.meta.url).href,
+  new URL('@/assets/scroll_ad_3.jpg', import.meta.url).href
 ]
 
 const userStore = store.user()
